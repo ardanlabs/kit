@@ -1,0 +1,121 @@
+{
+	"comment": "",
+	"ignore": "",
+	"package": [
+		{
+			"path": "github.com/coralproject/shelf/pkg/cfg",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"path": "github.com/coralproject/shelf/pkg/db",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"path": "github.com/coralproject/shelf/pkg/db/mongo",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"path": "github.com/coralproject/shelf/pkg/log",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"path": "github.com/coralproject/shelf/pkg/srv/auth/crypto",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"path": "github.com/coralproject/shelf/pkg/srv/auth/session",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"path": "github.com/coralproject/shelf/pkg/tests",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/ardanlabs/kit/vendor/github.com/pborman/uuid",
+			"path": "github.com/pborman/uuid",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/ardanlabs/kit/vendor/golang.org/x/crypto/bcrypt",
+			"path": "golang.org/x/crypto/bcrypt",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/coralproject/shelf/vendor/golang.org/x/crypto/blowfish",
+			"path": "golang.org/x/crypto/blowfish",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/coralproject/shelf/vendor/golang.org/x/crypto/pbkdf2",
+			"path": "golang.org/x/crypto/pbkdf2",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/ardanlabs/kit/vendor/golang.org/x/crypto/scrypt",
+			"path": "golang.org/x/crypto/scrypt",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"path": "gopkg.in/bluesuncorp/validator.v6",
+			"revision": "15e8444e515459e82ef3c33c8cd2dc68b2031e5b",
+			"revisionTime": "2015-09-24T07:48:25-04:00"
+		},
+		{
+			"path": "gopkg.in/check.v1",
+			"revision": "11d3bc7aa68e238947792f30573146a3231fc0f1",
+			"revisionTime": "2015-07-29T10:04:31+02:00"
+		},
+		{
+			"path": "gopkg.in/go-playground/assert.v1",
+			"revision": "81e18c3a1062114068407f67a360d6eb6b429715",
+			"revisionTime": "2015-09-24T06:57:13-04:00"
+		},
+		{
+			"path": "gopkg.in/go-playground/validator.v6",
+			"revision": "15e8444e515459e82ef3c33c8cd2dc68b2031e5b",
+			"revisionTime": "2015-09-24T07:48:25-04:00"
+		},
+		{
+			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/mgo.v2",
+			"path": "gopkg.in/mgo.v2",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/mgo.v2/bson",
+			"path": "gopkg.in/mgo.v2/bson",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/coralproject/shelf/vendor/gopkg.in/mgo.v2/internal/sasl",
+			"path": "gopkg.in/mgo.v2/internal/sasl",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/coralproject/shelf/vendor/gopkg.in/mgo.v2/internal/scram",
+			"path": "gopkg.in/mgo.v2/internal/scram",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		},
+		{
+			"origin": "github.com/coralproject/shelf/vendor/gopkg.in/yaml.v2",
+			"path": "gopkg.in/yaml.v2",
+			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
+			"revisionTime": "2015-12-07T17:02:10-05:00"
+		}
+	]
+}

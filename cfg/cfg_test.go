@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/coralproject/shelf/pkg/cfg"
+	"github.com/ardanlabs/kit/cfg"
 )
 
 // succeed is the Unicode codepoint for a check mark.

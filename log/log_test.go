@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/coralproject/shelf/pkg/log"
+	"github.com/ardanlabs/kit/log"
 )
 
 // succeed is the Unicode codepoint for a check mark.
