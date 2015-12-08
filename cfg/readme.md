@@ -1,6 +1,6 @@
 
 # cfg
-    import "github.com/coralproject/shelf/pkg/cfg"
+    import "github.com/ardanlabs/kit/cfg"
 
 Package cfg provides configuration options that are loaded from the environment.
 Configuration is then stored in memory and can be retrieved by its proper
@@ -31,6 +31,14 @@ will panic if the key does not exist:
 
 
 
+## func Bool
+``` go
+func Bool(key string) (bool, error)
+```
+Bool returns the bool balue of a given key as a bool, else it will return an
+error, if the key was not found or the value can't be convered to a bool.
+
+
 ## func Init
 ``` go
 func Init(namespace string) error
@@ -45,6 +53,14 @@ func Int(key string) (int, error)
 ```
 Int returns the value of the giving key as an int, else it will return
 an error, if the key was not found or the value can't be convered to an int.
+
+
+## func MustBool
+``` go
+func MustBool(key string) bool
+```
+MustBool returns the bool balue of a given key as a bool, else it will panic
+if the key was not found or the value can't be convered to a bool.
 
 
 ## func MustInt
@@ -71,6 +87,14 @@ MustTime returns the value of the giving key as a Time, else it will panic
 if the key was not found or the value can't be convered to a Time.
 
 
+## func MustURL
+``` go
+func MustURL(key string) *url.URL
+```
+MustURL returns the value of the giving key as a URL, else it will panic
+if the key was not found or the value can't be convered to a URL.
+
+
 ## func String
 ``` go
 func String(key string) (string, error)
@@ -85,6 +109,14 @@ func Time(key string) (time.Time, error)
 ```
 Time returns the value of the giving key as a Time, else it will return an
 error, if the key was not found or the value can't be convered to a Time.
+
+
+## func URL
+``` go
+func URL(key string) (*url.URL, error)
+```
+URL returns the value of the giving key as a URL, else it will return an
+error, if the key was not found or the value can't be convered to a URL.
 
 
 
