@@ -1,0 +1,11 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"path": "gopkg.in/mgo.v2",
+			"revision": "e30de8ac9ae3b30df7065f766c71f88bba7d4e49",
+			"revisionTime": "2015-12-07T00:15:13-02:00"
+		}
+	]
+}
