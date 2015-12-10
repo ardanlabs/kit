@@ -118,9 +118,15 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	a.TreeMux.Handle(verb, path, h)
 }
 
+// Settings represents things required to initialize the app.
+type Settings struct {
+	ConfigKey string // The based environment variable key for all variables.
+	UseMongo  bool   // If MongoDB should be initialized and used.
+}
+
 // Init is called to initialize the application.
-func Init(cfgKey string, useMongo bool) {
-	app.useMongo = useMongo
+func Init(set *Settings) {
+	app.useMongo = set.UseMongo
 
 	logLevel := func() int {
 		ll, err := cfg.Int("LOGGING_LEVEL")
@@ -132,12 +138,12 @@ func Init(cfgKey string, useMongo bool) {
 
 	log.Init(os.Stderr, logLevel)
 
-	if err := cfg.Init(cfgKey); err != nil {
+	if err := cfg.Init(set.ConfigKey); err != nil {
 		log.Error("startup", "Init", err, "Initializing config")
 		os.Exit(1)
 	}
 
-	if useMongo {
+	if set.UseMongo {
 		err := mongo.InitMGO()
 		if err != nil {
 			log.Error("startup", "Init", err, "Initializing MongoDB")

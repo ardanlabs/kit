@@ -29,8 +29,12 @@ export ENV_PREFIX_LOGGING_LEVEL=1
 func init() {
 	os.Setenv("ENV_PREFIX_LOGGING_LEVEL", "1")
 
-	var useMongo bool
-	app.Init("ENV_PREFIX", useMongo)
+	set := app.Settings{
+		ConfigKey: "ENV_PREFIX",
+		UseMongo:  false,
+	}
+
+	app.Init(&set)
 }
 
 func main() {

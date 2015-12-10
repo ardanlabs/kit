@@ -58,12 +58,6 @@
 			"revisionTime": "2015-09-24T07:48:25-04:00"
 		},
 		{
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/mgo.v2",
-			"path": "gopkg.in/mgo.v2",
-			"revision": "a107c5139b7f6b2196f73f81a8602726c1f9ae82",
-			"revisionTime": "2015-12-07T17:02:10-05:00"
-		},
-		{
 			"path": "gopkg.in/mgo.v2/bson",
 			"revision": "4d04138ffef2791c479c0c8bbffc30b34081b8d9",
 			"revisionTime": "2015-10-26T14:34:53-02:00"
