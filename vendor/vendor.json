@@ -3,6 +3,16 @@
 	"ignore": "",
 	"package": [
 		{
+			"path": "github.com/dimfeld/httppath",
+			"revision": "c8e499c3ef3c3e272ed8bdcc1ccf39f73c88debc",
+			"revisionTime": "2014-05-15T11:47:37-05:00"
+		},
+		{
+			"path": "github.com/dimfeld/httptreemux",
+			"revision": "a1f77c483db030c0892de9ba2d006fc74272e9a8",
+			"revisionTime": "2015-09-30T23:53:14-05:00"
+		},
+		{
 			"path": "github.com/pborman/uuid",
 			"revision": "cccd189d45f7ac3368a0d127efb7f4d08ae0b655",
 			"revisionTime": "2015-08-24T14:28:02-07:00"
