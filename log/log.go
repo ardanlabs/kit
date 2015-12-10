@@ -10,7 +10,8 @@ import (
 
 // Level constants that define the supported usable LogLevel.
 const (
-	DEV int = iota + 1
+	NONE int = iota
+	DEV
 	USER
 )
 
@@ -53,11 +54,13 @@ func Dev(context interface{}, funcName string, format string, a ...interface{}) 
 func User(context interface{}, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
-		if a != nil {
-			format = fmt.Sprintf(format, a...)
-		}
+		if l.level() >= DEV {
+			if a != nil {
+				format = fmt.Sprintf(format, a...)
+			}
 
-		l.Output(2, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+			l.Output(2, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+		}
 	}
 	l.mu.RUnlock()
 }
@@ -66,11 +69,13 @@ func User(context interface{}, funcName string, format string, a ...interface{})
 func Error(context interface{}, funcName string, err error, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
-		if a != nil {
-			format = fmt.Sprintf(format, a...)
-		}
+		if l.level() >= DEV {
+			if a != nil {
+				format = fmt.Sprintf(format, a...)
+			}
 
-		l.Output(2, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+			l.Output(2, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+		}
 	}
 	l.mu.RUnlock()
 }
@@ -79,11 +84,13 @@ func Error(context interface{}, funcName string, err error, format string, a ...
 func Fatal(context interface{}, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
-		if a != nil {
-			format = fmt.Sprintf(format, a...)
-		}
+		if l.level() >= DEV {
+			if a != nil {
+				format = fmt.Sprintf(format, a...)
+			}
 
-		l.Output(2, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+			l.Output(2, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+		}
 	}
 	l.mu.RUnlock()
 
