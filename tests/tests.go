@@ -49,7 +49,7 @@ func Init(cfgKey string) {
 
 // InitMongo initializes the mongodb connections for testing.
 func InitMongo() {
-	if err := mongo.InitMGO(); err != nil {
+	if err := mongo.Init(); err != nil {
 		log.Error("Test", "Init", err, "Completed")
 		logdash.WriteTo(os.Stdout)
 		os.Exit(1)
