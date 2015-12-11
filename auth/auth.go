@@ -17,7 +17,7 @@ import (
 )
 
 // collection contains the name of the auth_users collection.
-const collection = "auth_users"
+const Collection = "auth_users"
 
 //==============================================================================
 
@@ -35,7 +35,7 @@ func CreateUser(context interface{}, db *db.DB, u *User) error {
 		return c.Insert(u)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "CreateUser", err, "Completed")
 		return err
 	}
@@ -161,7 +161,7 @@ func GetUserByPublicID(context interface{}, db *db.DB, publicID string) (*User, 
 		return c.Find(q).One(&user)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "GetUserByPublicID", err, "Completed")
 		return nil, err
 	}
@@ -181,7 +181,7 @@ func GetUserByEmail(context interface{}, db *db.DB, email string) (*User, error)
 		return c.Find(q).One(&user)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "GetUserByEmail", err, "Completed")
 		return nil, err
 	}
@@ -244,7 +244,7 @@ func UpdateUser(context interface{}, db *db.DB, uu UpdUser) error {
 		return c.Update(q, upd)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "UpdateUser", err, "Completed")
 		return err
 	}
@@ -281,7 +281,7 @@ func UpdateUserPassword(context interface{}, db *db.DB, u *User, password string
 		return c.Update(q, upd)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "UpdateUserPassword", err, "Completed")
 		return err
 	}
@@ -307,7 +307,7 @@ func UpdateUserStatus(context interface{}, db *db.DB, publicID string, status in
 		return c.Update(q, upd)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "UpdateUserStatus", err, "Completed")
 		return err
 	}

@@ -1,11 +1,13 @@
 package session_test
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"github.com/ardanlabs/kit/auth/session"
 	"github.com/ardanlabs/kit/db"
+	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/tests"
 
 	"gopkg.in/mgo.v2"
@@ -18,7 +20,29 @@ var (
 )
 
 func init() {
-	tests.Init()
+	os.Setenv("KIT_MONGO_HOST", "ds027155.mongolab.com:27155")
+	os.Setenv("KIT_MONGO_USER", "kit")
+	os.Setenv("KIT_MONGO_AUTHDB", "kit")
+	os.Setenv("KIT_MONGO_DB", "kit")
+	os.Setenv("KIT_LOGGING_LEVEL", "1")
+	os.Setenv("KIT_MONGO_PASS", "community")
+
+	tests.Init("KIT")
+	tests.InitMongo()
+
+	ensureIndexes()
+}
+
+func ensureIndexes() {
+	ses := mongo.GetSession()
+	defer ses.Close()
+
+	index := mgo.Index{
+		Key:    []string{"public_id"},
+		Unique: false,
+	}
+
+	mongo.GetCollection(ses, session.Collection).EnsureIndex(index)
 }
 
 // removeSessions is used to clear out all the test sessions that are
@@ -30,7 +54,7 @@ func removeSessions(db *db.DB) error {
 		return err
 	}
 
-	if err := db.ExecuteMGO(context, "sessions", f); err != nil {
+	if err := db.ExecuteMGO(context, session.Collection, f); err != nil {
 		return err
 	}
 

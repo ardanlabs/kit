@@ -17,7 +17,7 @@ import (
 )
 
 // collections contains the name of the user collection.
-const collection = "sessions"
+const Collection = "auth_sessions"
 
 //==============================================================================
 
@@ -37,7 +37,7 @@ func Create(context interface{}, db *db.DB, publicID string, expires time.Durati
 		return c.Insert(&s)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "Create", err, "Completed")
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func GetBySessionID(context interface{}, db *db.DB, sessionID string) (*Session,
 		return c.Find(q).One(&s)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "GetBySessionID", err, "Completed")
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func GetByLatest(context interface{}, db *db.DB, publicID string) (*Session, err
 		return c.Find(q).Sort("-date_created").One(&s)
 	}
 
-	if err := db.ExecuteMGO(context, collection, f); err != nil {
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
 		log.Error(context, "GetByLatest", err, "Completed")
 		return nil, err
 	}

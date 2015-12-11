@@ -38,22 +38,14 @@ func DisplayLog() {
 	logdash.WriteTo(os.Stdout)
 }
 
-// Init intializes the tests package.
-func Init(m string){
-	InitLog()
-	InitMongo(m)
-}
-
-// InitLog initializes the log package.
-func InitLog(){
+// Init initializes the log package.
+func Init(cfgKey string) {
+	cfg.Init(cfgKey)
 	log.Init(&logdash, func() int { return log.DEV })
 }
 
-// Init is to be runned once. It initializes the necessary logs and mongodb
-// connections for testing.
-func InitMongo(pkg string) {
-	cfg.Init(pkg)
-
+// InitMongo initializes the mongodb connections for testing.
+func InitMongo() {
 	if err := mongo.InitMGO(); err != nil {
 		log.Error("Test", "Init", err, "Completed")
 		logdash.WriteTo(os.Stdout)

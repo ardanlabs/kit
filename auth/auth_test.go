@@ -1,6 +1,7 @@
 package auth_test
 
 import (
+	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/ardanlabs/kit/auth"
 	"github.com/ardanlabs/kit/auth/session"
 	"github.com/ardanlabs/kit/db"
+	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/tests"
 
 	"gopkg.in/mgo.v2"
@@ -17,7 +19,29 @@ import (
 var context = "testing"
 
 func init() {
-	tests.Init()
+	os.Setenv("KIT_MONGO_HOST", "ds027155.mongolab.com:27155")
+	os.Setenv("KIT_MONGO_USER", "kit")
+	os.Setenv("KIT_MONGO_AUTHDB", "kit")
+	os.Setenv("KIT_MONGO_DB", "kit")
+	os.Setenv("KIT_LOGGING_LEVEL", "1")
+	os.Setenv("KIT_MONGO_PASS", "community")
+
+	tests.Init("KIT")
+	tests.InitMongo()
+
+	ensureIndexes()
+}
+
+func ensureIndexes() {
+	ses := mongo.GetSession()
+	defer ses.Close()
+
+	index := mgo.Index{
+		Key:    []string{"public_id"},
+		Unique: true,
+	}
+
+	mongo.GetCollection(ses, auth.Collection).EnsureIndex(index)
 }
 
 //==============================================================================
@@ -29,7 +53,7 @@ func removeUser(db *db.DB, publicID string) error {
 		return c.Remove(q)
 	}
 
-	if err := db.ExecuteMGO(context, "auth_users", f); err != nil {
+	if err := db.ExecuteMGO(context, auth.Collection, f); err != nil {
 		return err
 	}
 
@@ -39,7 +63,7 @@ func removeUser(db *db.DB, publicID string) error {
 		return err
 	}
 
-	if err := db.ExecuteMGO(context, "sessions", f); err != nil {
+	if err := db.ExecuteMGO(context, session.Collection, f); err != nil {
 		return err
 	}
 
