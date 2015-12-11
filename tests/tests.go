@@ -14,6 +14,9 @@ import (
 	"github.com/ardanlabs/kit/log"
 )
 
+// Context provides a base context for tests.
+var Context = "Test"
+
 // Success is a unicode codepoint for a check mark.
 var Success = "\u2713"
 
