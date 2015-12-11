@@ -144,7 +144,7 @@ func Init(set *Settings) {
 	}
 
 	if set.UseMongo {
-		err := mongo.InitMGO()
+		err := mongo.Init()
 		if err != nil {
 			log.Error("startup", "Init", err, "Initializing MongoDB")
 			os.Exit(1)
