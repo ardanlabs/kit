@@ -22,6 +22,8 @@ var status struct {
 	active bool
 }
 
+//==============================================================================
+
 // addStatus handles the deletion of user records.
 func addStatus() {
 	cmd := &cobra.Command{

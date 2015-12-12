@@ -20,6 +20,8 @@ var m struct {
 	mu     sync.RWMutex
 }
 
+//==============================================================================
+
 // Init sets up the MongoDB environment. This expects that the
 // cfg package has been initialized first.
 func Init() error {

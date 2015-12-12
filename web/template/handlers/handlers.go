@@ -13,6 +13,8 @@ type testHandle struct{}
 // Test fronts the access to the test service functionality.
 var Test testHandle
 
+//==============================================================================
+
 // List returns all the existing test names in the system.
 // 200 Success, 404 Not Found, 500 Internal
 func (testHandle) List(c *app.Context) error {

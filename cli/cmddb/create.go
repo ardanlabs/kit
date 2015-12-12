@@ -24,6 +24,8 @@ var create struct {
 	file string
 }
 
+//==============================================================================
+
 // addCreate handles the creation of users.
 func addCreate() {
 	cmd := &cobra.Command{

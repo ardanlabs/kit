@@ -18,6 +18,8 @@ var c struct {
 	mu sync.RWMutex
 }
 
+//==============================================================================
+
 // Init is to be called only once, to load up the giving namespace if found,
 // in the environment variables. All keys will be made lowercase.
 func Init(namespace string) error {

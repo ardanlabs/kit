@@ -23,6 +23,8 @@ var create struct {
 	email string
 }
 
+//==============================================================================
+
 // addCreate handles the creation of users.
 func addCreate() {
 	cmd := &cobra.Command{

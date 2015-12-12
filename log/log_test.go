@@ -11,11 +11,11 @@ import (
 	"github.com/ardanlabs/kit/log"
 )
 
-// succeed is the Unicode codepoint for a check mark.
-const succeed = "\u2713"
-
-// failed is the Unicode codepoint for an X mark.
-const failed = "\u2717"
+// Success and failure markers.
+var (
+	Success = "\u2713"
+	Failed  = "\u2717"
+)
 
 // logdest implements io.Writer and is the log package destination.
 var logdest bytes.Buffer
@@ -31,6 +31,8 @@ func displayLog() {
 	}
 	logdest.WriteTo(os.Stdout)
 }
+
+//==============================================================================
 
 // TestLogLevelUSER tests the basic functioning of the logger in USER mode.
 func TestLogLevelUSER(t *testing.T) {

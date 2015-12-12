@@ -4,8 +4,6 @@
 package main
 
 import (
-	"os"
-
 	"github.com/ardanlabs/kit/web/app"
 	"github.com/ardanlabs/kit/web/template/routes"
 )
@@ -25,17 +23,6 @@ export ENV_PREFIX_MONGO_PASS=
 
 export ENV_PREFIX_LOGGING_LEVEL=1
 */
-
-func init() {
-	os.Setenv("ENV_PREFIX_LOGGING_LEVEL", "1")
-
-	set := app.Settings{
-		ConfigKey: "ENV_PREFIX",
-		UseMongo:  false,
-	}
-
-	app.Init(&set)
-}
 
 func main() {
 	// If ENV_HOST is not found then :4000 is used.

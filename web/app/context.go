@@ -29,6 +29,8 @@ type jsonError struct {
 	Fields []Invalid `json:"fields,omitempty"`
 }
 
+//==============================================================================
+
 // Context contains data associated with a single request.
 type Context struct {
 	DB *db.DB

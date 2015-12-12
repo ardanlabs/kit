@@ -8,6 +8,8 @@ var dbCmd = &cobra.Command{
 	Short: "db will create a kit database and validate everything exists.",
 }
 
+//==============================================================================
+
 // GetCommands returns the query commands.
 func GetCommands() *cobra.Command {
 	addCreate()

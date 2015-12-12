@@ -7,11 +7,13 @@ import (
 	"github.com/ardanlabs/kit/cfg"
 )
 
-// succeed is the Unicode codepoint for a check mark.
-const succeed = "\u2713"
+// Success and failure markers.
+var (
+	Success = "\u2713"
+	Failed  = "\u2717"
+)
 
-// failed is the Unicode codepoint for an X mark.
-const failed = "\u2717"
+//==============================================================================
 
 // TestExists validates the ability to load configuration values
 // using the OS-level environment variables and read them back.

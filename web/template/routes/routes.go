@@ -2,6 +2,7 @@ package routes
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/ardanlabs/kit/web/app"
 	"github.com/ardanlabs/kit/web/template/handlers"
@@ -9,6 +10,19 @@ import (
 	// If you want to include middleware such as basic authentication.
 	// "github.com/ardanlabs/kit/web/midware"
 )
+
+func init() {
+	os.Setenv("ENV_PREFIX_LOGGING_LEVEL", "1")
+
+	set := app.Settings{
+		ConfigKey: "ENV_PREFIX",
+		UseMongo:  false,
+	}
+
+	app.Init(&set)
+}
+
+//==============================================================================
 
 // API returns a handler for a set of routes.
 func API() http.Handler {

@@ -23,6 +23,8 @@ var get struct {
 	email string
 }
 
+//==============================================================================
+
 // addGet handles the retrival users records, displayed in json formatted response.
 func addGet() {
 	cmd := &cobra.Command{

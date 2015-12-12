@@ -22,6 +22,8 @@ var l struct {
 	mu    sync.RWMutex
 }
 
+//==============================================================================
+
 // Init must be called to initialize the logging system. This function should
 // only be called once.
 func Init(w io.Writer, level func() int) error {

@@ -17,14 +17,16 @@ import (
 // Context provides a base context for tests.
 var Context = "Test"
 
-// Success is a unicode codepoint for a check mark.
-var Success = "\u2713"
-
-// Failed is a unicode codepoint for a check X mark.
-var Failed = "\u2717"
+// Success and failure markers.
+var (
+	Success = "\u2713"
+	Failed  = "\u2717"
+)
 
 // logdash is the central buffer where all logs are stored.
 var logdash bytes.Buffer
+
+//==============================================================================
 
 // ResetLog resets the contents of logdash.
 func ResetLog() {

@@ -32,44 +32,6 @@ func init() {
 	ensureIndexes()
 }
 
-func ensureIndexes() {
-	ses := mongo.GetSession()
-	defer ses.Close()
-
-	index := mgo.Index{
-		Key:    []string{"public_id"},
-		Unique: true,
-	}
-
-	mongo.GetCollection(ses, auth.Collection).EnsureIndex(index)
-}
-
-//==============================================================================
-
-// removeUser is used to clear out all the test user from the collection.
-func removeUser(db *db.DB, publicID string) error {
-	f := func(c *mgo.Collection) error {
-		q := bson.M{"public_id": publicID}
-		return c.Remove(q)
-	}
-
-	if err := db.ExecuteMGO(context, auth.Collection, f); err != nil {
-		return err
-	}
-
-	f = func(c *mgo.Collection) error {
-		q := bson.M{"public_id": publicID}
-		_, err := c.RemoveAll(q)
-		return err
-	}
-
-	if err := db.ExecuteMGO(context, session.Collection, f); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 //==============================================================================
 
 // TestModelInvalidation tests things that can fail with model validation.
@@ -1112,4 +1074,42 @@ func TestNoSession(t *testing.T) {
 			}
 		}
 	}
+}
+
+//==============================================================================
+
+func ensureIndexes() {
+	ses := mongo.GetSession()
+	defer ses.Close()
+
+	index := mgo.Index{
+		Key:    []string{"public_id"},
+		Unique: true,
+	}
+
+	mongo.GetCollection(ses, auth.Collection).EnsureIndex(index)
+}
+
+// removeUser is used to clear out all the test user from the collection.
+func removeUser(db *db.DB, publicID string) error {
+	f := func(c *mgo.Collection) error {
+		q := bson.M{"public_id": publicID}
+		return c.Remove(q)
+	}
+
+	if err := db.ExecuteMGO(context, auth.Collection, f); err != nil {
+		return err
+	}
+
+	f = func(c *mgo.Collection) error {
+		q := bson.M{"public_id": publicID}
+		_, err := c.RemoveAll(q)
+		return err
+	}
+
+	if err := db.ExecuteMGO(context, session.Collection, f); err != nil {
+		return err
+	}
+
+	return nil
 }

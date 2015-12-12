@@ -8,6 +8,8 @@ var userCmd = &cobra.Command{
 	Short: "auth provides managing user records.",
 }
 
+//==============================================================================
+
 // GetCommands returns the user commands.
 func GetCommands() *cobra.Command {
 	addCreate()

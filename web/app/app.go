@@ -47,6 +47,8 @@ var app struct {
 	useMongo bool
 }
 
+//==============================================================================
+
 // App is the entrypoint into our application and what configures our context
 // object for each of our http handlers. Feel free to add any configuration
 // data/logic on this App struct
@@ -117,6 +119,8 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	// Add this handler for the specified verb and route.
 	a.TreeMux.Handle(verb, path, h)
 }
+
+//==============================================================================
 
 // Settings represents things required to initialize the app.
 type Settings struct {

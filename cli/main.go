@@ -18,6 +18,8 @@ var kit = &cobra.Command{
 	Short: "Kit provides the central cli housing for the kit tooling.",
 }
 
+//==============================================================================
+
 func main() {
 	logLevel := func() int {
 		ll, err := cfg.Int("LOGGING_LEVEL")
