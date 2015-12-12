@@ -1,6 +1,6 @@
 
-# work
-    import "github.com/ardanlabs/kit/work"
+# pool
+    import "github.com/ardanlabs/kit/pool"
 
 Package work manages a pool of routines to perform work. It does so my providing
 a Do function that will block when the pool is busy. This also allows the pool
@@ -109,11 +109,11 @@ tasks that are submitted.
 
 
 
-### func NewPool
+### func New
 ``` go
-func NewPool(context interface{}, name string, cfg *Config) (*Pool, error)
+func New(context interface{}, name string, cfg *Config) (*Pool, error)
 ```
-NewPool creates a new Pool.
+New creates a new Pool.
 
 
 
