@@ -26,14 +26,14 @@ The following is a sample application using the work pool.
 	type theWork struct{}
 	
 	// Work implements the DoWorker interface.
-	func (p *theWork) Work(context string, id int) {
+	func (*theWork) Work(context string, id int) {
 	    fmt.Printf("%s : Performing Work\n", context)
 	}
 	
 	// ExampleNewDoPool provides a basic example for using a DoPool.
 	func ExampleNewDoPool() {
 	    // Create a new do pool.
-	    p, err := NewPool(context, "TheWork", 3, func() time.Duration { return time.Minute })
+	    p, err := pool.New(context, "TheWork", 3, func() time.Duration { return time.Minute })
 	    if err != nil {
 	        fmt.Println(err)
 	        return
