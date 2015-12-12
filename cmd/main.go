@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/cli/cmdauth"
-	"github.com/ardanlabs/kit/cli/cmddb"
+	"github.com/ardanlabs/kit/cmd/cmdauth"
+	"github.com/ardanlabs/kit/cmd/cmddb"
 	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/log"
 
@@ -15,7 +15,7 @@ import (
 
 var kit = &cobra.Command{
 	Use:   "kit",
-	Short: "Kit provides the central cli housing for the kit tooling.",
+	Short: "Kit provides the central command housing for the kit tooling.",
 }
 
 //==============================================================================
