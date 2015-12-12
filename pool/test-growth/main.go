@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ardanlabs/kit/work"
+	"github.com/ardanlabs/kit/pool"
 )
 
 // theWork is the customer work type for using the pool.
@@ -20,13 +20,13 @@ func (p *theWork) Work(context interface{}, id int) {
 
 func main() {
 	// Create a configuration.
-	config := work.Config{
+	config := pool.Config{
 		MinRoutines: func() int { return 100 },
 		MaxRoutines: func() int { return 10000 },
 	}
 
 	// Create a new do pool.
-	p, err := work.NewPool("TEST", "TheWork", &config)
+	p, err := pool.NewPool("TEST", "TheWork", &config)
 	if err != nil {
 		fmt.Println(err)
 		return

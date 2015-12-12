@@ -1,39 +1,17 @@
-package work_test
+package pool_test
 
 import (
-	"bytes"
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
-	"github.com/ardanlabs/kit/work"
+	"github.com/ardanlabs/kit/log"
+	"github.com/ardanlabs/kit/pool"
+	"github.com/ardanlabs/kit/tests"
 )
 
-// Success and failure markers.
-var (
-	success = "\u2713"
-	failed  = "\u2717"
-)
-
-// logdash is the central buffer where all logs are stored.
-var logdash bytes.Buffer
-
-//==============================================================================
-
-// resetLog resets the contents of logdash.
-func resetLog() {
-	logdash.Reset()
-}
-
-// displayLog writes the logdash data to standand out, if testing in verbose mode
-// was turned on.
-func displayLog() {
-	if !testing.Verbose() {
-		return
-	}
-
-	logdash.WriteTo(os.Stdout)
+func init() {
+	tests.Init("KIT")
 }
 
 //==============================================================================
@@ -45,22 +23,22 @@ type theWork struct {
 
 // Work implements the DoWorker interface.
 func (p *theWork) Work(context interface{}, id int) {
-	logdash.WriteString(fmt.Sprintf("Performing Work with privateID %d\n", p.privateID))
+	log.Dev(context, "Work", "Performing Work with privateID %d\n", p.privateID)
 }
 
 // ExampleNewDoPool provides a basic example for using a DoPool.
 func ExampleNewDoPool() {
-	resetLog()
-	defer displayLog()
+	tests.ResetLog()
+	defer tests.DisplayLog()
 
 	// Create a configuration.
-	config := work.Config{
+	config := pool.Config{
 		MinRoutines: func() int { return 3 },
 		MaxRoutines: func() int { return 4 },
 	}
 
-	// Create a new do pool.
-	p, err := work.NewPool("TEST", "TheWork", &config)
+	// Create a new pool.
+	p, err := pool.New("TEST", "TheWork", &config)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -80,17 +58,17 @@ func ExampleNewDoPool() {
 
 // ExampleMetrics provides an example of the metrics handler being called.
 func ExampleMetrics() {
-	resetLog()
-	defer displayLog()
+	tests.ResetLog()
+	defer tests.DisplayLog()
 
 	// Create a configuration.
-	config := work.Config{
+	config := pool.Config{
 		MinRoutines: func() int { return 3 },
 		MaxRoutines: func() int { return 4 },
 	}
 
-	// Create a new do pool.
-	p, err := work.NewPool("TEST", "TheWork", &config)
+	// Create a new pool.
+	p, err := pool.New("TEST", "TheWork", &config)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -108,21 +86,21 @@ func ExampleMetrics() {
 
 // TestPool tests the pool is functional.
 func TestPool(t *testing.T) {
-	resetLog()
-	defer displayLog()
+	tests.ResetLog()
+	defer tests.DisplayLog()
 
 	t.Log("Given the need to validate the work pool functions.")
 	{
-		cfg := work.Config{
+		cfg := pool.Config{
 			MinRoutines: func() int { return 100 },
 			MaxRoutines: func() int { return 5000 },
 		}
 
-		p, err := work.NewPool("TestPool", "Pool1", &cfg)
+		p, err := pool.New("TestPool", "Pool1", &cfg)
 		if err != nil {
-			t.Fatal("\tShould not get error creating pool.", failed, err)
+			t.Fatal("\tShould not get error creating pool.", tests.Failed, err)
 		}
-		t.Log("\tShould not get error creating pool.", success)
+		t.Log("\tShould not get error creating pool.", tests.Success)
 
 		for i := 0; i < 100; i++ {
 			p.Do("TestPool", &theWork{privateID: i})

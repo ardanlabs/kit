@@ -45,4 +45,4 @@
 //         // Shutdown the pool.
 //         p.Shutdown(context)
 //     }
-package work
+package pool
