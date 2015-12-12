@@ -1,6 +1,6 @@
 
 # log
-    import "github.com/coralproject/shelf/pkg/log"
+    import "github.com/ardanlabs/kit/log"
 
 Package log provides a simple layer above the standard library logging package.
 The base API provides two logging levels, DEV and USER. The DEV level logs things
@@ -53,7 +53,8 @@ would be substituted if provided. This messaging is up to you.
 ## Constants
 ``` go
 const (
-    DEV int = iota + 1
+    NONE int = iota
+    DEV
     USER
 )
 ```

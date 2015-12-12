@@ -1,6 +1,6 @@
 
 # mongo
-    import "github.com/coralproject/shelf/pkg/mongo"
+    import "github.com/ardanlabs/kit/db/mongo"
 
 Package mongo provides support for using MongoDB.
 
@@ -51,11 +51,11 @@ func GetSession() *mgo.Session
 GetSession returns a copy of the master session for use.
 
 
-## func InitMGO
+## func Init
 ``` go
-func InitMGO() error
+func Init() error
 ```
-InitMGO sets up the MongoDB environment. This expects that the
+Init sets up the MongoDB environment. This expects that the
 cfg package has been initialized first.
 
 

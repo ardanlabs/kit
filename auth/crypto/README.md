@@ -1,6 +1,6 @@
 
 # crypto
-    import "github.com/coralproject/shelf/pkg/srv/auth/crypto"
+    import "github.com/ardanlabs/kit/auth/crypto"
 
 Package crypto provides support for encrypting passwords and generating
 tokens for authentication support.

@@ -1,6 +1,6 @@
 
 # session
-    import "github.com/coralproject/shelf/pkg/srv/auth/session"
+    import "github.com/ardanlabs/kit/auth/session"
 
 Package session provides a level of security for web tokens by giving them an
 expiration date and a lookup point for the user accessing the API. The session
@@ -9,6 +9,12 @@ PublicID is not private, it is not used directly.
 
 
 
+
+## Constants
+``` go
+const Collection = "auth_sessions"
+```
+collections contains the name of the user collection.
 
 
 

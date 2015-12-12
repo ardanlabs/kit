@@ -1,11 +1,11 @@
 
 # auth
-    import "github.com/coralproject/shelf/pkg/srv/auth"
+    import "github.com/ardanlabs/kit/auth"
 
 Package auth package provides API's for managing users who will be accessing
 our web API's and applications. This includes all the CRUD related support
 for users and authentication. For now the user system is simple since users
-are pre-registered using our cli tool `shelf`. In the future this can be
+are pre-registered using our cli tool `kit`. In the future this can be
 expanded to provide more UI based support.
 
 ### Users
@@ -38,7 +38,7 @@ is used to look up the user performing the web call. Though the user's PublicID
 is not private, it is not used directly.
 
 ### Web Tokens
-Access to the different web service API's in shelf require sending a web token
+Access to the different web service API's using kit require sending a web token
 on every request. HTTP Basic Authorization is being used:
 
 
@@ -104,6 +104,11 @@ const (
 ```
 Set of user status codes.
 
+``` go
+const Collection = "auth_users"
+```
+collection contains the name of the auth_users collection.
+
 
 
 ## func CreateUser
@@ -125,6 +130,13 @@ CreateWebToken return a token and session that can be used to authenticate a use
 func DecodeWebToken(context interface{}, webToken string) (sessionID string, token string, err error)
 ```
 DecodeWebToken breaks a web token into its parts.
+
+
+## func GetUserWebToken
+``` go
+func GetUserWebToken(context interface{}, db *db.DB, publicID string) (string, error)
+```
+GetUserWebToken return a token if one exists and is valid.
 
 
 ## func UpdateUser

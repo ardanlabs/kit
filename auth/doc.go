@@ -1,7 +1,7 @@
 // Package auth package provides API's for managing users who will be accessing
 // our web API's and applications. This includes all the CRUD related support
 // for users and authentication. For now the user system is simple since users
-// are pre-registered using our cli tool `shelf`. In the future this can be
+// are pre-registered using our cli tool `kit`. In the future this can be
 // expanded to provide more UI based support.
 //
 // Users
@@ -37,7 +37,7 @@
 //
 // Web Tokens
 //
-// Access to the different web service API's in shelf require sending a web token
+// Access to the different web service API's using kit require sending a web token
 // on every request. HTTP Basic Authorization is being used:
 //
 // 		Authorization: Basic WebToken

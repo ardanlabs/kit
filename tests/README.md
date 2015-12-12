@@ -1,6 +1,6 @@
 
 # tests
-    import "github.com/coralproject/shelf/pkg/tests"
+    import "github.com/ardanlabs/kit/tests"
 
 Package tests provides the generic support all tests require.
 
@@ -9,6 +9,11 @@ Package tests provides the generic support all tests require.
 
 
 ## Variables
+``` go
+var Context = "Test"
+```
+Context provides a base context for tests.
+
 ``` go
 var Failed = "\u2717"
 ```
@@ -30,10 +35,23 @@ was turned on.
 
 ## func Init
 ``` go
-func Init()
+func Init(cfgKey string)
 ```
-Init is to be runned once. It initializes the necessary logs and mongodb
-connections for testing.
+Init initializes the log package.
+
+
+## func InitMongo
+``` go
+func InitMongo()
+```
+InitMongo initializes the mongodb connections for testing.
+
+
+## func NewRequest
+``` go
+func NewRequest(method, path string, body io.Reader) *http.Request
+```
+NewRequest used to setup a request for mocking API calls with httptreemux.
 
 
 ## func ResetLog

@@ -3,6 +3,11 @@
 	"ignore": "",
 	"package": [
 		{
+			"path": "github.com/cpuguy83/go-md2man/md2man",
+			"revision": "71acacd42f85e5e82f70a55327789582a5200a90",
+			"revisionTime": "2015-08-03T11:35:22-04:00"
+		},
+		{
 			"path": "github.com/dimfeld/httppath",
 			"revision": "c8e499c3ef3c3e272ed8bdcc1ccf39f73c88debc",
 			"revisionTime": "2014-05-15T11:47:37-05:00"
@@ -13,9 +18,34 @@
 			"revisionTime": "2015-09-30T23:53:14-05:00"
 		},
 		{
+			"path": "github.com/inconshreveable/mousetrap",
+			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
+			"revisionTime": "2014-10-17T13:07:13-07:00"
+		},
+		{
 			"path": "github.com/pborman/uuid",
 			"revision": "cccd189d45f7ac3368a0d127efb7f4d08ae0b655",
 			"revisionTime": "2015-08-24T14:28:02-07:00"
+		},
+		{
+			"path": "github.com/russross/blackfriday",
+			"revision": "300106c228d52c8941d4b3de6054a6062a86dda3",
+			"revisionTime": "2015-11-17T09:23:12+02:00"
+		},
+		{
+			"path": "github.com/shurcooL/sanitized_anchor_name",
+			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
+			"revisionTime": "2015-10-27T17:19:15-07:00"
+		},
+		{
+			"path": "github.com/spf13/cobra",
+			"revision": "9324f3657d033e6978fed178989ef71418e6a9a6",
+			"revisionTime": "2015-11-14T22:46:43-07:00"
+		},
+		{
+			"path": "github.com/spf13/pflag",
+			"revision": "08b1a584251b5b62f458943640fc8ebd4d50aaa5",
+			"revisionTime": "2015-10-13T15:06:43-05:00"
 		},
 		{
 			"path": "golang.org/x/crypto/bcrypt",

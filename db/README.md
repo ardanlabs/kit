@@ -1,6 +1,6 @@
 
 # db
-    import "github.com/coralproject/shelf/pkg/db"
+    import "github.com/ardanlabs/kit/db"
 
 Package db provides a thin layer of abstraction for any database system
 being use. This will allow service layer API to remain consistent.
