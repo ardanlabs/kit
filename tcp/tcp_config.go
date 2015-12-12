@@ -3,14 +3,14 @@ package tcp
 import (
 	"time"
 
-	"github.com/ardanlabs/kit/work"
+	"github.com/ardanlabs/kit/pool"
 )
 
 // OptUserPool declares fields for the user to pass their own
 // work pools for configuration.
 type OptUserPool struct {
-	RecvPool *work.Pool // User provided work pool for the receive work.
-	SendPool *work.Pool // User provided work pool for the send work.
+	RecvPool *pool.Pool // User provided work pool for the receive work.
+	SendPool *pool.Pool // User provided work pool for the send work.
 }
 
 // OptIntPool declares fields for the user to provide configuration

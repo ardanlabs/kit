@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/work"
+	"github.com/ardanlabs/kit/pool"
 )
 
 // Set of error variables for start up.
@@ -40,8 +40,8 @@ type TCP struct {
 	clients   map[string]*client
 	clientsMu sync.Mutex
 
-	recv      *work.Pool
-	send      *work.Pool
+	recv      *pool.Pool
+	send      *pool.Pool
 	userPools bool
 
 	wg sync.WaitGroup
@@ -72,34 +72,34 @@ func New(context interface{}, name string, cfg *Config) (*TCP, error) {
 	log.Dev(context, "New", "Address[ %s ] Zone[%s]", join(tcpAddr.IP.String(), tcpAddr.Port), tcpAddr.Zone)
 
 	// Need a work pool to handle the received messages.
-	var recv *work.Pool
+	var recv *pool.Pool
 	if cfg.RecvPool != nil {
 		recv = cfg.RecvPool
 	} else {
-		recvCfg := work.Config{
+		recvCfg := pool.Config{
 			MinRoutines: cfg.RecvMinPoolSize,
 			MaxRoutines: cfg.RecvMaxPoolSize,
 		}
 
 		var err error
-		if recv, err = work.NewPool(context, name+"-Recv", &recvCfg); err != nil {
+		if recv, err = pool.New(context, name+"-Recv", &recvCfg); err != nil {
 			log.Error(context, "New", err, "Completed")
 			return nil, err
 		}
 	}
 
 	// Need a work pool to handle the messages to send.
-	var send *work.Pool
+	var send *pool.Pool
 	if cfg.SendPool != nil {
 		send = cfg.SendPool
 	} else {
-		sendCfg := work.Config{
+		sendCfg := pool.Config{
 			MinRoutines: cfg.SendMinPoolSize,
 			MaxRoutines: cfg.SendMaxPoolSize,
 		}
 
 		var err error
-		if send, err = work.NewPool(context, name+"-Send", &sendCfg); err != nil {
+		if send, err = pool.New(context, name+"-Send", &sendCfg); err != nil {
 			log.Error(context, "New", err, "Completed")
 			return nil, err
 		}
@@ -371,12 +371,12 @@ func (t *TCP) DropConnections(context interface{}, drop bool) {
 }
 
 // StatsRecv returns the current snapshot of the recv pool stats.
-func (t *TCP) StatsRecv() work.Stat {
+func (t *TCP) StatsRecv() pool.Stat {
 	return t.recv.Stats()
 }
 
 // StatsSend returns the current snapshot of the send pool stats.
-func (t *TCP) StatsSend() work.Stat {
+func (t *TCP) StatsSend() pool.Stat {
 	return t.send.Stats()
 }
 

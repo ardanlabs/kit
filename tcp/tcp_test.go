@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ardanlabs/kit/pool"
 	"github.com/ardanlabs/kit/tcp"
 	"github.com/ardanlabs/kit/tests"
-	"github.com/ardanlabs/kit/work"
 )
 
 func init() {
@@ -170,22 +170,22 @@ func TestDropConnections(t *testing.T) {
 
 	t.Log("Given the need to drop TCP connections.")
 	{
-		recvCfg := work.Config{
+		recvCfg := pool.Config{
 			MinRoutines: func() int { return 2 },
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		recv, err := work.NewPool(tests.Context, "Test-Recv", &recvCfg)
+		recv, err := pool.New(tests.Context, "Test-Recv", &recvCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the recv.", tests.Failed, err)
 		}
 
-		sendCfg := work.Config{
+		sendCfg := pool.Config{
 			MinRoutines: func() int { return 2 },
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		send, err := work.NewPool(tests.Context, "Test-Send", &sendCfg)
+		send, err := pool.New(tests.Context, "Test-Send", &sendCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the send.", tests.Failed, err)
 		}
@@ -248,22 +248,22 @@ func TestRateLimit(t *testing.T) {
 
 	t.Log("Given the need to drop TCP connections.")
 	{
-		recvCfg := work.Config{
+		recvCfg := pool.Config{
 			MinRoutines: func() int { return 2 },
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		recv, err := work.NewPool(tests.Context, "Test-Recv", &recvCfg)
+		recv, err := pool.New(tests.Context, "Test-Recv", &recvCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the recv.", tests.Failed, err)
 		}
 
-		sendCfg := work.Config{
+		sendCfg := pool.Config{
 			MinRoutines: func() int { return 2 },
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		send, err := work.NewPool(tests.Context, "Test-Send", &sendCfg)
+		send, err := pool.New(tests.Context, "Test-Send", &sendCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the send.", tests.Failed, err)
 		}
