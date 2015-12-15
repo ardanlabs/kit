@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/cmd/cmdauth"
-	"github.com/ardanlabs/kit/cmd/cmddb"
+	"github.com/ardanlabs/kit/cmd/kit/cmdauth"
+	"github.com/ardanlabs/kit/cmd/kit/cmddb"
 	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/log"
 
