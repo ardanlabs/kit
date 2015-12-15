@@ -131,7 +131,7 @@ func TestCreateUser(t *testing.T) {
 			// We need to do this so we can clean up after.
 			publicID = u1.PublicID
 
-			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID)
+			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID, true)
 			if err != nil {
 				t.Fatalf("\t%s\tShould be able to retrieve the user by PublicID : %v", tests.Failed, err)
 			}
@@ -154,7 +154,7 @@ func TestCreateUser(t *testing.T) {
 				t.Logf("\t%s\tShould be able to get back the same user.", tests.Success)
 			}
 
-			u3, err := auth.GetUserByEmail(tests.Context, db, u1.Email)
+			u3, err := auth.GetUserByEmail(tests.Context, db, u1.Email, true)
 			if err != nil {
 				t.Fatalf("\t%s\tShould be able to retrieve the user by Email : %v", tests.Failed, err)
 			}
@@ -360,7 +360,7 @@ func TestUpdateUser(t *testing.T) {
 			}
 			t.Logf("\t%s\tShould be able to update a user.", tests.Success)
 
-			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID)
+			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID, true)
 			if err != nil {
 				t.Fatalf("\t%s\tShould be able to retrieve the user by PublicID : %v", tests.Failed, err)
 			}
@@ -528,7 +528,7 @@ func TestUpdateUserPassword(t *testing.T) {
 			}
 			t.Logf("\t%s\tShould Not be able to validate the new org token.", tests.Success)
 
-			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID)
+			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID, true)
 			if err != nil {
 				t.Fatalf("\t%s\tShould be able to retrieve the user by PublicID : %v", tests.Failed, err)
 			}
@@ -640,7 +640,7 @@ func TestDisableUser(t *testing.T) {
 			// We need to do this so we can clean up after.
 			publicID = u1.PublicID
 
-			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID)
+			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID, true)
 			if err != nil {
 				t.Fatalf("\t%s\tShould be able to retrieve the user by PublicID : %v", tests.Failed, err)
 			}
@@ -651,7 +651,7 @@ func TestDisableUser(t *testing.T) {
 			}
 			t.Logf("\t%s\tShould be able to disable the user.", tests.Success)
 
-			if _, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID); err == nil {
+			if _, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID, true); err == nil {
 				t.Fatalf("\t%s\tShould Not be able to retrieve the user by PublicID.", tests.Failed)
 			}
 			t.Logf("\t%s\tShould Not be able to retrieve the user by PublicID.", tests.Success)
@@ -716,7 +716,7 @@ func TestCreateWebToken(t *testing.T) {
 			}
 			t.Logf("\t%s\tShould be able to retrieve the session.", tests.Success)
 
-			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID)
+			u2, err := auth.GetUserByPublicID(tests.Context, db, u1.PublicID, true)
 			if err != nil {
 				t.Fatalf("\t%s\tShould be able to retrieve the user by PublicID : %v", tests.Failed, err)
 			}
@@ -1022,13 +1022,13 @@ func TestNoSession(t *testing.T) {
 				t.Logf("\t%s\tShould Not be able to validate a web token.", tests.Success)
 			}
 
-			if _, err := auth.GetUserByPublicID(tests.Context, nil, "6dcda2da-92c3-11e5-8994-feff819cdc9f"); err == nil {
+			if _, err := auth.GetUserByPublicID(tests.Context, nil, "6dcda2da-92c3-11e5-8994-feff819cdc9f", true); err == nil {
 				t.Errorf("\t%s\tShould Not be able to get a user by PublicID.", tests.Failed)
 			} else {
 				t.Logf("\t%s\tShould Not be able to get a user by PublicID.", tests.Success)
 			}
 
-			if _, err := auth.GetUserByEmail(tests.Context, nil, "bill@ardanlabs.com"); err == nil {
+			if _, err := auth.GetUserByEmail(tests.Context, nil, "bill@ardanlabs.com", true); err == nil {
 				t.Errorf("\t%s\tShould Not be able to get a user by Email.", tests.Failed)
 			} else {
 				t.Logf("\t%s\tShould Not be able to get a user by Email.", tests.Success)

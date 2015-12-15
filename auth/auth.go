@@ -132,7 +132,7 @@ func ValidateWebToken(context interface{}, db *db.DB, webToken string) (*User, e
 	}
 
 	// Pull the user for this session.
-	u, err := GetUserByPublicID(context, db, s.PublicID)
+	u, err := GetUserByPublicID(context, db, s.PublicID, true)
 	if err != nil {
 		log.Error(context, "ValidateWebToken", err, "Completed")
 		return nil, err
@@ -151,12 +151,17 @@ func ValidateWebToken(context interface{}, db *db.DB, webToken string) (*User, e
 //==============================================================================
 
 // GetUserByPublicID retrieves a user record by using the provided PublicID.
-func GetUserByPublicID(context interface{}, db *db.DB, publicID string) (*User, error) {
+func GetUserByPublicID(context interface{}, db *db.DB, publicID string, activeOnly bool) (*User, error) {
 	log.Dev(context, "GetUserByPublicID", "Started : PID[%s]", publicID)
 
 	var user User
 	f := func(c *mgo.Collection) error {
-		q := bson.M{"public_id": publicID, "status": StatusActive}
+		var q bson.M
+		if activeOnly {
+			q = bson.M{"public_id": publicID, "status": StatusActive}
+		} else {
+			q = bson.M{"public_id": publicID}
+		}
 		log.Dev(context, "GetUserByPublicID", "MGO : db.%s.findOne(%s)", c.Name, mongo.Query(q))
 		return c.Find(q).One(&user)
 	}
@@ -171,12 +176,17 @@ func GetUserByPublicID(context interface{}, db *db.DB, publicID string) (*User, 
 }
 
 // GetUserByEmail retrieves a user record by using the provided email.
-func GetUserByEmail(context interface{}, db *db.DB, email string) (*User, error) {
+func GetUserByEmail(context interface{}, db *db.DB, email string, activeOnly bool) (*User, error) {
 	log.Dev(context, "GetUserByEmail", "Started : Email[%s]", email)
 
 	var user User
 	f := func(c *mgo.Collection) error {
-		q := bson.M{"email": strings.ToLower(email), "status": StatusActive}
+		var q bson.M
+		if activeOnly {
+			q = bson.M{"email": strings.ToLower(email), "status": StatusActive}
+		} else {
+			q = bson.M{"email": strings.ToLower(email)}
+		}
 		log.Dev(context, "GetUserByEmail", "MGO : db.%s.findOne(%s)", c.Name, mongo.Query(q))
 		return c.Find(q).One(&user)
 	}
@@ -209,7 +219,7 @@ func GetUserWebToken(context interface{}, db *db.DB, publicID string) (string, e
 	}
 
 	// Pull the user information.
-	u, err := GetUserByPublicID(context, db, publicID)
+	u, err := GetUserByPublicID(context, db, publicID, true)
 	if err != nil {
 		log.Error(context, "GetUserWebToken", err, "Completed")
 		return "", err
@@ -322,7 +332,7 @@ func UpdateUserStatus(context interface{}, db *db.DB, publicID string, status in
 func LoginUser(context interface{}, db *db.DB, email string, password string) (*User, error) {
 	log.Dev(context, "LoginUser", "Started : Email[%s]", email)
 
-	u, err := GetUserByEmail(context, db, email)
+	u, err := GetUserByEmail(context, db, email, true)
 	if err != nil {
 		log.Error(context, "LoginUser", err, "Completed")
 		return nil, err
