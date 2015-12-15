@@ -35,7 +35,7 @@ func addStatus() {
 
 	cmd.Flags().StringVarP(&status.pid, "public_id", "p", "", "Public Id of the user.")
 	cmd.Flags().StringVarP(&status.email, "email", "e", "", "Email of the user.")
-	cmd.Flags().BoolVarP(&status.active, "active", "a", false, "Use `true` if active or `false` if not.")
+	cmd.Flags().BoolVarP(&status.active, "active", "a", false, "Specify -a if active else don't include it.")
 
 	userCmd.AddCommand(cmd)
 }
