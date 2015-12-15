@@ -56,9 +56,9 @@ func runGet(cmd *cobra.Command, args []string) {
 	var err error
 
 	if get.pid != "" {
-		u, err = auth.GetUserByPublicID("", db, get.pid)
+		u, err = auth.GetUserByPublicID("", db, get.pid, false)
 	} else {
-		u, err = auth.GetUserByEmail("", db, get.email)
+		u, err = auth.GetUserByEmail("", db, get.email, false)
 	}
 
 	if err != nil {
