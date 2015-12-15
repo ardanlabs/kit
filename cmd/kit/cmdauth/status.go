@@ -56,7 +56,7 @@ func runStatus(cmd *cobra.Command, args []string) {
 	if status.pid != "" {
 		publicID = status.pid
 	} else {
-		u, err := auth.GetUserByEmail("", db, get.email)
+		u, err := auth.GetUserByEmail("", db, status.email)
 		if err != nil {
 			cmd.Println("Status User : ", err)
 			return
