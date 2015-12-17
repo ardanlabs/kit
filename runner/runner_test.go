@@ -1,6 +1,7 @@
 package runner_test
 
 import (
+	"errors"
 	"runtime"
 	"syscall"
 	"testing"
@@ -76,6 +77,29 @@ func TestCompleted(t *testing.T) {
 				t.Fatalf("\t%s\tShould not receive an error : %v", tests.Failed, err)
 			}
 			t.Logf("\t%s\tShould not receive an error.", tests.Success)
+		}
+	}
+}
+
+// TestError tests when jobs complete properly but with errors.
+func TestError(t *testing.T) {
+	tests.ResetLog()
+	defer tests.DisplayLog()
+
+	t.Log("Given the need to test a successful task run with error.")
+	{
+		t.Log("\tWhen using a task that will complete in time.")
+		{
+			Err := errors.New("An error")
+			job := task{
+				err: Err,
+			}
+			job.KillAfter(time.Millisecond)
+
+			if err := runner.Run(tests.Context, time.Second, &job); err != Err {
+				t.Fatalf("\t%s\tShould receive our error : %v", tests.Failed, err)
+			}
+			t.Logf("\t%s\tShould receive our error.", tests.Success)
 		}
 	}
 }
