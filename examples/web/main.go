@@ -4,8 +4,9 @@
 package main
 
 import (
+	"github.com/ardanlabs/kit/examples/web/routes"
+
 	"github.com/ardanlabs/kit/web/app"
-	"github.com/ardanlabs/kit/web/template/routes"
 )
 
 /*

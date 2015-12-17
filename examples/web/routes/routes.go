@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ardanlabs/kit/examples/web/handlers"
+
 	"github.com/ardanlabs/kit/web/app"
-	"github.com/ardanlabs/kit/web/template/handlers"
 
 	// If you want to include middleware such as basic authentication.
 	// "github.com/ardanlabs/kit/web/midware"
