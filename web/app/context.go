@@ -9,7 +9,9 @@
 package app
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/ardanlabs/kit/auth"
@@ -70,7 +72,16 @@ func (c *Context) Respond(data interface{}, code int) {
 
 	c.Header().Set("Content-Type", "application/json")
 	c.WriteHeader(code)
-	json.NewEncoder(c).Encode(data)
+
+	cb, exists := c.Params["callback"]
+	if exists {
+		b := bytes.NewBufferString(cb + "(")
+		json.NewEncoder(b).Encode(data)
+		b.WriteString(")")
+		fmt.Fprintf(c, b.String())
+	} else {
+		json.NewEncoder(c).Encode(data)
+	}
 
 	log.User(c.SessionID, "api : Respond", "Completed")
 }
