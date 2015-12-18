@@ -58,6 +58,7 @@ func Run(context interface{}, timeout time.Duration, job Jobber) error {
 	for {
 		select {
 		case <-runner.sigChan:
+
 			// Interrupt event signaled by the operation system.
 			log.User(context, "Run", "Interrupt Received")
 
@@ -72,11 +73,13 @@ func Run(context interface{}, timeout time.Duration, job Jobber) error {
 			signal.Stop(runner.sigChan)
 
 		case <-runner.kill:
+
 			// We have taken too much time. Kill the app hard.
 			log.User(context, "Run", "Completed : Timedout")
 			return ErrTimeout
 
 		case err := <-runner.complete:
+
 			// Everything completed within the time given.
 			log.User(context, "Run", "Completed : Task Result : %v", err)
 
@@ -94,11 +97,13 @@ func Run(context interface{}, timeout time.Duration, job Jobber) error {
 func CheckShutdown(context interface{}) bool {
 	select {
 	case <-runner.shutdown:
+
 		// We have been asked to shutdown.
 		log.User(context, "CheckShutdown", "Shutdown Early")
 		return true
 
 	default:
+
 		// We have not been asked to shutdown.
 		return false
 	}
@@ -144,6 +149,7 @@ func processor(context interface{}, job Jobber) {
 	// Defer the send on the channel so it happens
 	// regardless of how this function terminates.
 	defer func() {
+
 		// Capture any potential panic.
 		if r := recover(); r != nil {
 			log.User(context, "processor", "Panic : %v", r)

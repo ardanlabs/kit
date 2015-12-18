@@ -224,6 +224,7 @@ func (p *Pool) reset(context interface{}, routines int) {
 
 // work performs the users work and keeps stats.
 func (p *Pool) work(id int) {
+
 	// Increment the number of routines.
 	value := atomic.AddInt64(&p.routines, 1)
 
@@ -264,6 +265,7 @@ done:
 func (p *Pool) execute(id int, dw doWork) {
 	defer func() {
 		if r := recover(); r != nil {
+
 			// Capture the stack trace
 			buf := make([]byte, 10000)
 			runtime.Stack(buf, false)
@@ -278,6 +280,7 @@ func (p *Pool) execute(id int, dw doWork) {
 
 // measureHealth calculates the health of the work pool.
 func (p *Pool) measureHealth() {
+
 	// If there are values pending to be updated, just
 	// leave. We need those to finish first.
 	if atomic.LoadInt64(&p.updatePending) > 0 {
@@ -291,6 +294,7 @@ func (p *Pool) measureHealth() {
 
 	// We are not performing any work at all and we have more routines than min.
 	if stats.Pending == 0 && stats.Active == 0 && (stats.Routines > int64(p.MinRoutines())) {
+
 		// Reset the pool back to the min value.
 		p.reset(p.Name, p.MinRoutines())
 		return
@@ -298,6 +302,7 @@ func (p *Pool) measureHealth() {
 
 	// If we have no available routines at the moment and we have room to grow.
 	if (stats.Routines == stats.Active) && (stats.Routines < int64(p.MaxRoutines())) {
+
 		// Calculate the number of goroutines to add.
 		add := int(float64(stats.Routines) * .20)
 
@@ -324,6 +329,7 @@ func (p *Pool) manager(context interface{}) {
 		for {
 			select {
 			case <-p.shutdown:
+
 				// Capture the current number of routines.
 				routines := int(atomic.LoadInt64(&p.routines))
 
@@ -339,6 +345,7 @@ func (p *Pool) manager(context interface{}) {
 			case c := <-p.control:
 				switch c {
 				case addRoutine:
+
 					// Capture the number of routines.
 					routines := int(atomic.LoadInt64(&p.routines))
 
@@ -355,6 +362,7 @@ func (p *Pool) manager(context interface{}) {
 					go p.work(int(counter))
 
 				case rmvRoutine:
+
 					// Capture the number of routines.
 					routines := int(atomic.LoadInt64(&p.routines))
 

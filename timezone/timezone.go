@@ -13,8 +13,6 @@ const (
 	geonamesURI string = "http://api.geonames.org/timezoneJSON?lat=%f&lng=%f&username=%s"
 )
 
-//** TYPES
-
 type (
 	// GoogleTimezone is the repsonse from the Google timezone API.
 	GoogleTimezone struct {
