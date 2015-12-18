@@ -13,14 +13,19 @@ import (
 )
 
 func init() {
+	// Setting this here but should be done outside the app.
 	os.Setenv("ENV_PREFIX_LOGGING_LEVEL", "1")
+
+	// If you want to add a custom header to every request.
+	// Add the following env variable:
+	// ENV_PRRFIX_HEADERS=key:value,key:value
 
 	set := app.Settings{
 		ConfigKey: "ENV_PREFIX",
 		UseMongo:  false,
 	}
 
-	app.Init(&set)
+	app.Init(set)
 }
 
 //==============================================================================
