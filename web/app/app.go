@@ -161,6 +161,7 @@ func Init(settings Settings) {
 
 	// HEADERS should be key:value,key:value
 	if hs, err := cfg.String("HEADERS"); err == nil {
+		app.userHeaders = make(map[string]string)
 		hdrs := strings.Split(hs, ",")
 		for _, hdr := range hdrs {
 			if kv := strings.Split(hdr, ":"); len(kv) == 2 {
