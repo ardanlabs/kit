@@ -165,6 +165,7 @@ func Init(settings Settings) {
 		hdrs := strings.Split(hs, ",")
 		for _, hdr := range hdrs {
 			if kv := strings.Split(hdr, ":"); len(kv) == 2 {
+				log.User("startup", "Init", "User Headers : %s:%s", kv[0], kv[1])
 				app.userHeaders[kv[0]] = kv[1]
 			}
 		}

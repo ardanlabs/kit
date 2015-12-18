@@ -77,6 +77,7 @@ func (c *Context) Respond(data interface{}, code int) {
 	// Load any user defined header values.
 	if app.userHeaders != nil {
 		for key, value := range app.userHeaders {
+			log.User("startup", "Init", "Setting user headers : %s:%s", key, value)
 			c.Header().Set(key, value)
 		}
 	}
