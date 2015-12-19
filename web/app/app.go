@@ -135,9 +135,6 @@ func Init(configKey string) {
 		os.Exit(1)
 	}
 
-	// Log all the configuration options
-	log.User("startup", "Init", "\n%s\n", cfg.Log())
-
 	// Init the log system.
 	logLevel := func() int {
 		ll, err := cfg.Int("LOGGING_LEVEL")
@@ -147,6 +144,9 @@ func Init(configKey string) {
 		return ll
 	}
 	log.Init(os.Stderr, logLevel)
+
+	// Log all the configuration options
+	log.User("startup", "Init", "\n%s\n", cfg.Log())
 
 	// Init MongoDB if configured.
 	if _, err := cfg.String("MONGO_HOST"); err != nil {
