@@ -188,6 +188,12 @@ func Bool(key string) (bool, error) {
 		return false, fmt.Errorf("Unknown Key %s !", key)
 	}
 
+	if value == "on" || value == "yes" {
+		value = "true"
+	} else if value == "off" || value == "no" {
+		value = "false"
+	}
+
 	val, err := strconv.ParseBool(value)
 	if err != nil {
 		return false, err
@@ -205,6 +211,12 @@ func MustBool(key string) bool {
 	value, found := c.m[key]
 	if !found {
 		panic(fmt.Sprintf("Unknown Key %s !", key))
+	}
+
+	if value == "on" || value == "yes" {
+		value = "true"
+	} else if value == "off" || value == "no" {
+		value = "false"
 	}
 
 	val, err := strconv.ParseBool(value)

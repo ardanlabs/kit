@@ -25,7 +25,7 @@ func TestExists(t *testing.T) {
 		os.Setenv("MYAPP_PROC_ID", "322")
 		os.Setenv("MYAPP_SOCKET", "./tmp/sockets.po")
 		os.Setenv("MYAPP_PORT", "4034")
-		os.Setenv("MYAPP_FLAG", "true")
+		os.Setenv("MYAPP_FLAG", "on")
 		os.Setenv("MYAPP_DSN", uStr)
 
 		cfg.Init("MYAPP")
@@ -114,7 +114,7 @@ func TestNotExists(t *testing.T) {
 		os.Setenv("MYAPP_PROC_ID", "322")
 		os.Setenv("MYAPP_SOCKET", "./tmp/sockets.po")
 		os.Setenv("MYAPP_PORT", "4034")
-		os.Setenv("MYAPP_FLAG", "true")
+		os.Setenv("MYAPP_FLAG", "on")
 
 		cfg.Init("MYAPP")
 
