@@ -20,12 +20,7 @@ func init() {
 	// Add the following env variable:
 	// ENV_PRRFIX_HEADERS=key:value,key:value
 
-	set := app.Settings{
-		ConfigKey: "ENV_PREFIX",
-		UseMongo:  false,
-	}
-
-	app.Init(set)
+	app.Init("ENV_PREFIX")
 }
 
 //==============================================================================

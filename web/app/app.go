@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -43,16 +44,9 @@ type (
 	Middleware func(Handler) Handler
 )
 
-// Settings represents things required to initialize the app.
-type Settings struct {
-	ConfigKey string // The based environment variable key for all variables.
-	UseMongo  bool   // If MongoDB should be initialized and used.
-}
-
 // app maintains some framework state.
 var app struct {
-	Settings
-
+	useMongo    bool
 	userHeaders map[string]string // Extra headers for each response.
 }
 
@@ -85,7 +79,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 		start := time.Now()
 
 		var dbConn *db.DB
-		if app.UseMongo {
+		if app.useMongo {
 			dbConn = db.NewMGO()
 		}
 
@@ -97,7 +91,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 			SessionID:      uuid.New(),
 		}
 
-		if app.UseMongo {
+		if app.useMongo {
 			defer c.DB.CloseMGO()
 		}
 
@@ -133,9 +127,15 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 //==============================================================================
 
 // Init is called to initialize the application.
-func Init(settings Settings) {
-	app.Settings = settings
+func Init(configKey string) {
 
+	// Init the configuration system.
+	if err := cfg.Init(configKey); err != nil {
+		fmt.Println("Error initalizing configuration system", err)
+		os.Exit(1)
+	}
+
+	// Init the log system.
 	logLevel := func() int {
 		ll, err := cfg.Int("LOGGING_LEVEL")
 		if err != nil {
@@ -143,23 +143,19 @@ func Init(settings Settings) {
 		}
 		return ll
 	}
-
 	log.Init(os.Stderr, logLevel)
 
-	if err := cfg.Init(settings.ConfigKey); err != nil {
-		log.Error("startup", "Init", err, "Initializing config")
-		os.Exit(1)
-	}
+	// Init MongoDB if configured.
+	if _, err := cfg.String("MONGO_HOST"); err != nil {
+		app.useMongo = true
 
-	if settings.UseMongo {
-		err := mongo.Init()
-		if err != nil {
+		if err := mongo.Init(); err != nil {
 			log.Error("startup", "Init", err, "Initializing MongoDB")
 			os.Exit(1)
 		}
 	}
 
-	// HEADERS should be key:value,key:value
+	// Load user defined custom headers. HEADERS should be key:value,key:value
 	if hs, err := cfg.String("HEADERS"); err == nil {
 		app.userHeaders = make(map[string]string)
 		hdrs := strings.Split(hs, ",")
