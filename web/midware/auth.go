@@ -2,12 +2,21 @@ package midware
 
 import (
 	"github.com/ardanlabs/kit/auth"
+	"github.com/ardanlabs/kit/cfg"
 	"github.com/ardanlabs/kit/log"
 	"github.com/ardanlabs/kit/web/app"
 )
 
 // Auth handles token authentication.
 func Auth(h app.Handler) app.Handler {
+
+	// Check if authentication is turned off.
+	on, err := cfg.Bool("AUTH")
+	if err == nil || !on {
+		return func(c *app.Context) error { return nil }
+	}
+
+	// Turn authentication on.
 	return func(c *app.Context) error {
 		token := c.Request.Header.Get("Authorization")
 		log.Dev(c.SessionID, "Auth", "Started : Token[%s]", token)
