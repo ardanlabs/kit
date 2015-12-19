@@ -32,6 +32,9 @@ func API() http.Handler {
 	// If you want to include middleware such as basic authentication.
 	// a := app.New(midware.Auth)
 
+	// If you have configured auth and want to turn it off.
+	// ENV_PRRFIX_AUTH=false
+
 	// Initialize the routes for the API.
 
 	// http://localhost:4000/1.0/test/names

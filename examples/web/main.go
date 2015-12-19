@@ -27,5 +27,5 @@ export ENV_PREFIX_LOGGING_LEVEL=1
 
 func main() {
 	// If ENV_HOST is not found then :4000 is used.
-	app.Run("ENV_HOST", ":4000", routes.API())
+	app.Run(":4000", routes.API())
 }
