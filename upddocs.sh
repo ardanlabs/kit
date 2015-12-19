@@ -19,6 +19,18 @@ godoc2md github.com/ardanlabs/kit/db/mongo > README.md
 cd $GOPATH/src/github.com/ardanlabs/kit/log
 godoc2md github.com/ardanlabs/kit/log > README.md
 
+cd $GOPATH/src/github.com/ardanlabs/kit/tcp
+godoc2md github.com/ardanlabs/kit/tcp > README.md
+
+cd $GOPATH/src/github.com/ardanlabs/kit/udp
+godoc2md github.com/ardanlabs/kit/udp > README.md
+
+cd $GOPATH/src/github.com/ardanlabs/kit/runner
+godoc2md github.com/ardanlabs/kit/runner > README.md
+
+cd $GOPATH/src/github.com/ardanlabs/kit/pool
+godoc2md github.com/ardanlabs/kit/pool > README.md
+
 cd $GOPATH/src/github.com/ardanlabs/kit/tests
 godoc2md github.com/ardanlabs/kit/tests > README.md
 

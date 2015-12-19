@@ -214,8 +214,8 @@ for connection rate limit.
 ## type OptUserPool
 ``` go
 type OptUserPool struct {
-    RecvPool *work.Pool // User provided work pool for the receive work.
-    SendPool *work.Pool // User provided work pool for the send work.
+    RecvPool *pool.Pool // User provided work pool for the receive work.
+    SendPool *pool.Pool // User provided work pool for the send work.
 }
 ```
 OptUserPool declares fields for the user to pass their own
@@ -404,7 +404,7 @@ Start creates the accept routine and begins to accept connections.
 
 ### func (\*TCP) StatsRecv
 ``` go
-func (t *TCP) StatsRecv() work.Stat
+func (t *TCP) StatsRecv() pool.Stat
 ```
 StatsRecv returns the current snapshot of the recv pool stats.
 
@@ -412,7 +412,7 @@ StatsRecv returns the current snapshot of the recv pool stats.
 
 ### func (\*TCP) StatsSend
 ``` go
-func (t *TCP) StatsSend() work.Stat
+func (t *TCP) StatsSend() pool.Stat
 ```
 StatsSend returns the current snapshot of the send pool stats.
 

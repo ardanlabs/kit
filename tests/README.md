@@ -10,19 +10,17 @@ Package tests provides the generic support all tests require.
 
 ## Variables
 ``` go
+var (
+    Success = "\u2713"
+    Failed  = "\u2717"
+)
+```
+Success and failure markers.
+
+``` go
 var Context = "Test"
 ```
 Context provides a base context for tests.
-
-``` go
-var Failed = "\u2717"
-```
-Failed is a unicode codepoint for a check X mark.
-
-``` go
-var Success = "\u2713"
-```
-Success is a unicode codepoint for a check mark.
 
 
 ## func DisplayLog
@@ -42,7 +40,7 @@ Init initializes the log package.
 
 ## func InitMongo
 ``` go
-func InitMongo()
+func InitMongo(cfg mongo.Config)
 ```
 InitMongo initializes the mongodb connections for testing.
 

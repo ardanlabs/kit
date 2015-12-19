@@ -36,14 +36,14 @@ var (
 
 ## func Init
 ``` go
-func Init(set *Settings)
+func Init(configKey string)
 ```
 Init is called to initialize the application.
 
 
 ## func Run
 ``` go
-func Run(cfgHost string, defaultHost string, routes http.Handler)
+func Run(defaultHost string, routes http.Handler)
 ```
 Run is called to start the web service.
 
@@ -76,6 +76,15 @@ New create an App value that handle a set of routes for the application.
 You can provide any number of middleware and they'll be used to wrap every
 request handler.
 
+
+
+
+### func (\*App) CORS
+``` go
+func (a *App) CORS()
+```
+CORS providing support for Cross-Origin Resource Sharing.
+<a href="https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/">https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/</a>
 
 
 
@@ -189,25 +198,6 @@ type Middleware func(Handler) Handler
 ```
 A Middleware is a type that wraps a handler to remove boilerplate or other
 concerns not direct to any given Handler.
-
-
-
-
-
-
-
-
-
-
-
-## type Settings
-``` go
-type Settings struct {
-    ConfigKey string // The based environment variable key for all variables.
-    UseMongo  bool   // If MongoDB should be initialized and used.
-}
-```
-Settings represents things required to initialize the app.
 
 
 

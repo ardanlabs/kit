@@ -246,14 +246,14 @@ User model denotes a user entity for a tenant.
 
 ### func GetUserByEmail
 ``` go
-func GetUserByEmail(context interface{}, db *db.DB, email string) (*User, error)
+func GetUserByEmail(context interface{}, db *db.DB, email string, activeOnly bool) (*User, error)
 ```
 GetUserByEmail retrieves a user record by using the provided email.
 
 
 ### func GetUserByPublicID
 ``` go
-func GetUserByPublicID(context interface{}, db *db.DB, publicID string) (*User, error)
+func GetUserByPublicID(context interface{}, db *db.DB, publicID string, activeOnly bool) (*User, error)
 ```
 GetUserByPublicID retrieves a user record by using the provided PublicID.
 

@@ -55,6 +55,13 @@ Int returns the value of the giving key as an int, else it will return
 an error, if the key was not found or the value can't be convered to an int.
 
 
+## func Log
+``` go
+func Log() string
+```
+Log returns a string to help with logging configuration.
+
+
 ## func MustBool
 ``` go
 func MustBool(key string) bool
