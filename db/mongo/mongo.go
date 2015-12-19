@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ardanlabs/kit/cfg"
-
 	"gopkg.in/mgo.v2"
 )
 
@@ -20,11 +18,20 @@ var m struct {
 	mu     sync.RWMutex
 }
 
+// Config provides configuration values.
+type Config struct {
+	Host     string
+	AuthDB   string
+	DB       string
+	User     string
+	Password string
+}
+
 //==============================================================================
 
 // Init sets up the MongoDB environment. This expects that the
 // cfg package has been initialized first.
-func Init() error {
+func Init(cfg Config) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -34,11 +41,11 @@ func Init() error {
 
 	// We need this object to establish a session to our MongoDB.
 	mongoDBDialInfo := mgo.DialInfo{
-		Addrs:    []string{cfg.MustString("MONGO_HOST")},
+		Addrs:    []string{cfg.Host},
 		Timeout:  60 * time.Second,
-		Database: cfg.MustString("MONGO_AUTHDB"),
-		Username: cfg.MustString("MONGO_USER"),
-		Password: cfg.MustString("MONGO_PASS"),
+		Database: cfg.AuthDB,
+		Username: cfg.User,
+		Password: cfg.Password,
 	}
 
 	// Create a session which maintains a pool of socket connections
@@ -49,7 +56,7 @@ func Init() error {
 	}
 
 	// Save the database name to use.
-	m.dbName = cfg.MustString("MONGO_DB")
+	m.dbName = cfg.DB
 
 	// Reads may not be entirely up-to-date, but they will always see the
 	// history of changes moving forward, the data read will be consistent

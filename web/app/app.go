@@ -18,6 +18,21 @@ import (
 	"github.com/pborman/uuid"
 )
 
+// Web config environmental variables.
+const (
+	cfgLoggingLevel = "LOGGING_LEVEL"
+	cfgHost         = "HOST"
+)
+
+// Mongo config environmental variables.
+const (
+	cfgMongoHost     = "MONGO_HOST"
+	cfgMongoAuthDB   = "MONGO_AUTHDB"
+	cfgMongoDB       = "MONGO_DB"
+	cfgMongoUser     = "MONGO_USER"
+	cfgMongoPassword = "MONGO_PASS"
+)
+
 var (
 	// ErrNotAuthorized occurs when the call is not authorized.
 	ErrNotAuthorized = errors.New("Not authorized")
@@ -137,7 +152,7 @@ func Init(configKey string) {
 
 	// Init the log system.
 	logLevel := func() int {
-		ll, err := cfg.Int("LOGGING_LEVEL")
+		ll, err := cfg.Int(cfgLoggingLevel)
 		if err != nil {
 			return log.USER
 		}
@@ -149,10 +164,18 @@ func Init(configKey string) {
 	log.User("startup", "Init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
 
 	// Init MongoDB if configured.
-	if _, err := cfg.String("MONGO_HOST"); err != nil {
+	if _, err := cfg.String(cfgMongoHost); err != nil {
 		app.useMongo = true
 
-		if err := mongo.Init(); err != nil {
+		cfg := mongo.Config{
+			Host:     cfg.MustString(cfgMongoHost),
+			AuthDB:   cfg.MustString(cfgMongoAuthDB),
+			DB:       cfg.MustString(cfgMongoDB),
+			User:     cfg.MustString(cfgMongoUser),
+			Password: cfg.MustString(cfgMongoPassword),
+		}
+
+		if err := mongo.Init(cfg); err != nil {
 			log.Error("startup", "Init", err, "Initializing MongoDB")
 			os.Exit(1)
 		}
@@ -172,8 +195,8 @@ func Init(configKey string) {
 }
 
 // Run is called to start the web service.
-func Run(cfgHost string, defaultHost string, routes http.Handler) {
-	log.Dev("startup", "Run", "Start : cfgHost[%s] defaultHost[%s]", cfgHost, defaultHost)
+func Run(defaultHost string, routes http.Handler) {
+	log.Dev("startup", "Run", "Start : defaultHost[%s]", defaultHost)
 
 	// Check for a configured host value.
 	host, err := cfg.String(cfgHost)

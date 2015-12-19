@@ -7,11 +7,14 @@ import (
 	"github.com/ardanlabs/kit/web/app"
 )
 
+// Auth config environmental variables.
+const cfgAuth = "AUTH"
+
 // Auth handles token authentication.
 func Auth(h app.Handler) app.Handler {
 
 	// Check if authentication is turned off.
-	on, err := cfg.Bool("AUTH")
+	on, err := cfg.Bool(cfgAuth)
 	if err == nil || !on {
 		return func(c *app.Context) error { return nil }
 	}
