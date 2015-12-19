@@ -13,6 +13,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Config environmental variables.
+const (
+	cfgLoggingLevel  = "LOGGING_LEVEL"
+	cfgMongoHost     = "MONGO_HOST"
+	cfgMongoAuthDB   = "MONGO_AUTHDB"
+	cfgMongoDB       = "MONGO_DB"
+	cfgMongoUser     = "MONGO_USER"
+	cfgMongoPassword = "MONGO_PASS"
+)
+
 var kit = &cobra.Command{
 	Use:   "kit",
 	Short: "Kit provides the central command housing for the kit tooling.",
@@ -21,23 +31,29 @@ var kit = &cobra.Command{
 //==============================================================================
 
 func main() {
-	logLevel := func() int {
-		ll, err := cfg.Int("LOGGING_LEVEL")
-		if err != nil {
-			return log.NONE
-		}
-		return ll
-	}
-
-	log.Init(os.Stderr, logLevel)
-
 	if err := cfg.Init("KIT"); err != nil {
 		kit.Println("Unable to initialize configuration")
 		os.Exit(1)
 	}
 
-	err := mongo.Init()
-	if err != nil {
+	logLevel := func() int {
+		ll, err := cfg.Int(cfgLoggingLevel)
+		if err != nil {
+			return log.NONE
+		}
+		return ll
+	}
+	log.Init(os.Stderr, logLevel)
+
+	cfg := mongo.Config{
+		Host:     cfg.MustString(cfgMongoHost),
+		AuthDB:   cfg.MustString(cfgMongoAuthDB),
+		DB:       cfg.MustString(cfgMongoDB),
+		User:     cfg.MustString(cfgMongoUser),
+		Password: cfg.MustString(cfgMongoPassword),
+	}
+
+	if err := mongo.Init(cfg); err != nil {
 		kit.Println("Unable to initialize MongoDB")
 		os.Exit(1)
 	}

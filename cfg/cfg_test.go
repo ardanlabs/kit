@@ -9,8 +9,8 @@ import (
 
 // Success and failure markers.
 var (
-	Success = "\u2713"
-	Failed  = "\u2717"
+	success = "\u2713"
+	failed  = "\u2717"
 )
 
 //==============================================================================
@@ -37,12 +37,12 @@ func TestExists(t *testing.T) {
 			if err != nil {
 				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "PROC_ID")
 			} else {
-				t.Logf("\t\t%s Should not return error when valid key %q", succeed, "PROC_ID")
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "PROC_ID")
 
 				if proc != 322 {
 					t.Errorf("\t\t%s Should have key %q with value %d", failed, "PROC_ID", 322)
 				} else {
-					t.Logf("\t\t%s Should have key %q with value %d", succeed, "PROC_ID", 322)
+					t.Logf("\t\t%s Should have key %q with value %d", success, "PROC_ID", 322)
 				}
 			}
 
@@ -51,12 +51,12 @@ func TestExists(t *testing.T) {
 			if err != nil {
 				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "SOCKET")
 			} else {
-				t.Logf("\t\t%s Should not return error when valid key %q", succeed, "SOCKET")
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "SOCKET")
 
 				if socket != "./tmp/sockets.po" {
 					t.Errorf("\t\t%s Should have key %q with value %q", failed, "SOCKET", "./tmp/sockets.po")
 				} else {
-					t.Logf("\t\t%s Should have key %q with value %q", succeed, "SOCKET", "./tmp/sockets.po")
+					t.Logf("\t\t%s Should have key %q with value %q", success, "SOCKET", "./tmp/sockets.po")
 				}
 			}
 
@@ -65,12 +65,12 @@ func TestExists(t *testing.T) {
 			if err != nil {
 				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "PORT")
 			} else {
-				t.Logf("\t\t%s Should not return error when valid key %q", succeed, "PORT")
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "PORT")
 
 				if port != 4034 {
 					t.Errorf("\t\t%s Should have key %q with value %d", failed, "PORT", 4034)
 				} else {
-					t.Logf("\t\t%s Should have key %q with value %d", succeed, "PORT", 4034)
+					t.Logf("\t\t%s Should have key %q with value %d", success, "PORT", 4034)
 				}
 			}
 
@@ -79,12 +79,12 @@ func TestExists(t *testing.T) {
 			if err != nil {
 				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "FLAG")
 			} else {
-				t.Logf("\t\t%s Should not return error when valid key %q", succeed, "FLAG")
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "FLAG")
 
 				if flag == false {
 					t.Errorf("\t\t%s Should have key %q with value %v", failed, "FLAG", true)
 				} else {
-					t.Logf("\t\t%s Should have key %q with value %v", succeed, "FLAG", true)
+					t.Logf("\t\t%s Should have key %q with value %v", success, "FLAG", true)
 				}
 			}
 
@@ -93,12 +93,12 @@ func TestExists(t *testing.T) {
 			if err != nil {
 				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "DSN")
 			} else {
-				t.Logf("\t\t%s Should not return error when valid key %q", succeed, "DSN")
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "DSN")
 
 				if u.String() != uStr {
 					t.Errorf("\t\t%s Should have key %q with value %v", failed, "DSN", true)
 				} else {
-					t.Logf("\t\t%s Should have key %q with value %v", succeed, "DSN", true)
+					t.Logf("\t\t%s Should have key %q with value %v", success, "DSN", true)
 				}
 			}
 		}
@@ -150,7 +150,7 @@ func shouldPanic(t *testing.T, context string, fx func()) {
 		if err := recover(); err == nil {
 			t.Errorf("\t\t%s Should paniced when giving unknown key %q.", failed, context)
 		} else {
-			t.Logf("\t\t%s Should paniced when giving unknown key %q.", succeed, context)
+			t.Logf("\t\t%s Should paniced when giving unknown key %q.", success, context)
 		}
 	}()
 

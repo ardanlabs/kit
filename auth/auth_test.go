@@ -17,15 +17,18 @@ import (
 )
 
 func init() {
-	os.Setenv("KIT_MONGO_HOST", "ds027155.mongolab.com:27155")
-	os.Setenv("KIT_MONGO_USER", "kit")
-	os.Setenv("KIT_MONGO_AUTHDB", "kit")
-	os.Setenv("KIT_MONGO_DB", "kit")
 	os.Setenv("KIT_LOGGING_LEVEL", "1")
-	os.Setenv("KIT_MONGO_PASS", "community")
+
+	cfg := mongo.Config{
+		Host:     "ds027155.mongolab.com:27155",
+		AuthDB:   "kit",
+		DB:       "kit",
+		User:     "kit",
+		Password: "community",
+	}
 
 	tests.Init("KIT")
-	tests.InitMongo()
+	tests.InitMongo(cfg)
 
 	ensureIndexes()
 }
