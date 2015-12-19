@@ -15,8 +15,11 @@ func Auth(h app.Handler) app.Handler {
 
 	// Check if authentication is turned off.
 	on, err := cfg.Bool(cfgAuth)
-	if err == nil || !on {
-		return func(c *app.Context) error { return nil }
+	if err == nil && !on {
+		return func(c *app.Context) error {
+			log.Dev(c.SessionID, "Auth", "******> Authentication Off")
+			return h(c)
+		}
 	}
 
 	// Turn authentication on.
