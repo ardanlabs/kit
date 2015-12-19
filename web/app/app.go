@@ -135,6 +135,9 @@ func Init(configKey string) {
 		os.Exit(1)
 	}
 
+	// Log all the configuration options
+	log.User("startup", "Init", "\n%s\n", cfg.Log())
+
 	// Init the log system.
 	logLevel := func() int {
 		ll, err := cfg.Int("LOGGING_LEVEL")
