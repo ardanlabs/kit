@@ -164,7 +164,7 @@ func Init(configKey string) {
 	log.User("startup", "Init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
 
 	// Init MongoDB if configured.
-	if _, err := cfg.String(cfgMongoHost); err != nil {
+	if _, err := cfg.String(cfgMongoHost); err == nil {
 		app.useMongo = true
 
 		cfg := mongo.Config{
