@@ -139,6 +139,30 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	a.TreeMux.Handle(verb, path, h)
 }
 
+// CORS providing support for Cross-Origin Resource Sharing.
+// https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/
+func (a *App) CORS() {
+	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+		w.Header().Set("Content-Type", "text/html")
+		w.WriteHeader(http.StatusOK)
+
+		const resp = `<html>
+	<body>
+		<a href='http://www.xmpp.org/extensions/xep-0124.html'>XEP-0124</a> - BOSH
+	</body>
+</html>`
+
+		fmt.Fprintf(w, resp)
+	}
+
+	a.TreeMux.Handle("GET", "/xmpp-httpbind", h)
+	a.TreeMux.Handle("OPTIONS", "/xmpp-httpbind", h)
+}
+
 //==============================================================================
 
 // Init is called to initialize the application.
