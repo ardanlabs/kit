@@ -164,6 +164,9 @@ func (a *App) CORS() {
 	}
 
 	a.TreeMux.OptionsHandler = h
+
+	// This header is now required for all requests.
+	app.userHeaders["Access-Control-Allow-Origin"] = "*"
 }
 
 //==============================================================================
