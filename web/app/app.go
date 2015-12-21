@@ -151,16 +151,9 @@ func (a *App) CORS() {
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Access-Control-Max-Age", "86400")
-		w.Header().Set("Content-Type", "text/html")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-
-		const resp = `<html>
-	<body>
-		<a href='http://www.xmpp.org/extensions/xep-0124.html'>XEP-0124</a> - BOSH
-	</body>
-</html>`
-
-		fmt.Fprintf(w, resp)
+		fmt.Fprintf(w, "")
 	}
 
 	a.TreeMux.OptionsHandler = h
