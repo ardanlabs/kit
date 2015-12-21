@@ -153,7 +153,6 @@ func (a *App) CORS() {
 		w.Header().Set("Access-Control-Max-Age", "86400")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "")
 	}
 
 	a.TreeMux.OptionsHandler = h
