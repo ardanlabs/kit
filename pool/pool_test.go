@@ -26,8 +26,8 @@ func (p *theWork) Work(context interface{}, id int) {
 	log.Dev(context, "Work", "Performing Work with privateID %d\n", p.privateID)
 }
 
-// ExampleNewDoPool provides a basic example for using a DoPool.
-func ExampleNewDoPool() {
+// ExampleNew provides a basic example for using a pool.
+func ExampleNew() {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
@@ -51,34 +51,6 @@ func ExampleNewDoPool() {
 
 	// Wait to the work to be processed.
 	time.Sleep(100 * time.Millisecond)
-
-	// Shutdown the pool.
-	p.Shutdown("TEST")
-}
-
-// ExampleMetrics provides an example of the metrics handler being called.
-func ExampleMetrics() {
-	tests.ResetLog()
-	defer tests.DisplayLog()
-
-	// Create a configuration.
-	cfg := pool.Config{
-		MinRoutines: func() int { return 3 },
-		MaxRoutines: func() int { return 4 },
-	}
-
-	// Create a new pool.
-	p, err := pool.New("TEST", "TheWork", cfg)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// Pass in one piece of work to be performed.
-	p.Do("TEST", &theWork{})
-
-	// For the example, wait for it to display
-	time.Sleep(time.Second)
 
 	// Shutdown the pool.
 	p.Shutdown("TEST")
