@@ -64,9 +64,11 @@ type (
 )
 
 // app maintains some framework state.
-var app struct {
+var app = struct {
 	useMongo    bool
-	userHeaders map[string]string // Extra headers for each response.
+	userHeaders map[string]string
+}{
+	userHeaders: make(map[string]string),
 }
 
 //==============================================================================
@@ -202,9 +204,6 @@ func Init(configKey string) {
 			os.Exit(1)
 		}
 	}
-
-	// Make the map.
-	app.userHeaders = make(map[string]string)
 
 	// Load user defined custom headers. HEADERS should be key:value,key:value
 	if hs, err := cfg.String("HEADERS"); err == nil {
