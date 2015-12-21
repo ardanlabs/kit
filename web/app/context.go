@@ -72,7 +72,6 @@ func (c *Context) Respond(data interface{}, code int) {
 
 	// Set application default header values.
 	c.Header().Set("Content-Type", "application/json")
-	c.WriteHeader(code)
 
 	// Load any user defined header values.
 	if app.userHeaders != nil {
@@ -81,6 +80,8 @@ func (c *Context) Respond(data interface{}, code int) {
 			c.Header().Set(key, value)
 		}
 	}
+
+	c.WriteHeader(code)
 
 	// Look for a JSONP marker
 	if cb := c.Request.URL.Query().Get("callback"); cb != "" {
