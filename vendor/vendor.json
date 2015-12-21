@@ -14,8 +14,8 @@
 		},
 		{
 			"path": "github.com/dimfeld/httptreemux",
-			"revision": "a1f77c483db030c0892de9ba2d006fc74272e9a8",
-			"revisionTime": "2015-09-30T23:53:14-05:00"
+			"revision": "f74b8868fbe8534a40358ce27b77818eeea2d6e0",
+			"revisionTime": "2015-12-08T16:55:51-06:00"
 		},
 		{
 			"path": "github.com/inconshreveable/mousetrap",

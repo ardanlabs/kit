@@ -163,8 +163,7 @@ func (a *App) CORS() {
 		fmt.Fprintf(w, resp)
 	}
 
-	a.TreeMux.Handle("GET", "/xmpp-httpbind", h)
-	a.TreeMux.Handle("OPTIONS", "/xmpp-httpbind", h)
+	a.TreeMux.OptionsHandler = h
 }
 
 //==============================================================================
