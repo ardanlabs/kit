@@ -58,7 +58,7 @@ type Config struct {
 // Pool provides a pool of routines that can execute any Worker
 // tasks that are submitted.
 type Pool struct {
-	*Config
+	Config
 	Name string // Name of this pool.
 
 	tasks    chan doWork    // Unbuffered channel that work is sent into.
@@ -80,7 +80,7 @@ type Pool struct {
 }
 
 // New creates a new Pool.
-func New(context interface{}, name string, cfg *Config) (*Pool, error) {
+func New(context interface{}, name string, cfg Config) (*Pool, error) {
 	log.Dev(context, "New", "Started : Name[%s]", name)
 
 	if cfg.MinRoutines == nil {

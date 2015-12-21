@@ -30,7 +30,7 @@ type temporary interface {
 
 // UDP manages message to a specific ip address and port.
 type UDP struct {
-	*Config
+	Config
 	Name string
 
 	ipAddress string
@@ -52,7 +52,7 @@ type UDP struct {
 }
 
 // New creates a new manager to service clients.
-func New(context interface{}, name string, cfg *Config) (*UDP, error) {
+func New(context interface{}, name string, cfg Config) (*UDP, error) {
 	log.Dev(context, "New", "Started : Name[%s] NetType[%s] Addr[%s] RecvMaxPoolSize[%d] SendMaxPoolSize[%d]", name, cfg.NetType, cfg.Addr, cfg.RecvMaxPoolSize, cfg.SendMaxPoolSize)
 
 	// Validate the configuration.
@@ -81,7 +81,7 @@ func New(context interface{}, name string, cfg *Config) (*UDP, error) {
 		}
 
 		var err error
-		if recv, err = pool.New(context, name+"-Recv", &recvCfg); err != nil {
+		if recv, err = pool.New(context, name+"-Recv", recvCfg); err != nil {
 			log.Error(context, "New", err, "Completed")
 			return nil, err
 		}
@@ -98,7 +98,7 @@ func New(context interface{}, name string, cfg *Config) (*UDP, error) {
 		}
 
 		var err error
-		if send, err = pool.New(context, name+"-Send", &sendCfg); err != nil {
+		if send, err = pool.New(context, name+"-Send", sendCfg); err != nil {
 			log.Error(context, "New", err, "Completed")
 			return nil, err
 		}

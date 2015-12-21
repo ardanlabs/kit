@@ -44,7 +44,7 @@ func TestTCP(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New(tests.Context, "TEST", &cfg)
+		u, err := tcp.New(tests.Context, "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}
@@ -126,7 +126,7 @@ func TestTCPAddr(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New(tests.Context, "TEST", &cfg)
+		u, err := tcp.New(tests.Context, "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}
@@ -175,7 +175,7 @@ func TestDropConnections(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		recv, err := pool.New(tests.Context, "Test-Recv", &recvCfg)
+		recv, err := pool.New(tests.Context, "Test-Recv", recvCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the recv.", tests.Failed, err)
 		}
@@ -185,7 +185,7 @@ func TestDropConnections(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		send, err := pool.New(tests.Context, "Test-Send", &sendCfg)
+		send, err := pool.New(tests.Context, "Test-Send", sendCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the send.", tests.Failed, err)
 		}
@@ -205,7 +205,7 @@ func TestDropConnections(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New(tests.Context, "TEST", &cfg)
+		u, err := tcp.New(tests.Context, "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}
@@ -253,7 +253,7 @@ func TestRateLimit(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		recv, err := pool.New(tests.Context, "Test-Recv", &recvCfg)
+		recv, err := pool.New(tests.Context, "Test-Recv", recvCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the recv.", tests.Failed, err)
 		}
@@ -263,7 +263,7 @@ func TestRateLimit(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		send, err := pool.New(tests.Context, "Test-Send", &sendCfg)
+		send, err := pool.New(tests.Context, "Test-Send", sendCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the send.", tests.Failed, err)
 		}
@@ -287,7 +287,7 @@ func TestRateLimit(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New(tests.Context, "TEST", &cfg)
+		u, err := tcp.New(tests.Context, "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}

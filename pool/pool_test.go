@@ -32,13 +32,13 @@ func ExampleNewDoPool() {
 	defer tests.DisplayLog()
 
 	// Create a configuration.
-	config := pool.Config{
+	cfg := pool.Config{
 		MinRoutines: func() int { return 3 },
 		MaxRoutines: func() int { return 4 },
 	}
 
 	// Create a new pool.
-	p, err := pool.New("TEST", "TheWork", &config)
+	p, err := pool.New("TEST", "TheWork", cfg)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -62,13 +62,13 @@ func ExampleMetrics() {
 	defer tests.DisplayLog()
 
 	// Create a configuration.
-	config := pool.Config{
+	cfg := pool.Config{
 		MinRoutines: func() int { return 3 },
 		MaxRoutines: func() int { return 4 },
 	}
 
 	// Create a new pool.
-	p, err := pool.New("TEST", "TheWork", &config)
+	p, err := pool.New("TEST", "TheWork", cfg)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -96,7 +96,7 @@ func TestPool(t *testing.T) {
 			MaxRoutines: func() int { return 5000 },
 		}
 
-		p, err := pool.New("TestPool", "Pool1", &cfg)
+		p, err := pool.New("TestPool", "Pool1", cfg)
 		if err != nil {
 			t.Fatal("\tShould not get error creating pool.", tests.Failed, err)
 		}

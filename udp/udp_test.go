@@ -44,7 +44,7 @@ func TestUDP(t *testing.T) {
 		}
 
 		// Create a new UDP value.
-		u, err := udp.New("TEST", "TEST", &cfg)
+		u, err := udp.New("TEST", "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new UDP listener.", tests.Failed, err)
 		}
@@ -123,7 +123,7 @@ func TestUDPAddr(t *testing.T) {
 		}
 
 		// Create a new UDP value.
-		u, err := udp.New("TEST", "TEST", &cfg)
+		u, err := udp.New("TEST", "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new UDP listener.", tests.Failed, err)
 		}
