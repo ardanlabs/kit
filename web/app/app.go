@@ -148,10 +148,11 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 func (a *App) CORS() {
 	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		w.Header().Set("Access-Control-Max-Age", "86400")
 		w.Header().Set("Content-Type", "application/json")
+
 		w.WriteHeader(http.StatusOK)
 	}
 
