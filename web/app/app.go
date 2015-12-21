@@ -158,8 +158,6 @@ func (a *App) CORS() {
 
 	a.TreeMux.OptionsHandler = h
 
-	// This header is now required for all requests.
-	app.userHeaders = make(map[string]string)
 	app.userHeaders["Access-Control-Allow-Origin"] = "*"
 }
 
@@ -205,12 +203,11 @@ func Init(configKey string) {
 		}
 	}
 
+	// Make the map.
+	app.userHeaders = make(map[string]string)
+
 	// Load user defined custom headers. HEADERS should be key:value,key:value
 	if hs, err := cfg.String("HEADERS"); err == nil {
-		if app.userHeaders == nil {
-			app.userHeaders = make(map[string]string)
-		}
-
 		hdrs := strings.Split(hs, ",")
 		for _, hdr := range hdrs {
 			if kv := strings.Split(hdr, ":"); len(kv) == 2 {
