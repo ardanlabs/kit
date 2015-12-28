@@ -13,7 +13,7 @@ import (
 type tcpConnHandler struct{}
 
 // Bind is called to init a reader and writer.
-func (tch tcpConnHandler) Bind(context interface{}, conn net.Conn) (io.Reader, io.Writer) {
+func (tcpConnHandler) Bind(context interface{}, conn net.Conn) (io.Reader, io.Writer) {
 	return bufio.NewReader(conn), bufio.NewWriter(conn)
 }
 
