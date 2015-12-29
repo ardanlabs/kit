@@ -85,8 +85,8 @@ var decodePathDoc = `{
      "userId": 10483860,
      "userType":
          {
-         "userTypeId": 1,
-         "userTypeName": "normal_user"
+         	"userTypeId": 1,
+         	"userTypeName": "normal_user"
          }
 }`
 
@@ -160,12 +160,12 @@ var decodePathArrayDoc = `{
 			"year":2000,
 			"animals": [
 				{
-				"barks":"yes",
-				"tail":"yes"
+					"barks":"yes",
+					"tail":"yes"
 				},
 				{
-				"barks":"no",
-				"tail":"yes"
+					"barks":"no",
+					"tail":"yes"
 				}
 			]
 		}
