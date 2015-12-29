@@ -25,12 +25,11 @@ from the bytes of the encoded format. This is great, but the problem is if
 you have configuration or an encoding that changes slightly depending on
 specific fields. For example, consider this JSON:
 
-
-			json
-			{
-	  		"type": "person",
-	  		"name": "Mitchell"
-			}
+	json
+	{
+		"type": "person",
+		"name": "Mitchell"
+	}
 
 Perhaps we can't populate a specific structure without first reading
 the "type" field from the JSON. We could always do two passes over the
@@ -89,9 +88,8 @@ a small part.
 It is nice to be able to define and pull the documents and fields you need without
 having to map the entire JSON structure.
 
-
 	type UserType struct {
-		UserTypeId   int
+		UserTypeID   int
 		UserTypeName string
 	}
 	
@@ -103,18 +101,18 @@ having to map the entire JSON structure.
 	
 	type User struct {
 		Session   string   `jpath:"userContext.cobrandConversationCredentials.sessionToken"`
-		CobrandId int      `jpath:"userContext.cobrandId"`
+		CobrandID int      `jpath:"userContext.cobrandId"`
 		UserType  UserType `jpath:"userType"`
 		LoginName string   `jpath:"loginName"`
 		NumberFormat       // This can also be a pointer to the struct (*NumberFormat)
 	}
 	
-	docScript := []byte(document)
+	doc := []byte(document)
 	var docMap map[string]interface{}
-	json.Unmarshal(docScript, &docMap)
+	json.Unmarshal(doc, &docMap)
 	
-	var user User
-	mapstructure.DecodePath(docMap, &user)
+	var u User
+	mapstructure.DecodePath(docMap, &u)
 
 ### DecodeSlicePath
 Sometimes you have a slice of documents that you need to decode into a slice of structures
@@ -132,9 +130,9 @@ Just Unmarshal your document into a slice of maps and decode the slice
 		Name string `jpath:"name"`
 	}
 	
-	sliceScript := []byte(document)
+	doc := []byte(document)
 	var sliceMap []map[string]interface{}
-	json.Unmarshal(sliceScript, &sliceMap)
+	json.Unmarshal(doc, &sliceMap)
 	
 	var myslice []NameDoc
 	err := DecodeSlicePath(sliceMap, &myslice)
