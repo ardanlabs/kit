@@ -1,3 +1,5 @@
+// Sample program to show how to use the udp package to build servers that
+// can accept udp connections and send messages.
 package main
 
 import (

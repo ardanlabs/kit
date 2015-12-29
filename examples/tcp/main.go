@@ -1,3 +1,5 @@
+// Sample program to show how to use the tcp package to build servers that
+// can accept tcp connections and send messages.
 package main
 
 import (
