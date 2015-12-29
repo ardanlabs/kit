@@ -5,6 +5,13 @@
 Package mapstructure is a Go library for decoding generic map values to structures
 and vice versa, while providing helpful error handling.
 
+Base code comes from:
+
+
+	<a href="https://github.com/mitchellh/mapstructure">https://github.com/mitchellh/mapstructure</a>
+
+This package has added higher level support for flattening out JSON documents.
+
 This library is most useful when decoding values from some data stream (JSON,
 Gob, etc.) where you don't _quite_ know the structure of the underlying data
 until you read a part of it. You can therefore read a `map[string]interface{}`
@@ -25,11 +32,12 @@ from the bytes of the encoded format. This is great, but the problem is if
 you have configuration or an encoding that changes slightly depending on
 specific fields. For example, consider this JSON:
 
-	json
-	{
-		"type": "person",
-		"name": "Mitchell"
-	}
+
+			json
+			{
+	  		"type": "person",
+	  		"name": "Mitchell"
+			}
 
 Perhaps we can't populate a specific structure without first reading
 the "type" field from the JSON. We could always do two passes over the
@@ -88,8 +96,9 @@ a small part.
 It is nice to be able to define and pull the documents and fields you need without
 having to map the entire JSON structure.
 
+
 	type UserType struct {
-		UserTypeID   int
+		UserTypeId   int
 		UserTypeName string
 	}
 	
@@ -101,18 +110,18 @@ having to map the entire JSON structure.
 	
 	type User struct {
 		Session   string   `jpath:"userContext.cobrandConversationCredentials.sessionToken"`
-		CobrandID int      `jpath:"userContext.cobrandId"`
+		CobrandId int      `jpath:"userContext.cobrandId"`
 		UserType  UserType `jpath:"userType"`
 		LoginName string   `jpath:"loginName"`
 		NumberFormat       // This can also be a pointer to the struct (*NumberFormat)
 	}
 	
-	doc := []byte(document)
+	docScript := []byte(document)
 	var docMap map[string]interface{}
-	json.Unmarshal(doc, &docMap)
+	json.Unmarshal(docScript, &docMap)
 	
-	var u User
-	mapstructure.DecodePath(docMap, &u)
+	var user User
+	mapstructure.DecodePath(docMap, &user)
 
 ### DecodeSlicePath
 Sometimes you have a slice of documents that you need to decode into a slice of structures
@@ -130,9 +139,9 @@ Just Unmarshal your document into a slice of maps and decode the slice
 		Name string `jpath:"name"`
 	}
 	
-	doc := []byte(document)
+	sliceScript := []byte(document)
 	var sliceMap []map[string]interface{}
-	json.Unmarshal(doc, &sliceMap)
+	json.Unmarshal(sliceScript, &sliceMap)
 	
 	var myslice []NameDoc
 	err := DecodeSlicePath(sliceMap, &myslice)

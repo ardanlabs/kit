@@ -1,6 +1,12 @@
 // Package mapstructure is a Go library for decoding generic map values to structures
 // and vice versa, while providing helpful error handling.
 //
+// Base code comes from:
+//
+// 		https://github.com/mitchellh/mapstructure
+//
+// This package has added higher level support for flattening out JSON documents.
+//
 // This library is most useful when decoding values from some data stream (JSON,
 // Gob, etc.) where you don't _quite_ know the structure of the underlying data
 // until you read a part of it. You can therefore read a `map[string]interface{}`
