@@ -7,8 +7,7 @@ and vice versa, while providing helpful error handling.
 
 Base code comes from:
 
-
-	<a href="https://github.com/mitchellh/mapstructure">https://github.com/mitchellh/mapstructure</a>
+<a href="https://github.com/mitchellh/mapstructure">https://github.com/mitchellh/mapstructure</a>
 
 This package has added higher level support for flattening out JSON documents.
 

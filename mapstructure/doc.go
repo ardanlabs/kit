@@ -3,7 +3,7 @@
 //
 // Base code comes from:
 //
-// 		https://github.com/mitchellh/mapstructure
+// https://github.com/mitchellh/mapstructure
 //
 // This package has added higher level support for flattening out JSON documents.
 //
