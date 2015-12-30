@@ -32,13 +32,13 @@ func Init(p Provider) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	// get the provided configuration
+	// Get the provided configuration.
 	m, err := p.Provide()
 	if err != nil {
 		return err
 	}
 
-	// set it to the global instance
+	// Set it to the global instance.
 	c.m = m
 
 	return nil

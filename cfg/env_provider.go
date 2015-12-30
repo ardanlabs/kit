@@ -7,14 +7,15 @@ import (
 	"strings"
 )
 
-// EnvProvider provides configuration from the environment
+// EnvProvider provides configuration from the environment.
 type EnvProvider struct {
 	Namespace string
 }
 
-// Provide implements the Provider interface
+// Provide implements the Provider interface.
 func (ep EnvProvider) Provide() (map[string]string, error) {
-	// Store the config in this empty map
+
+	// Store the config in this empty map.
 	config := map[string]string{}
 
 	// Get the lists of available environment variables.

@@ -133,7 +133,7 @@ type EnvProvider struct {
     Namespace string
 }
 ```
-EnvProvider provides configuration from the environment
+EnvProvider provides configuration from the environment.
 
 
 
@@ -149,7 +149,7 @@ EnvProvider provides configuration from the environment
 ``` go
 func (ep EnvProvider) Provide() (map[string]string, error)
 ```
-Provide implements the Provider interface
+Provide implements the Provider interface.
 
 
 
@@ -160,7 +160,7 @@ type MapProvider struct {
 }
 ```
 MapProvider provides a simple implementation of the Provider whereby it just
-returns a stored map
+returns a stored map.
 
 
 
@@ -176,7 +176,7 @@ returns a stored map
 ``` go
 func (mp MapProvider) Provide() (map[string]string, error)
 ```
-Provide implements the Provider interface
+Provide implements the Provider interface.
 
 
 
