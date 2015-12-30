@@ -9,7 +9,7 @@ type.
 To initialize the configuration system from your environment, call Init:
 
 
-	cfg.Init("myapp")
+	cfg.Init(cfg.EnvProvider{Namespace: "configKey"})
 
 To retrieve values from configuration:
 
