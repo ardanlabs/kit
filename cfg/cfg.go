@@ -26,8 +26,9 @@ type Provider interface {
 
 //==============================================================================
 
-// Init is to be called only once, to load up the given namespace if found,
-// in the environment variables. All keys will be made lowercase.
+// Init is to be called only once. A Provider must be supplied which will return
+// a map of key/value pairs to be loaded. There are currently two Providers
+// implemented today, EnvProvider and MapProvider. All keys will be made lowercase.
 func Init(p Provider) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
