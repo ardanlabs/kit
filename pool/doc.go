@@ -1,4 +1,4 @@
-// Package work manages a pool of routines to perform work. It does so my providing
+// Package pool manages a pool of routines to perform work. It does so my providing
 // a Do function that will block when the pool is busy. This also allows the pool
 // to monitor and report pushback. The pool also supports the dynamic re-sizing
 // of the number of routines in the pool.
