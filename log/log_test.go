@@ -54,11 +54,11 @@ func TestLogLevelUSER(t *testing.T) {
 			log.Error("context", "FuncName", errors.New("An error"), "Message 3 no format")
 
 			if logdest.String() == log1+log2 {
-				t.Logf("\t\t%v : Should log the expected trace line.", succeed)
+				t.Logf("\t\t%v : Should log the expected trace line.", Success)
 			} else {
 				t.Log("***>", logdest.String())
 				t.Log("***>", log1+log2)
-				t.Errorf("\t\t%v : Should log the expected trace line.", failed)
+				t.Errorf("\t\t%v : Should log the expected trace line.", Failed)
 			}
 		}
 	}
@@ -85,11 +85,11 @@ func TestLogLevelDEV(t *testing.T) {
 			log.Error("context", "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
 			if logdest.String() == log1+log2+log3 {
-				t.Logf("\t\t%v : Should log the expected trace line.", succeed)
+				t.Logf("\t\t%v : Should log the expected trace line.", Success)
 			} else {
 				t.Log("***>", logdest.String())
 				t.Log("***>", log1+log2+log3)
-				t.Errorf("\t\t%v : Should log the expected trace line.", failed)
+				t.Errorf("\t\t%v : Should log the expected trace line.", Failed)
 			}
 		}
 	}
