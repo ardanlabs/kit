@@ -2,10 +2,8 @@ package cfg
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -21,39 +19,27 @@ var c struct {
 
 //==============================================================================
 
+// Provider is implemented by the user to provide the configuration as a map
+type Provider interface {
+	Provide() (map[string]string, error)
+}
+
+//==============================================================================
+
 // Init is to be called only once, to load up the giving namespace if found,
 // in the environment variables. All keys will be made lowercase.
-func Init(namespace string) error {
+func Init(p Provider) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	if c.m == nil {
-		c.m = make(map[string]string)
+	// get the provided configuration
+	m, err := p.Provide()
+	if err != nil {
+		return err
 	}
 
-	// Get the lists of available environment variables.
-	envs := os.Environ()
-	if len(envs) == 0 {
-		return errors.New("No environment variables found")
-	}
-
-	// Create the uppercase version to meet the standard {NAMESPACE_} format.
-	uspace := fmt.Sprintf("%s_", strings.ToUpper(namespace))
-
-	// Loop and match each variable using the uppercase namespace.
-	for _, val := range envs {
-		if !strings.HasPrefix(val, uspace) {
-			continue
-		}
-
-		idx := strings.Index(val, "=")
-		c.m[strings.ToUpper(strings.TrimPrefix(val[0:idx], uspace))] = val[idx+1:]
-	}
-
-	// Did we find any keys for this namespace?
-	if len(c.m) == 0 {
-		return fmt.Errorf("Namespace %q was not found", namespace)
-	}
+	// set it to the global instance
+	c.m = m
 
 	return nil
 }

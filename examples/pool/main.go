@@ -30,7 +30,7 @@ func init() {
 	os.Setenv("KIT_MAX_ROUTINES", "10")
 
 	// Init the configuration system.
-	if err := cfg.Init(configKey); err != nil {
+	if err := cfg.Init(cfg.EnvProvider{Namespace: configKey}); err != nil {
 		fmt.Println("Error initalizing configuration system", err)
 		os.Exit(1)
 	}

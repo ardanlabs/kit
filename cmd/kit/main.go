@@ -15,6 +15,7 @@ import (
 
 // Config environmental variables.
 const (
+	cfgNamespace     = "KIT"
 	cfgLoggingLevel  = "LOGGING_LEVEL"
 	cfgMongoHost     = "MONGO_HOST"
 	cfgMongoAuthDB   = "MONGO_AUTHDB"
@@ -31,7 +32,7 @@ var kit = &cobra.Command{
 //==============================================================================
 
 func main() {
-	if err := cfg.Init("KIT"); err != nil {
+	if err := cfg.Init(cfg.EnvProvider{Namespace: cfgNamespace}); err != nil {
 		kit.Println("Unable to initialize configuration")
 		os.Exit(1)
 	}
