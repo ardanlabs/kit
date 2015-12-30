@@ -41,7 +41,7 @@ error, if the key was not found or the value can't be convered to a bool.
 
 ## func Init
 ``` go
-func Init(namespace string) error
+func Init(p Provider) error
 ```
 Init is to be called only once, to load up the giving namespace if found,
 in the environment variables. All keys will be made lowercase.
@@ -124,6 +124,77 @@ func URL(key string) (*url.URL, error)
 ```
 URL returns the value of the giving key as a URL, else it will return an
 error, if the key was not found or the value can't be convered to a URL.
+
+
+
+## type EnvProvider
+``` go
+type EnvProvider struct {
+    Namespace string
+}
+```
+EnvProvider provides configuration from the environment
+
+
+
+
+
+
+
+
+
+
+
+### func (EnvProvider) Provide
+``` go
+func (ep EnvProvider) Provide() (map[string]string, error)
+```
+Provide implements the Provider interface
+
+
+
+## type MapProvider
+``` go
+type MapProvider struct {
+    Map map[string]string
+}
+```
+MapProvider provides a simple implementation of the Provider whereby it just
+returns a stored map
+
+
+
+
+
+
+
+
+
+
+
+### func (MapProvider) Provide
+``` go
+func (mp MapProvider) Provide() (map[string]string, error)
+```
+Provide implements the Provider interface
+
+
+
+## type Provider
+``` go
+type Provider interface {
+    Provide() (map[string]string, error)
+}
+```
+Provider is implemented by the user to provide the configuration as a map
+
+
+
+
+
+
+
+
 
 
 

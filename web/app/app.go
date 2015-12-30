@@ -169,7 +169,7 @@ func (a *App) CORS() {
 func Init(configKey string) {
 
 	// Init the configuration system.
-	if err := cfg.Init(configKey); err != nil {
+	if err := cfg.Init(cfg.EnvProvider{Namespace: configKey}); err != nil {
 		fmt.Println("Error initalizing configuration system", err)
 		os.Exit(1)
 	}

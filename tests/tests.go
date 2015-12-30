@@ -45,7 +45,7 @@ func DisplayLog() {
 
 // Init initializes the log package.
 func Init(cfgKey string) {
-	cfg.Init(cfgKey)
+	cfg.Init(cfg.EnvProvider{Namespace: cfgKey})
 
 	logLevel := func() int {
 		ll, err := cfg.Int("LOGGING_LEVEL")

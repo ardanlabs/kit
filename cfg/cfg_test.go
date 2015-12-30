@@ -1,7 +1,6 @@
 package cfg_test
 
 import (
-	"os"
 	"testing"
 
 	"github.com/ardanlabs/kit/cfg"
@@ -22,13 +21,15 @@ func TestExists(t *testing.T) {
 	{
 		uStr := "postgres://root:root@127.0.0.1:8080/postgres?sslmode=disable"
 
-		os.Setenv("MYAPP_PROC_ID", "322")
-		os.Setenv("MYAPP_SOCKET", "./tmp/sockets.po")
-		os.Setenv("MYAPP_PORT", "4034")
-		os.Setenv("MYAPP_FLAG", "on")
-		os.Setenv("MYAPP_DSN", uStr)
-
-		cfg.Init("MYAPP")
+		cfg.Init(cfg.MapProvider{
+			Map: map[string]string{
+				"PROC_ID": "322",
+				"SOCKET":  "./tmp/sockets.po",
+				"PORT":    "4034",
+				"FLAG":    "on",
+				"DSN":     uStr,
+			},
+		})
 
 		t.Log("\tWhen given a namspace key to search for that exists.")
 		{
@@ -111,12 +112,15 @@ func TestExists(t *testing.T) {
 func TestNotExists(t *testing.T) {
 	t.Log("Given the need to panic when environment variables are missing.")
 	{
-		os.Setenv("MYAPP_PROC_ID", "322")
-		os.Setenv("MYAPP_SOCKET", "./tmp/sockets.po")
-		os.Setenv("MYAPP_PORT", "4034")
-		os.Setenv("MYAPP_FLAG", "on")
 
-		cfg.Init("MYAPP")
+		cfg.Init(cfg.MapProvider{
+			Map: map[string]string{
+				"PROC_ID": "322",
+				"SOCKET":  "./tmp/sockets.po",
+				"PORT":    "4034",
+				"FLAG":    "on",
+			},
+		})
 
 		t.Log("\tWhen given a namspace key to search for that does NOT exist.")
 		{
