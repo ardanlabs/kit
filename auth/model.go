@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -47,9 +46,8 @@ type NUser struct {
 
 // Validate performs validation on a NUser value before it is processed.
 func (nu *NUser) Validate() error {
-	errs := validate.Struct(nu)
-	if errs != nil {
-		return fmt.Errorf("%v", errs)
+	if err := validate.Struct(nu); err != nil {
+		return err
 	}
 
 	return nil
@@ -98,9 +96,8 @@ func NewUser(nu NUser) (*User, error) {
 
 // Validate performs validation on a CrtUser value before it is processed.
 func (u *User) Validate() error {
-	errs := validate.Struct(u)
-	if errs != nil {
-		return fmt.Errorf("%v", errs)
+	if err := validate.Struct(u); err != nil {
+		return err
 	}
 
 	return nil
@@ -163,9 +160,8 @@ type UpdUser struct {
 
 // Validate performs validation on a NewUser value before it is processed.
 func (uu *UpdUser) Validate() error {
-	errs := validate.Struct(uu)
-	if errs != nil {
-		return fmt.Errorf("%v", errs)
+	if err := validate.Struct(uu); err != nil {
+		return err
 	}
 
 	return nil
