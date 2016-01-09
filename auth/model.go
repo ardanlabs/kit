@@ -9,7 +9,7 @@ import (
 	"github.com/ardanlabs/kit/auth/crypto"
 
 	"github.com/pborman/uuid"
-	"gopkg.in/bluesuncorp/validator.v6"
+	"gopkg.in/bluesuncorp/validator.v8"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -26,12 +26,7 @@ const (
 var validate *validator.Validate
 
 func init() {
-	config := validator.Config{
-		TagName:         "validate",
-		ValidationFuncs: validator.BakedInValidators,
-	}
-
-	validate = validator.New(config)
+	validate = validator.New(&validator.Config{TagName: "validate"})
 }
 
 //==============================================================================

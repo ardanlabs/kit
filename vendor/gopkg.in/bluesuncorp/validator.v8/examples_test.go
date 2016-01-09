@@ -3,14 +3,11 @@ package validator_test
 import (
 	"fmt"
 
-	"gopkg.in/go-playground/validator.v6"
+	"gopkg.in/go-playground/validator.v8"
 )
 
 func ExampleValidate_new() {
-	config := validator.Config{
-		TagName:         "validate",
-		ValidationFuncs: validator.BakedInValidators,
-	}
+	config := &validator.Config{TagName: "validate"}
 
 	validator.New(config)
 }
@@ -19,16 +16,13 @@ func ExampleValidate_field() {
 	// This should be stored somewhere globally
 	var validate *validator.Validate
 
-	config := validator.Config{
-		TagName:         "validate",
-		ValidationFuncs: validator.BakedInValidators,
-	}
+	config := &validator.Config{TagName: "validate"}
 
 	validate = validator.New(config)
 
 	i := 0
 	errs := validate.Field(i, "gt=1,lte=10")
-	err := errs[""]
+	err := errs.(validator.ValidationErrors)[""]
 	fmt.Println(err.Field)
 	fmt.Println(err.Tag)
 	fmt.Println(err.Kind) // NOTE: Kind and Type can be different i.e. time Kind=struct and Type=time.Time
@@ -48,10 +42,7 @@ func ExampleValidate_struct() {
 	// This should be stored somewhere globally
 	var validate *validator.Validate
 
-	config := validator.Config{
-		TagName:         "validate",
-		ValidationFuncs: validator.BakedInValidators,
-	}
+	config := &validator.Config{TagName: "validate"}
 
 	validate = validator.New(config)
 
@@ -81,7 +72,7 @@ func ExampleValidate_struct() {
 	}
 
 	errs := validate.Struct(user)
-	for _, v := range errs {
+	for _, v := range errs.(validator.ValidationErrors) {
 		fmt.Println(v.Field) // Phone
 		fmt.Println(v.Tag)   // required
 		//... and so forth

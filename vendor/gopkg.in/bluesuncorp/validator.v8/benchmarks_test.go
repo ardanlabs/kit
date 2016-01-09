@@ -2,29 +2,67 @@ package validator
 
 import (
 	sql "database/sql/driver"
-	"reflect"
 	"testing"
+	"time"
 )
 
 func BenchmarkFieldSuccess(b *testing.B) {
+
+	var s *string
+	tmp := "1"
+	s = &tmp
+
 	for n := 0; n < b.N; n++ {
-		validate.Field("1", "len=1")
+		validate.Field(s, "len=1")
 	}
 }
 
 func BenchmarkFieldFailure(b *testing.B) {
+
+	var s *string
+	tmp := "12"
+	s = &tmp
+
 	for n := 0; n < b.N; n++ {
-		validate.Field("2", "len=1")
+		validate.Field(s, "len=1")
+	}
+}
+
+func BenchmarkFieldDiveSuccess(b *testing.B) {
+
+	m := make([]*string, 3)
+	t1 := "val1"
+	t2 := "val2"
+	t3 := "val3"
+
+	m[0] = &t1
+	m[1] = &t2
+	m[2] = &t3
+
+	for n := 0; n < b.N; n++ {
+		validate.Field(m, "required,dive,required")
+	}
+}
+
+func BenchmarkFieldDiveFailure(b *testing.B) {
+
+	m := make([]*string, 3)
+	t1 := "val1"
+	t2 := ""
+	t3 := "val3"
+
+	m[0] = &t1
+	m[1] = &t2
+	m[2] = &t3
+
+	for n := 0; n < b.N; n++ {
+		validate.Field(m, "required,dive,required")
 	}
 }
 
 func BenchmarkFieldCustomTypeSuccess(b *testing.B) {
 
-	customTypes := map[reflect.Type]CustomTypeFunc{}
-	customTypes[reflect.TypeOf((*sql.Valuer)(nil))] = ValidateValuerType
-	customTypes[reflect.TypeOf(valuer{})] = ValidateValuerType
-
-	validate := New(Config{TagName: "validate", ValidationFuncs: BakedInValidators, CustomTypeFuncs: customTypes})
+	validate.RegisterCustomTypeFunc(ValidateValuerType, (*sql.Valuer)(nil), valuer{})
 
 	val := valuer{
 		Name: "1",
@@ -37,11 +75,7 @@ func BenchmarkFieldCustomTypeSuccess(b *testing.B) {
 
 func BenchmarkFieldCustomTypeFailure(b *testing.B) {
 
-	customTypes := map[reflect.Type]CustomTypeFunc{}
-	customTypes[reflect.TypeOf((*sql.Valuer)(nil))] = ValidateValuerType
-	customTypes[reflect.TypeOf(valuer{})] = ValidateValuerType
-
-	validate := New(Config{TagName: "validate", ValidationFuncs: BakedInValidators, CustomTypeFuncs: customTypes})
+	validate.RegisterCustomTypeFunc(ValidateValuerType, (*sql.Valuer)(nil), valuer{})
 
 	val := valuer{}
 
@@ -51,24 +85,56 @@ func BenchmarkFieldCustomTypeFailure(b *testing.B) {
 }
 
 func BenchmarkFieldOrTagSuccess(b *testing.B) {
+
+	var s *string
+	tmp := "rgba(0,0,0,1)"
+	s = &tmp
+
 	for n := 0; n < b.N; n++ {
-		validate.Field("rgba(0,0,0,1)", "rgb|rgba")
+		validate.Field(s, "rgb|rgba")
 	}
 }
 
 func BenchmarkFieldOrTagFailure(b *testing.B) {
+
+	var s *string
+	tmp := "#000"
+	s = &tmp
+
 	for n := 0; n < b.N; n++ {
-		validate.Field("#000", "rgb|rgba")
+		validate.Field(s, "rgb|rgba")
+	}
+}
+
+func BenchmarkStructLevelValidationSuccess(b *testing.B) {
+
+	validate.RegisterStructValidation(StructValidationTestStructSuccess, TestStruct{})
+
+	tst := &TestStruct{
+		String: "good value",
+	}
+
+	for n := 0; n < b.N; n++ {
+		validate.Struct(tst)
+	}
+}
+
+func BenchmarkStructLevelValidationFailure(b *testing.B) {
+
+	validate.RegisterStructValidation(StructValidationTestStruct, TestStruct{})
+
+	tst := &TestStruct{
+		String: "good value",
+	}
+
+	for n := 0; n < b.N; n++ {
+		validate.Struct(tst)
 	}
 }
 
 func BenchmarkStructSimpleCustomTypeSuccess(b *testing.B) {
 
-	customTypes := map[reflect.Type]CustomTypeFunc{}
-	customTypes[reflect.TypeOf((*sql.Valuer)(nil))] = ValidateValuerType
-	customTypes[reflect.TypeOf(valuer{})] = ValidateValuerType
-
-	validate := New(Config{TagName: "validate", ValidationFuncs: BakedInValidators, CustomTypeFuncs: customTypes})
+	validate.RegisterCustomTypeFunc(ValidateValuerType, (*sql.Valuer)(nil), valuer{})
 
 	val := valuer{
 		Name: "1",
@@ -88,11 +154,7 @@ func BenchmarkStructSimpleCustomTypeSuccess(b *testing.B) {
 
 func BenchmarkStructSimpleCustomTypeFailure(b *testing.B) {
 
-	customTypes := map[reflect.Type]CustomTypeFunc{}
-	customTypes[reflect.TypeOf((*sql.Valuer)(nil))] = ValidateValuerType
-	customTypes[reflect.TypeOf(valuer{})] = ValidateValuerType
-
-	validate := New(Config{TagName: "validate", ValidationFuncs: BakedInValidators, CustomTypeFuncs: customTypes})
+	validate.RegisterCustomTypeFunc(ValidateValuerType, (*sql.Valuer)(nil), valuer{})
 
 	val := valuer{}
 
@@ -169,6 +231,101 @@ func BenchmarkStructExceptFailure(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		validate.StructPartial(test, "Name")
+	}
+}
+
+func BenchmarkStructSimpleCrossFieldSuccess(b *testing.B) {
+
+	type Test struct {
+		Start time.Time
+		End   time.Time `validate:"gtfield=Start"`
+	}
+
+	now := time.Now().UTC()
+	then := now.Add(time.Hour * 5)
+
+	test := &Test{
+		Start: now,
+		End:   then,
+	}
+
+	for n := 0; n < b.N; n++ {
+		validate.Struct(test)
+	}
+}
+
+func BenchmarkStructSimpleCrossFieldFailure(b *testing.B) {
+
+	type Test struct {
+		Start time.Time
+		End   time.Time `validate:"gtfield=Start"`
+	}
+
+	now := time.Now().UTC()
+	then := now.Add(time.Hour * -5)
+
+	test := &Test{
+		Start: now,
+		End:   then,
+	}
+
+	for n := 0; n < b.N; n++ {
+		validate.Struct(test)
+	}
+}
+
+func BenchmarkStructSimpleCrossStructCrossFieldSuccess(b *testing.B) {
+
+	type Inner struct {
+		Start time.Time
+	}
+
+	type Outer struct {
+		Inner     *Inner
+		CreatedAt time.Time `validate:"eqcsfield=Inner.Start"`
+	}
+
+	now := time.Now().UTC()
+
+	inner := &Inner{
+		Start: now,
+	}
+
+	outer := &Outer{
+		Inner:     inner,
+		CreatedAt: now,
+	}
+
+	for n := 0; n < b.N; n++ {
+		validate.Struct(outer)
+	}
+}
+
+func BenchmarkStructSimpleCrossStructCrossFieldFailure(b *testing.B) {
+
+	type Inner struct {
+		Start time.Time
+	}
+
+	type Outer struct {
+		Inner     *Inner
+		CreatedAt time.Time `validate:"eqcsfield=Inner.Start"`
+	}
+
+	now := time.Now().UTC()
+	then := now.Add(time.Hour * 5)
+
+	inner := &Inner{
+		Start: then,
+	}
+
+	outer := &Outer{
+		Inner:     inner,
+		CreatedAt: now,
+	}
+
+	for n := 0; n < b.N; n++ {
+		validate.Struct(outer)
 	}
 }
 
