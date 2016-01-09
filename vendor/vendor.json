@@ -68,9 +68,9 @@
 			"revisionTime": "2015-06-18T15:57:31-07:00"
 		},
 		{
-			"path": "gopkg.in/bluesuncorp/validator.v6",
-			"revision": "15e8444e515459e82ef3c33c8cd2dc68b2031e5b",
-			"revisionTime": "2015-09-24T07:48:25-04:00"
+			"path": "gopkg.in/bluesuncorp/validator.v8",
+			"revision": "e8d470cd7a944d716c5527fb382487b6e314022d",
+			"revisionTime": "2016-01-06T09:33:57-05:00"
 		},
 		{
 			"path": "gopkg.in/check.v1",
