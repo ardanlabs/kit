@@ -9,7 +9,6 @@
 package app
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -83,22 +82,25 @@ func (c *Context) Respond(data interface{}, code int) {
 
 	c.WriteHeader(code)
 
+	// Marshal the data into a JSON string.
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		jsonData = []byte("{}")
+	}
+
 	// Look for a JSONP marker
 	if cb := c.Request.URL.Query().Get("callback"); cb != "" {
 
 		// We need to wrap the result in a function call.
 		// callback_value({"data_1": "hello world", "data_2": ["the","sun","is","shining"]});
-		b := bytes.NewBufferString(cb + "(")
-		json.NewEncoder(b).Encode(data)
-		b.WriteString(")")
-		fmt.Fprintf(c, b.String())
+		fmt.Fprintf(c, "%s(%s)", cb, string(jsonData))
 
-	} else {
-
-		// We can send the result straight through.
-		json.NewEncoder(c).Encode(data)
-
+		log.User(c.SessionID, "api : Respond", "Completed")
+		return
 	}
+
+	// We can send the result straight through.
+	fmt.Fprintf(c, string(jsonData))
 
 	log.User(c.SessionID, "api : Respond", "Completed")
 }
