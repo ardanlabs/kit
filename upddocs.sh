@@ -1,46 +1,15 @@
-cd $GOPATH/src/github.com/ardanlabs/kit/auth
-godoc2md github.com/ardanlabs/kit/auth > README.md
+#!/bin/bash
 
-cd $GOPATH/src/github.com/ardanlabs/kit/auth/session
-godoc2md github.com/ardanlabs/kit/auth/session > README.md
+# list all the packges, trim out the vendor directory and any main packages,
+# then strip off the package name
+PACKAGES="$(go list -f "{{.Name}}:{{.ImportPath}}" ./... | grep -v -E "main:|vendor/" | cut -d ":" -f 2)"
 
-cd $GOPATH/src/github.com/ardanlabs/kit/auth/crypto
-godoc2md github.com/ardanlabs/kit/auth/crypto > README.md
+# loop over all packages generating all their documentation
+for PACKAGE in $PACKAGES
+do
 
-cd $GOPATH/src/github.com/ardanlabs/kit/cfg
-godoc2md github.com/ardanlabs/kit/cfg > README.md
+  echo "godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md"
 
-cd $GOPATH/src/github.com/ardanlabs/kit/db
-godoc2md github.com/ardanlabs/kit/db > README.md
+  godoc2md $PACKAGE > $GOPATH/src/$PACKAGE/README.md
 
-cd $GOPATH/src/github.com/ardanlabs/kit/db/mongo
-godoc2md github.com/ardanlabs/kit/db/mongo > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/log
-godoc2md github.com/ardanlabs/kit/log > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/tcp
-godoc2md github.com/ardanlabs/kit/tcp > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/udp
-godoc2md github.com/ardanlabs/kit/udp > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/runner
-godoc2md github.com/ardanlabs/kit/runner > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/pool
-godoc2md github.com/ardanlabs/kit/pool > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/tests
-godoc2md github.com/ardanlabs/kit/tests > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/web/app
-godoc2md github.com/ardanlabs/kit/web/app > README.md
-
-cd $GOPATH/src/github.com/ardanlabs/kit/web/midware
-godoc2md github.com/ardanlabs/kit/web/midware > README.md
-
-
-
-
-
+done

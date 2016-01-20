@@ -344,7 +344,7 @@ This is called from a routine in the work pool.
 ## type TCP
 ``` go
 type TCP struct {
-    *Config
+    Config
     Name string
     // contains filtered or unexported fields
 }
@@ -361,7 +361,7 @@ TCP contains a set of networked client connections.
 
 ### func New
 ``` go
-func New(context interface{}, name string, cfg *Config) (*TCP, error)
+func New(context interface{}, name string, cfg Config) (*TCP, error)
 ```
 New creates a new manager to service clients.
 
