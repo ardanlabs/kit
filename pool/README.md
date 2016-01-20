@@ -2,7 +2,7 @@
 # pool
     import "github.com/ardanlabs/kit/pool"
 
-Package work manages a pool of routines to perform work. It does so my providing
+Package pool manages a pool of routines to perform work. It does so my providing
 a Do function that will block when the pool is busy. This also allows the pool
 to monitor and report pushback. The pool also supports the dynamic re-sizing
 of the number of routines in the pool.
@@ -93,7 +93,7 @@ Config provides configuration for the pool.
 ## type Pool
 ``` go
 type Pool struct {
-    *Config
+    Config
     Name string // Name of this pool.
     // contains filtered or unexported fields
 }
@@ -111,7 +111,7 @@ tasks that are submitted.
 
 ### func New
 ``` go
-func New(context interface{}, name string, cfg *Config) (*Pool, error)
+func New(context interface{}, name string, cfg Config) (*Pool, error)
 ```
 New creates a new Pool.
 

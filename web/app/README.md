@@ -2,6 +2,11 @@
 # app
     import "github.com/ardanlabs/kit/web/app"
 
+Package app provides a thin layer of support for writing web services. It
+integrates with the ardanlabs kit repo to provide support for logging,
+configuration, database, routing and application context. The base things
+you need to write a web service is provided.
+
 Package app provides application support for context and MongoDB access.
 Current Status Codes:
 

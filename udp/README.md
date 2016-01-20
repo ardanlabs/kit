@@ -321,7 +321,7 @@ AsyncSend via the d.client.Do(context, &resp) method call.
 ## type UDP
 ``` go
 type UDP struct {
-    *Config
+    Config
     Name string
     // contains filtered or unexported fields
 }
@@ -338,7 +338,7 @@ UDP manages message to a specific ip address and port.
 
 ### func New
 ``` go
-func New(context interface{}, name string, cfg *Config) (*UDP, error)
+func New(context interface{}, name string, cfg Config) (*UDP, error)
 ```
 New creates a new manager to service clients.
 
