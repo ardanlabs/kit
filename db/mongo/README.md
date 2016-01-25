@@ -59,6 +59,13 @@ Init sets up the MongoDB environment. This expects that the
 cfg package has been initialized first.
 
 
+## func New
+``` go
+func New(cfg Config) (*mgo.Session, error)
+```
+New creates a new master session.
+
+
 ## func Query
 ``` go
 func Query(value interface{}) string
