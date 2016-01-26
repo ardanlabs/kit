@@ -49,8 +49,12 @@ func runStatus(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO("", mgoSession)
+	if err != nil {
+		cmd.Println("Status User : ", err)
+		return
+	}
+	defer db.CloseMGO("")
 
 	var publicID string
 	if status.pid != "" {

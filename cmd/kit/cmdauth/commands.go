@@ -8,10 +8,13 @@ var userCmd = &cobra.Command{
 	Short: "auth provides managing user records.",
 }
 
-//==============================================================================
+// mgoSession holds the master session for the DB access.
+var mgoSession string
 
 // GetCommands returns the user commands.
-func GetCommands() *cobra.Command {
+func GetCommands(mgoSes string) *cobra.Command {
+	mgoSession = mgoSes
+
 	addCreate()
 	addGet()
 	addStatus()

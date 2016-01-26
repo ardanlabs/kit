@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ardanlabs/kit/db/mongo"
+	"github.com/ardanlabs/kit/db"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/mgo.v2"
@@ -48,8 +48,8 @@ var (
 	ErrCollectionExists = errors.New("Collection already exists.")
 )
 
-// DB is the container for all db objects.
-type DB struct {
+// DBMeta is the container for all db objects.
+type DBMeta struct {
 	Cols []Collection `json:"collections"`
 }
 
@@ -75,20 +75,22 @@ type Field struct {
 
 // runCreate is the code that implements the create command.
 func runCreate(cmd *cobra.Command, args []string) {
-	db, err := retrieveDatabaseMetadata(create.file)
+	dbMeta, err := retrieveDatabaseMetadata(create.file)
 	if err != nil {
 		dbCmd.Printf("Error reading collections : %s : ERROR : %v\n", create.file, err)
 		return
 	}
 
-	ses := mongo.GetSession()
-	defer ses.Close()
+	db, err := db.NewMGO("", mgoSession)
+	if err != nil {
+		cmd.Println("Creating User : ", err)
+		return
+	}
+	defer db.CloseMGO("")
 
-	cmd.Println("Configuring database", mongo.GetDatabaseName())
-
-	for _, col := range db.Cols {
+	for _, col := range dbMeta.Cols {
 		cmd.Println("Creating collection", col.Name)
-		if err := createCollection(ses, db, &col, true); err != nil && err != ErrCollectionExists {
+		if err := createCollection(db, dbMeta, &col, true); err != nil && err != ErrCollectionExists {
 			cmd.Println("ERROR:", err)
 			return
 		}
@@ -97,32 +99,32 @@ func runCreate(cmd *cobra.Command, args []string) {
 
 // retrieveDatabaseMetadata reads the specified file and returns the database
 // metadata for creating and updating the database.
-func retrieveDatabaseMetadata(fileName string) (*DB, error) {
+func retrieveDatabaseMetadata(fileName string) (*DBMeta, error) {
 	f, err := os.Open(fileName)
 	if err != nil {
 		return nil, err
 	}
 
-	var db DB
-	if err := json.NewDecoder(f).Decode(&db); err != nil {
+	var dbMeta DBMeta
+	if err := json.NewDecoder(f).Decode(&dbMeta); err != nil {
 		return nil, err
 	}
 
-	return &db, nil
+	return &dbMeta, nil
 }
 
 // createCollection creates a collection in the new database.
-func createCollection(ses *mgo.Session, db *DB, col *Collection, dropIdxs bool) error {
-	if mongo.CollectionExists("", ses, col.Name) {
-		return ErrCollectionExists
+func createCollection(db *db.DB, dbMeta *DBMeta, col *Collection, dropIdxs bool) error {
+	mCol, err := db.CollectionMGO("", col.Name)
+	if err != nil {
+		return err
 	}
 
-	mCol := mongo.GetCollection(ses, col.Name)
 	if err := mCol.Create(new(mgo.CollectionInfo)); err != nil {
 		return err
 	}
 
-	if err := createIndexes(ses, mCol, col, dropIdxs); err != nil {
+	if err := createIndexes(mCol, col, dropIdxs); err != nil {
 		return err
 	}
 
@@ -130,7 +132,7 @@ func createCollection(ses *mgo.Session, db *DB, col *Collection, dropIdxs bool) 
 }
 
 // createIndexes creates a required indexes in the new database.
-func createIndexes(ses *mgo.Session, mCol *mgo.Collection, col *Collection, dropIdxs bool) error {
+func createIndexes(mCol *mgo.Collection, col *Collection, dropIdxs bool) error {
 	if dropIdxs == true {
 		idxs, err := mCol.Indexes()
 		if err != nil {

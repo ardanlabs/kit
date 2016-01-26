@@ -61,8 +61,12 @@ func runCreate(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO("", mgoSession)
+	if err != nil {
+		cmd.Println("Creating User : ", err)
+		return
+	}
+	defer db.CloseMGO("")
 
 	if err := auth.CreateUser("", db, u); err != nil {
 		cmd.Println("Creating User : ", err)

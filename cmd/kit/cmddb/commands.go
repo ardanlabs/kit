@@ -8,10 +8,13 @@ var dbCmd = &cobra.Command{
 	Short: "db will create a kit database and validate everything exists.",
 }
 
-//==============================================================================
+// mgoSession holds the master session for the DB access.
+var mgoSession string
 
 // GetCommands returns the query commands.
-func GetCommands() *cobra.Command {
+func GetCommands(mgoSes string) *cobra.Command {
+	mgoSession = mgoSes
+
 	addCreate()
 	return dbCmd
 }
