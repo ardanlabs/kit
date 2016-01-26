@@ -7,7 +7,7 @@ import (
 	"github.com/ardanlabs/kit/web/app"
 )
 
-// cfgDB config environmental variables.
+// cfgMongoDB config environmental variables.
 const cfgMongoDB = "MONGO_DB"
 
 // Mongo handles session management.
