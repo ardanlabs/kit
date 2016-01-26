@@ -1,41 +1,65 @@
-// Package db provides a thin layer of abstraction for any database system
-// being use. This will allow service layer API to remain consistent.
+// Package db abstracts different database systems we can use. I want to be
+// able to access the raw database support so an interface does not work. Each
+// database is too different.
 package db
 
 import (
 	"errors"
-
-	"github.com/ardanlabs/kit/db/mongo"
+	"fmt"
 
 	"gopkg.in/mgo.v2"
 )
 
-// DB abstracts different database systems we can use.
+// DB provides access to a session that is already tied to a particular
+// database for use.
 type DB struct {
-	MGOConn *mgo.Session
+	database *mgo.Database
+	session  *mgo.Session
 }
 
-// NewMGO return a new DB value for use with MongoDB.
-func NewMGO() *DB {
-	return &DB{
-		MGOConn: mongo.GetSession(),
+//==============================================================================
+// MongoDB support
+
+// NewMGO returns a new DB value for use with MongoDB based on a registered
+// master session.
+func NewMGO(context interface{}, name string) (*DB, error) {
+	var db mgoDB
+	var exists bool
+	masterMGO.Lock()
+	{
+		db, exists = masterMGO.ses[name]
 	}
+	masterMGO.Unlock()
+
+	if !exists {
+		return nil, fmt.Errorf("Master sesssion %q does not exist", name)
+	}
+
+	ses := db.ses.Copy()
+	mdb := ses.DB(db.dbName)
+
+	return &DB{mdb, ses}, nil
 }
 
 // CloseMGO closes a DB value being used with MongoDB.
-func (db *DB) CloseMGO() {
-	db.MGOConn.Close()
+func (db *DB) CloseMGO(context interface{}) {
+	db.session.Close()
 }
 
 // ExecuteMGO is used to execute MongoDB commands.
-func (db *DB) ExecuteMGO(context interface{}, collection string, f func(*mgo.Collection) error) error {
-	if db == nil || db.MGOConn == nil {
+func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error {
+	if db == nil || db.session == nil {
 		return errors.New("Invalid DB provided")
 	}
 
-	if err := mongo.ExecuteDB(context, db.MGOConn, collection, f); err != nil {
-		return err
+	return f(db.database.C(colName))
+}
+
+// CollectionMGO is used to get a collection value..
+func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error) {
+	if db == nil || db.session == nil {
+		return nil, errors.New("Invalid DB provided")
 	}
 
-	return nil
+	return db.database.C(colName), nil
 }

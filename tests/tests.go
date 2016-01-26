@@ -10,12 +10,16 @@ import (
 	"testing"
 
 	"github.com/ardanlabs/kit/cfg"
+	"github.com/ardanlabs/kit/db"
 	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/log"
 )
 
 // Context provides a base context for tests.
 var Context = "Test"
+
+// TestSession is the name used to register the MongoDB session.
+var TestSession = "test"
 
 // Success and failure markers.
 var (
@@ -59,7 +63,7 @@ func Init(cfgKey string) {
 
 // InitMongo initializes the mongodb connections for testing.
 func InitMongo(cfg mongo.Config) {
-	if err := mongo.Init(cfg); err != nil {
+	if err := db.RegMasterSession("Test", TestSession, cfg); err != nil {
 		log.Error("Test", "Init", err, "Completed")
 		logdash.WriteTo(os.Stdout)
 		os.Exit(1)

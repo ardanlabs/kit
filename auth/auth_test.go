@@ -1,6 +1,7 @@
 package auth_test
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"testing"
@@ -100,8 +101,11 @@ func TestCreateUser(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -187,8 +191,11 @@ func TestCreateUserTwice(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -234,8 +241,11 @@ func TestCreateUserValidation(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -317,8 +327,11 @@ func TestUpdateUser(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -399,8 +412,11 @@ func TestUpdateUserValidation(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -481,8 +497,11 @@ func TestUpdateUserPassword(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -569,8 +588,11 @@ func TestUpdateInvalidUserPassword(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	t.Log("Given the need to validate an invalid update to a user.")
 	{
@@ -609,8 +631,11 @@ func TestDisableUser(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -667,8 +692,11 @@ func TestCreateWebToken(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -779,8 +807,11 @@ func TestExpiredWebToken(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -832,8 +863,11 @@ func TestInvalidWebTokens(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	tokens := []string{
 		"",
@@ -861,8 +895,11 @@ func TestInvalidWebTokenUpdateEmail(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -931,8 +968,11 @@ func TestLoginUser(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	var publicID string
 	defer func() {
@@ -1080,15 +1120,25 @@ func TestNoSession(t *testing.T) {
 //==============================================================================
 
 func ensureIndexes() {
-	ses := mongo.GetSession()
-	defer ses.Close()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		fmt.Printf("Should be able to get a Mongo session : %v", err)
+		os.Exit(1)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	index := mgo.Index{
 		Key:    []string{"public_id"},
 		Unique: true,
 	}
 
-	mongo.GetCollection(ses, auth.Collection).EnsureIndex(index)
+	col, err := db.CollectionMGO(tests.Context, auth.Collection)
+	if err != nil {
+		fmt.Printf("Should be able to get a Mongo session : %v", err)
+		os.Exit(1)
+	}
+
+	col.EnsureIndex(index)
 }
 
 // removeUser is used to clear out all the test user from the collection.
