@@ -8,7 +8,7 @@ import (
 )
 
 // cfgDB config environmental variables.
-const cfgMongoDB = "DB"
+const cfgMongoDB = "MONGO_DB"
 
 // Mongo handles session management.
 func Mongo(h app.Handler) app.Handler {
