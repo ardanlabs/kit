@@ -1,6 +1,7 @@
 package session_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -34,15 +35,25 @@ func init() {
 }
 
 func ensureIndexes() {
-	ses := mongo.GetSession()
-	defer ses.Close()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		fmt.Printf("Should be able to get a Mongo session : %v", err)
+		os.Exit(1)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	index := mgo.Index{
 		Key:    []string{"public_id"},
 		Unique: false,
 	}
 
-	mongo.GetCollection(ses, session.Collection).EnsureIndex(index)
+	col, err := db.CollectionMGO(tests.Context, session.Collection)
+	if err != nil {
+		fmt.Printf("Should be able to get a Mongo session : %v", err)
+		os.Exit(1)
+	}
+
+	col.EnsureIndex(index)
 }
 
 // removeSessions is used to clear out all the test sessions that are
@@ -100,8 +111,11 @@ func TestCreate(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	defer func() {
 		if err := removeSessions(db); err != nil {
@@ -151,8 +165,11 @@ func TestGetLatest(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	defer func() {
 		if err := removeSessions(db); err != nil {
@@ -203,8 +220,11 @@ func TestGetNotFound(t *testing.T) {
 	tests.ResetLog()
 	defer tests.DisplayLog()
 
-	db := db.NewMGO()
-	defer db.CloseMGO()
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
 
 	t.Log("Given the need to test finding a session and it is not found.")
 	{

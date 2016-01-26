@@ -14,10 +14,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/db"
-	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/log"
-
 	"github.com/dimfeld/httptreemux"
 	"github.com/pborman/uuid"
 )
@@ -28,21 +25,15 @@ const (
 	cfgHost         = "HOST"
 )
 
-// Mongo config environmental variables.
-const (
-	cfgMongoHost     = "MONGO_HOST"
-	cfgMongoAuthDB   = "MONGO_AUTHDB"
-	cfgMongoDB       = "MONGO_DB"
-	cfgMongoUser     = "MONGO_USER"
-	cfgMongoPassword = "MONGO_PASS"
-)
-
 var (
 	// ErrNotAuthorized occurs when the call is not authorized.
 	ErrNotAuthorized = errors.New("Not authorized")
 
+	// ErrDBNotConfigured occurs when the DB is not initialized.
+	ErrDBNotConfigured = errors.New("DB not initialized")
+
 	// ErrNotFound is abstracting the mgo not found error.
-	ErrNotFound = errors.New("Entity Not found")
+	ErrNotFound = errors.New("Entity not found")
 
 	// ErrInvalidID occurs when an ID is not in a valid form.
 	ErrInvalidID = errors.New("ID is not in it's proper form")
@@ -65,7 +56,6 @@ type (
 
 // app maintains some framework state.
 var app = struct {
-	useMongo    bool
 	userHeaders map[string]string
 }{
 	userHeaders: make(map[string]string),
@@ -99,21 +89,11 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
 		start := time.Now()
 
-		var dbConn *db.DB
-		if app.useMongo {
-			dbConn = db.NewMGO()
-		}
-
 		c := Context{
-			DB:             dbConn,
 			ResponseWriter: w,
 			Request:        r,
 			Params:         p,
 			SessionID:      uuid.New(),
-		}
-
-		if app.useMongo {
-			defer c.DB.CloseMGO()
 		}
 
 		log.User(c.SessionID, "Request", "Started : Method[%s] URL[%s] RADDR[%s]", c.Request.Method, c.Request.URL.Path, c.Request.RemoteAddr)
@@ -186,24 +166,6 @@ func Init(configKey string) {
 
 	// Log all the configuration options
 	log.User("startup", "Init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
-
-	// Init MongoDB if configured.
-	if _, err := cfg.String(cfgMongoHost); err == nil {
-		app.useMongo = true
-
-		cfg := mongo.Config{
-			Host:     cfg.MustString(cfgMongoHost),
-			AuthDB:   cfg.MustString(cfgMongoAuthDB),
-			DB:       cfg.MustString(cfgMongoDB),
-			User:     cfg.MustString(cfgMongoUser),
-			Password: cfg.MustString(cfgMongoPassword),
-		}
-
-		if err := mongo.Init(cfg); err != nil {
-			log.Error("startup", "Init", err, "Initializing MongoDB")
-			os.Exit(1)
-		}
-	}
 
 	// Load user defined custom headers. HEADERS should be key:value,key:value
 	if hs, err := cfg.String("HEADERS"); err == nil {
