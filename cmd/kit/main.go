@@ -7,6 +7,7 @@ import (
 	"github.com/ardanlabs/kit/cfg"
 	"github.com/ardanlabs/kit/cmd/kit/cmdauth"
 	"github.com/ardanlabs/kit/cmd/kit/cmddb"
+	"github.com/ardanlabs/kit/db"
 	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/log"
 
@@ -54,11 +55,14 @@ func main() {
 		Password: cfg.MustString(cfgMongoPassword),
 	}
 
-	if err := mongo.Init(cfg); err != nil {
+	if err := db.RegMasterSession("startup", cfg.DB, cfg); err != nil {
 		kit.Println("Unable to initialize MongoDB")
 		os.Exit(1)
 	}
 
-	kit.AddCommand(cmdauth.GetCommands(), cmddb.GetCommands())
+	kit.AddCommand(
+		cmdauth.GetCommands(cfg.DB),
+		cmddb.GetCommands(cfg.DB),
+	)
 	kit.Execute()
 }
