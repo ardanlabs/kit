@@ -17,9 +17,9 @@ var (
 
 ## func GetCommands
 ``` go
-func GetCommands() *cobra.Command
+func GetCommands(db *db.DB) *cobra.Command
 ```
-GetCommands returns the query commands.
+GetCommands returns the db commands.
 
 
 
@@ -42,13 +42,13 @@ Collection is the container for a db collection definition.
 
 
 
-## type DB
+## type DBMeta
 ``` go
-type DB struct {
+type DBMeta struct {
     Cols []Collection `json:"collections"`
 }
 ```
-DB is the container for all db objects.
+DBMeta is the container for all db objects.
 
 
 

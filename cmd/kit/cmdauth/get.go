@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/ardanlabs/kit/auth"
-	"github.com/ardanlabs/kit/db"
-
 	"github.com/spf13/cobra"
 )
 
@@ -49,19 +47,13 @@ func runGet(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	db, err := db.NewMGO("", mgoSession)
-	if err != nil {
-		cmd.Println("Getting User : ", err)
-		return
-	}
-	defer db.CloseMGO("")
-
 	var u *auth.User
+	var err error
 
 	if get.pid != "" {
-		u, err = auth.GetUserByPublicID("", db, get.pid, false)
+		u, err = auth.GetUserByPublicID("", conn, get.pid, false)
 	} else {
-		u, err = auth.GetUserByEmail("", db, get.email, false)
+		u, err = auth.GetUserByEmail("", conn, get.email, false)
 	}
 
 	if err != nil {
@@ -69,7 +61,7 @@ func runGet(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	webTok, err := auth.GetUserWebToken("", db, u.PublicID)
+	webTok, err := auth.GetUserWebToken("", conn, u.PublicID)
 	if err != nil {
 		cmd.Println("Getting User : Unable to retrieve web token : ", err)
 	}

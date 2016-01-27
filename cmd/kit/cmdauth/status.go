@@ -2,8 +2,6 @@ package cmdauth
 
 import (
 	"github.com/ardanlabs/kit/auth"
-	"github.com/ardanlabs/kit/db"
-
 	"github.com/spf13/cobra"
 )
 
@@ -49,18 +47,11 @@ func runStatus(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	db, err := db.NewMGO("", mgoSession)
-	if err != nil {
-		cmd.Println("Status User : ", err)
-		return
-	}
-	defer db.CloseMGO("")
-
 	var publicID string
 	if status.pid != "" {
 		publicID = status.pid
 	} else {
-		u, err := auth.GetUserByEmail("", db, status.email, false)
+		u, err := auth.GetUserByEmail("", conn, status.email, false)
 		if err != nil {
 			cmd.Println("Status User : ", err)
 			return
@@ -73,7 +64,7 @@ func runStatus(cmd *cobra.Command, args []string) {
 		st = auth.StatusActive
 	}
 
-	if err := auth.UpdateUserStatus("", db, publicID, st); err != nil {
+	if err := auth.UpdateUserStatus("", conn, publicID, st); err != nil {
 		cmd.Println("Status User : ", err)
 		return
 	}

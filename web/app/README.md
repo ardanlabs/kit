@@ -28,8 +28,11 @@ var (
     // ErrNotAuthorized occurs when the call is not authorized.
     ErrNotAuthorized = errors.New("Not authorized")
 
+    // ErrDBNotConfigured occurs when the DB is not initialized.
+    ErrDBNotConfigured = errors.New("DB not initialized")
+
     // ErrNotFound is abstracting the mgo not found error.
-    ErrNotFound = errors.New("Entity Not found")
+    ErrNotFound = errors.New("Entity not found")
 
     // ErrInvalidID occurs when an ID is not in a valid form.
     ErrInvalidID = errors.New("ID is not in it's proper form")

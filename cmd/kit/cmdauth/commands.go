@@ -1,6 +1,9 @@
 package cmdauth
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/ardanlabs/kit/db"
+	"github.com/spf13/cobra"
+)
 
 // userCmd represents the parent for all cli commands.
 var userCmd = &cobra.Command{
@@ -8,12 +11,12 @@ var userCmd = &cobra.Command{
 	Short: "auth provides managing user records.",
 }
 
-// mgoSession holds the master session for the DB access.
-var mgoSession string
+// conn holds the session for the DB access.
+var conn *db.DB
 
-// GetCommands returns the user commands.
-func GetCommands(mgoSes string) *cobra.Command {
-	mgoSession = mgoSes
+// GetCommands returns the auth commands.
+func GetCommands(db *db.DB) *cobra.Command {
+	conn = db
 
 	addCreate()
 	addGet()

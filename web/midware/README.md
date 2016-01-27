@@ -14,6 +14,13 @@ func Auth(h app.Handler) app.Handler
 Auth handles token authentication.
 
 
+## func Mongo
+``` go
+func Mongo(h app.Handler) app.Handler
+```
+Mongo handles session management.
+
+
 
 
 

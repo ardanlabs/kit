@@ -2,22 +2,31 @@
 # db
     import "github.com/ardanlabs/kit/db"
 
-Package db provides a thin layer of abstraction for any database system
-being use. This will allow service layer API to remain consistent.
+Package db abstracts different database systems we can use.
 
 
 
 
+
+
+## func RegMasterSession
+``` go
+func RegMasterSession(context interface{}, name string, cfg mongo.Config) error
+```
+RegMasterSession adds a new master session to the set.
 
 
 
 ## type DB
 ``` go
 type DB struct {
-    MGOConn *mgo.Session
+    // contains filtered or unexported fields
 }
 ```
-DB abstracts different database systems we can use.
+DB is a collection of support for different DB technologies. Currently
+only MongoDB has been implemented. We want to be able to access the raw
+database support for the given DB so an interface does not work. Each
+database is too different.
 
 
 
@@ -29,24 +38,33 @@ DB abstracts different database systems we can use.
 
 ### func NewMGO
 ``` go
-func NewMGO() *DB
+func NewMGO(context interface{}, name string) (*DB, error)
 ```
-NewMGO return a new DB value for use with MongoDB.
+NewMGO returns a new DB value for use with MongoDB based on a registered
+master session.
 
 
 
 
 ### func (\*DB) CloseMGO
 ``` go
-func (db *DB) CloseMGO()
+func (db *DB) CloseMGO(context interface{})
 ```
 CloseMGO closes a DB value being used with MongoDB.
 
 
 
+### func (\*DB) CollectionMGO
+``` go
+func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error)
+```
+CollectionMGO is used to get a collection value..
+
+
+
 ### func (\*DB) ExecuteMGO
 ``` go
-func (db *DB) ExecuteMGO(context interface{}, collection string, f func(*mgo.Collection) error) error
+func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error
 ```
 ExecuteMGO is used to execute MongoDB commands.
 

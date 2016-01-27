@@ -22,6 +22,11 @@ var Context = "Test"
 ```
 Context provides a base context for tests.
 
+``` go
+var TestSession = "test"
+```
+TestSession is the name used to register the MongoDB session.
+
 
 ## func DisplayLog
 ``` go

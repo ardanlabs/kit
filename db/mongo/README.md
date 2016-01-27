@@ -9,56 +9,6 @@ Package mongo provides support for using MongoDB.
 
 
 
-## func CollectionExists
-``` go
-func CollectionExists(context interface{}, ses *mgo.Session, useCollection string) bool
-```
-CollectionExists returns true if the collection name exists in the specified database.
-
-
-## func ExecuteDB
-``` go
-func ExecuteDB(context interface{}, ses *mgo.Session, collectionName string, f func(*mgo.Collection) error) error
-```
-ExecuteDB the MongoDB literal function.
-
-
-## func GetCollection
-``` go
-func GetCollection(ses *mgo.Session, colName string) *mgo.Collection
-```
-GetCollection returns a mgo collection value based on configuration.
-
-
-## func GetDatabase
-``` go
-func GetDatabase(ses *mgo.Session) *mgo.Database
-```
-GetDatabase returns a mgo database value based on configuration.
-
-
-## func GetDatabaseName
-``` go
-func GetDatabaseName() string
-```
-GetDatabaseName returns the name of the database being used.
-
-
-## func GetSession
-``` go
-func GetSession() *mgo.Session
-```
-GetSession returns a copy of the master session for use.
-
-
-## func Init
-``` go
-func Init(cfg Config) error
-```
-Init sets up the MongoDB environment. This expects that the
-cfg package has been initialized first.
-
-
 ## func New
 ``` go
 func New(cfg Config) (*mgo.Session, error)

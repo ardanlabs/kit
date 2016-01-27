@@ -9,9 +9,9 @@
 
 ## func GetCommands
 ``` go
-func GetCommands() *cobra.Command
+func GetCommands(db *db.DB) *cobra.Command
 ```
-GetCommands returns the user commands.
+GetCommands returns the auth commands.
 
 
 

@@ -60,9 +60,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	db, err := db.NewMGO("", cfg.DB)
+	if err != nil {
+		kit.Println("Unable to get MongoDB session")
+		os.Exit(1)
+	}
+	defer db.CloseMGO("")
+
 	kit.AddCommand(
-		cmdauth.GetCommands(cfg.DB),
-		cmddb.GetCommands(cfg.DB),
+		cmdauth.GetCommands(db),
+		cmddb.GetCommands(db),
 	)
 	kit.Execute()
 }

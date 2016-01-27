@@ -81,16 +81,9 @@ func runCreate(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	db, err := db.NewMGO("", mgoSession)
-	if err != nil {
-		cmd.Println("Creating User : ", err)
-		return
-	}
-	defer db.CloseMGO("")
-
 	for _, col := range dbMeta.Cols {
 		cmd.Println("Creating collection", col.Name)
-		if err := createCollection(db, dbMeta, &col, true); err != nil && err != ErrCollectionExists {
+		if err := createCollection(conn, dbMeta, &col, true); err != nil && err != ErrCollectionExists {
 			cmd.Println("ERROR:", err)
 			return
 		}
