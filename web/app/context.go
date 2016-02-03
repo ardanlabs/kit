@@ -10,7 +10,7 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/ardanlabs/kit/auth"
@@ -93,14 +93,14 @@ func (c *Context) Respond(data interface{}, code int) {
 
 		// We need to wrap the result in a function call.
 		// callback_value({"data_1": "hello world", "data_2": ["the","sun","is","shining"]});
-		fmt.Fprintf(c, "%s(%s)", cb, string(jsonData))
+		io.WriteString(c, cb+"("+string(jsonData)+")")
 
 		log.User(c.SessionID, "api : Respond", "Completed")
 		return
 	}
 
 	// We can send the result straight through.
-	fmt.Fprintf(c, string(jsonData))
+	io.WriteString(c, string(jsonData))
 
 	log.User(c.SessionID, "api : Respond", "Completed")
 }
