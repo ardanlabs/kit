@@ -1,7 +1,9 @@
 package cfg_test
 
 import (
+	"net/url"
 	"testing"
+	"time"
 
 	"github.com/ardanlabs/kit/cfg"
 )
@@ -112,7 +114,6 @@ func TestExists(t *testing.T) {
 func TestNotExists(t *testing.T) {
 	t.Log("Given the need to panic when environment variables are missing.")
 	{
-
 		cfg.Init(cfg.MapProvider{
 			Map: map[string]string{
 				"PROC_ID": "322",
@@ -159,4 +160,118 @@ func shouldPanic(t *testing.T, context string, fx func()) {
 	}()
 
 	fx()
+}
+
+// TestSets validates the ability to manually set configuration values.
+func TestSets(t *testing.T) {
+	t.Log("Given the need to manually set configuration values.")
+	{
+		/*
+					uStr := "postgres://root:root@127.0.0.1:8080/postgres?sslmode=disable"
+			Map: map[string]string{
+							"PROC_ID": "322",
+							"SOCKET":  "./tmp/sockets.po",
+							"PORT":    "4034",
+							"FLAG":    "on",
+							"DSN":     uStr,
+						},
+		*/
+
+		cfg.Init(cfg.MapProvider{
+			Map: map[string]string{},
+		})
+
+		t.Log("\tWhen setting values.")
+		{
+			key := "key1"
+			strVal := "bill"
+			cfg.SetString(key, strVal)
+
+			retStrVal, err := cfg.String(key)
+			if err != nil {
+				t.Errorf("\t\t%s Should find a value for the specified key %q.", failed, key)
+			} else {
+				t.Logf("\t\t%s Should find a value for the specified key %q.", success, key)
+			}
+			if strVal != retStrVal {
+				t.Log(strVal)
+				t.Log(retStrVal)
+				t.Errorf("\t\t%s Should return the string value %q that was set.", failed, strVal)
+			} else {
+				t.Logf("\t\t%s Should return the string value %q that was set.", success, strVal)
+			}
+
+			key = "key2"
+			intVal := 223
+			cfg.SetInt(key, intVal)
+
+			retIntVal, err := cfg.Int(key)
+			if err != nil {
+				t.Errorf("\t\t%s Should find a value for the specified key %q.", failed, key)
+			} else {
+				t.Logf("\t\t%s Should find a value for the specified key %q.", success, key)
+			}
+			if intVal != retIntVal {
+				t.Log(intVal)
+				t.Log(retIntVal)
+				t.Errorf("\t\t%s Should return the int value %d that was set.", failed, intVal)
+			} else {
+				t.Logf("\t\t%s Should return the int value %d that was set.", success, intVal)
+			}
+
+			key = "key3"
+			timeVal, _ := time.Parse(time.UnixDate, "Mon Oct 27 20:18:15 EST 2016")
+			cfg.SetTime(key, timeVal)
+
+			retTimeVal, err := cfg.Time(key)
+			if err != nil {
+				t.Errorf("\t\t%s Should find a value for the specified key %q.", failed, key)
+			} else {
+				t.Logf("\t\t%s Should find a value for the specified key %q.", success, key)
+			}
+			if timeVal != retTimeVal {
+				t.Log(timeVal)
+				t.Log(retTimeVal)
+				t.Errorf("\t\t%s Should return the time value %q that was set.", failed, timeVal)
+			} else {
+				t.Logf("\t\t%s Should return the time value %q that was set.", success, timeVal)
+			}
+
+			key = "key4"
+			boolVal := true
+			cfg.SetBool(key, boolVal)
+
+			retBoolVal, err := cfg.Bool(key)
+			if err != nil {
+				t.Errorf("\t\t%s Should find a value for the specified key %q.", failed, key)
+			} else {
+				t.Logf("\t\t%s Should find a value for the specified key %q.", success, key)
+			}
+			if boolVal != retBoolVal {
+				t.Log(boolVal)
+				t.Log(retBoolVal)
+				t.Errorf("\t\t%s Should return the bool value \"%v\" that was set.", failed, boolVal)
+			} else {
+				t.Logf("\t\t%s Should return the bool value \"%v\" that was set.", success, boolVal)
+			}
+
+			key = "key5"
+			urlVal, _ := url.Parse("postgres://root:root@127.0.0.1:8080/postgres?sslmode=disable")
+			cfg.SetURL(key, urlVal)
+
+			retURLVal, err := cfg.URL(key)
+			if err != nil {
+				t.Errorf("\t\t%s Should find a value for the specified key %q.", failed, key)
+			} else {
+				t.Logf("\t\t%s Should find a value for the specified key %q.", success, key)
+			}
+			if urlVal.String() != retURLVal.String() {
+				t.Log(urlVal)
+				t.Log(retURLVal)
+				t.Errorf("\t\t%s Should return the bool value \"%v\" that was set.", failed, urlVal)
+			} else {
+				t.Logf("\t\t%s Should return the bool value \"%v\" that was set.", success, urlVal)
+			}
+		}
+	}
 }

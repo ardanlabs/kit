@@ -88,6 +88,15 @@ func MustString(key string) string {
 	return value
 }
 
+// SetString adds or modifies the configuration for the specified key and value.
+func SetString(key string, value string) {
+	c.mu.RLock()
+	{
+		c.m[key] = value
+	}
+	c.mu.RUnlock()
+}
+
 // Int returns the value of the given key as an int, else it will return
 // an error, if the key was not found or the value can't be convered to an int.
 func Int(key string) (int, error) {
@@ -126,6 +135,15 @@ func MustInt(key string) int {
 	return iv
 }
 
+// SetInt adds or modifies the configuration for the specified key and value.
+func SetInt(key string, value int) {
+	c.mu.RLock()
+	{
+		c.m[key] = strconv.Itoa(value)
+	}
+	c.mu.RUnlock()
+}
+
 // Time returns the value of the given key as a Time, else it will return an
 // error, if the key was not found or the value can't be convered to a Time.
 func Time(key string) (time.Time, error) {
@@ -162,6 +180,15 @@ func MustTime(key string) time.Time {
 	}
 
 	return tv
+}
+
+// SetTime adds or modifies the configuration for the specified key and value.
+func SetTime(key string, value time.Time) {
+	c.mu.RLock()
+	{
+		c.m[key] = value.Format(time.UnixDate)
+	}
+	c.mu.RUnlock()
 }
 
 // Bool returns the bool balue of a given key as a bool, else it will return an
@@ -214,6 +241,20 @@ func MustBool(key string) bool {
 	return val
 }
 
+// SetBool adds or modifies the configuration for the specified key and value.
+func SetBool(key string, value bool) {
+	str := "false"
+	if value {
+		str = "true"
+	}
+
+	c.mu.RLock()
+	{
+		c.m[key] = str
+	}
+	c.mu.RUnlock()
+}
+
 // URL returns the value of the given key as a URL, else it will return an
 // error, if the key was not found or the value can't be convered to a URL.
 func URL(key string) (*url.URL, error) {
@@ -250,4 +291,13 @@ func MustURL(key string) *url.URL {
 	}
 
 	return u
+}
+
+// SetURL adds or modifies the configuration for the specified key and value.
+func SetURL(key string, value *url.URL) {
+	c.mu.RLock()
+	{
+		c.m[key] = value.String()
+	}
+	c.mu.RUnlock()
 }
