@@ -52,6 +52,8 @@ func (c *Context) Error(err error) {
 		c.RespondError(err.Error(), http.StatusBadRequest)
 	case ErrValidation:
 		c.RespondError(err.Error(), http.StatusBadRequest)
+	case ErrNotAuthorized:
+		c.RespondError(err.Error(), http.StatusUnauthorized)
 	default:
 		c.RespondError(err.Error(), http.StatusInternalServerError)
 	}
