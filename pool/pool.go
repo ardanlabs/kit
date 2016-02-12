@@ -270,7 +270,7 @@ func (p *Pool) execute(id int, dw doWork) {
 			buf := make([]byte, 10000)
 			runtime.Stack(buf, false)
 
-			log.Dev(p.Name, "execute", string(buf))
+			log.Dev(dw.context, "execute", string(buf))
 		}
 	}()
 
