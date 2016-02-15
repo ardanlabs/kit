@@ -30,7 +30,7 @@ type Provider interface {
 func New(p Provider) (*Config, error) {
 	m, err := p.Provide()
 	if err != nil {
-		return &Config{}, err
+		return nil, err
 	}
 
 	c := &Config{m: m}
