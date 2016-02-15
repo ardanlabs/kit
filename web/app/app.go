@@ -94,6 +94,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 			Request:        r,
 			Params:         p,
 			SessionID:      uuid.New(),
+			Ctx:            make(map[string]interface{}),
 		}
 
 		log.User(c.SessionID, "Request", "Started : Method[%s] URL[%s] RADDR[%s]", c.Request.Method, c.Request.URL.Path, c.Request.RemoteAddr)
