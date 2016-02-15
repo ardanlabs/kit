@@ -33,7 +33,7 @@ func TestExists(t *testing.T) {
 			},
 		})
 
-		t.Log("\tWhen given a namspace key to search for that exists.")
+		t.Log("\tWhen given a namespace key to search for that exists.")
 		{
 			proc, err := cfg.Int("PROC_ID")
 
@@ -166,17 +166,6 @@ func shouldPanic(t *testing.T, context string, fx func()) {
 func TestSets(t *testing.T) {
 	t.Log("Given the need to manually set configuration values.")
 	{
-		/*
-					uStr := "postgres://root:root@127.0.0.1:8080/postgres?sslmode=disable"
-			Map: map[string]string{
-							"PROC_ID": "322",
-							"SOCKET":  "./tmp/sockets.po",
-							"PORT":    "4034",
-							"FLAG":    "on",
-							"DSN":     uStr,
-						},
-		*/
-
 		cfg.Init(cfg.MapProvider{
 			Map: map[string]string{},
 		})
@@ -271,6 +260,101 @@ func TestSets(t *testing.T) {
 				t.Errorf("\t\t%s Should return the bool value \"%v\" that was set.", failed, urlVal)
 			} else {
 				t.Logf("\t\t%s Should return the bool value \"%v\" that was set.", success, urlVal)
+			}
+		}
+	}
+}
+
+// TestNew validates the ability to create new instances of Config.
+func TestNew(t *testing.T) {
+	t.Log("Given the need to create a new instance of Config.")
+	{
+		t.Log("\tWhen instantiating configs")
+		{
+			uStr := "postgres://root:root@127.0.0.1:8080/postgres?sslmode=disable"
+			c, err := cfg.New(cfg.MapProvider{
+				Map: map[string]string{
+					"PROC_ID": "322",
+					"SOCKET":  "./tmp/sockets.po",
+					"PORT":    "4034",
+					"FLAG":    "on",
+					"DSN":     uStr,
+				},
+			})
+			if err != nil {
+				t.Fatalf("\t\t%s Should not return an error.", failed)
+			} else {
+				t.Logf("\t\t%s Should not return an error.", success)
+			}
+
+			proc, err := c.Int("PROC_ID")
+
+			if err != nil {
+				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "PROC_ID")
+			} else {
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "PROC_ID")
+
+				if proc != 322 {
+					t.Errorf("\t\t%s Should have key %q with value %d", failed, "PROC_ID", 322)
+				} else {
+					t.Logf("\t\t%s Should have key %q with value %d", success, "PROC_ID", 322)
+				}
+			}
+
+			socket, err := c.String("SOCKET")
+
+			if err != nil {
+				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "SOCKET")
+			} else {
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "SOCKET")
+
+				if socket != "./tmp/sockets.po" {
+					t.Errorf("\t\t%s Should have key %q with value %q", failed, "SOCKET", "./tmp/sockets.po")
+				} else {
+					t.Logf("\t\t%s Should have key %q with value %q", success, "SOCKET", "./tmp/sockets.po")
+				}
+			}
+
+			port, err := c.Int("PORT")
+
+			if err != nil {
+				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "PORT")
+			} else {
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "PORT")
+
+				if port != 4034 {
+					t.Errorf("\t\t%s Should have key %q with value %d", failed, "PORT", 4034)
+				} else {
+					t.Logf("\t\t%s Should have key %q with value %d", success, "PORT", 4034)
+				}
+			}
+
+			flag, err := c.Bool("FLAG")
+
+			if err != nil {
+				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "FLAG")
+			} else {
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "FLAG")
+
+				if flag == false {
+					t.Errorf("\t\t%s Should have key %q with value %v", failed, "FLAG", true)
+				} else {
+					t.Logf("\t\t%s Should have key %q with value %v", success, "FLAG", true)
+				}
+			}
+
+			u, err := c.URL("DSN")
+
+			if err != nil {
+				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "DSN")
+			} else {
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "DSN")
+
+				if u.String() != uStr {
+					t.Errorf("\t\t%s Should have key %q with value %v", failed, "DSN", true)
+				} else {
+					t.Logf("\t\t%s Should have key %q with value %v", success, "DSN", true)
+				}
 			}
 		}
 	}

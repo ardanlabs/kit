@@ -7,7 +7,8 @@ import (
 	"strings"
 )
 
-// EnvProvider provides configuration from the environment.
+// EnvProvider provides configuration from the environment. All keys will be
+// made uppercase.
 type EnvProvider struct {
 	Namespace string
 }

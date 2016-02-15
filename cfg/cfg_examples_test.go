@@ -2,13 +2,15 @@ package cfg_test
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/ardanlabs/kit/cfg"
 )
 
-// ExampleDev shows how to use the config package.
-func ExampleDev() {
+// ExampleGlobal shows how to use the package level funcs of the config
+// package.
+func ExampleGlobal() {
 	// Init() must be called only once with the given namespace to load.
 	cfg.Init(cfg.MapProvider{
 		Map: map[string]string{
@@ -37,4 +39,40 @@ func ExampleDev() {
 	// 4044
 	// 2009-11-10 15:00:00 +0000 UTC
 	// true
+}
+
+// ExampleNew shows how to create and use a new config which can be passed
+// around.
+func ExampleNew() {
+	c, err := cfg.New(cfg.MapProvider{
+		Map: map[string]string{
+			"IP":   "80.23.233.10",
+			"PORT": "8044",
+			"INIT_STAMP": time.Date(2009, time.November,
+				10, 23, 0, 0, 0, time.UTC).UTC().Format(time.UnixDate),
+			"FLAG": "off",
+		},
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// To get the ip.
+	fmt.Println(c.MustString("IP"))
+
+	// To get the port number.
+	fmt.Println(c.MustInt("PORT"))
+
+	// To get the timestamp.
+	fmt.Println(c.MustTime("INIT_STAMP"))
+
+	// To get the flag.
+	fmt.Println(c.MustBool("FLAG"))
+
+	// Output:
+	// 80.23.233.10
+	// 8044
+	// 2009-11-10 23:00:00 +0000 UTC
+	// false
 }
