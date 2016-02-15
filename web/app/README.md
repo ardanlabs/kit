@@ -44,7 +44,7 @@ var (
 
 ## func Init
 ``` go
-func Init(configKey string)
+func Init(p cfg.Provider)
 ```
 Init is called to initialize the application.
 
@@ -108,13 +108,12 @@ pair, this makes for really easy, convenient routing.
 ## type Context
 ``` go
 type Context struct {
-    DB *db.DB
     http.ResponseWriter
     Request   *http.Request
     Params    map[string]string
     SessionID string
-    User      *auth.User
     Status    int
+    Ctx       map[string]interface{}
 }
 ```
 Context contains data associated with a single request.

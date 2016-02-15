@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ardanlabs/kit/cfg"
 	"github.com/ardanlabs/kit/examples/web/handlers"
 
 	"github.com/ardanlabs/kit/web/app"
@@ -17,7 +18,7 @@ func init() {
 	// This is being added to showcase configuration.
 	os.Setenv("KIT_LOGGING_LEVEL", "1")
 
-	app.Init(configKey)
+	app.Init(cfg.EnvProvider{Namespace: configKey})
 }
 
 //==============================================================================
