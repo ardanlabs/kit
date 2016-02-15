@@ -146,10 +146,10 @@ func (a *App) CORS() {
 //==============================================================================
 
 // Init is called to initialize the application.
-func Init(configKey string) {
+func Init(p cfg.Provider) {
 
 	// Init the configuration system.
-	if err := cfg.Init(cfg.EnvProvider{Namespace: configKey}); err != nil {
+	if err := cfg.Init(p); err != nil {
 		fmt.Println("Error initalizing configuration system", err)
 		os.Exit(1)
 	}
@@ -165,7 +165,7 @@ func Init(configKey string) {
 	log.Init(os.Stderr, logLevel)
 
 	// Log all the configuration options
-	log.User("startup", "Init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
+	log.User("startup", "Init", "\n\nConfig Settings: %s\n", cfg.Log())
 
 	// Load user defined custom headers. HEADERS should be key:value,key:value
 	if hs, err := cfg.String("HEADERS"); err == nil {

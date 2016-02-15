@@ -13,8 +13,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/ardanlabs/kit/auth"
-	"github.com/ardanlabs/kit/db"
 	"github.com/ardanlabs/kit/log"
 )
 
@@ -34,13 +32,12 @@ type jsonError struct {
 
 // Context contains data associated with a single request.
 type Context struct {
-	DB *db.DB
 	http.ResponseWriter
 	Request   *http.Request
 	Params    map[string]string
 	SessionID string
-	User      *auth.User
 	Status    int
+	Ctx       map[string]interface{}
 }
 
 // Error handles all error responses for the API.

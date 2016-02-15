@@ -3,6 +3,7 @@ package midware
 import (
 	"github.com/ardanlabs/kit/auth"
 	"github.com/ardanlabs/kit/cfg"
+	"github.com/ardanlabs/kit/db"
 	"github.com/ardanlabs/kit/log"
 	"github.com/ardanlabs/kit/web/app"
 )
@@ -33,7 +34,7 @@ func Auth(h app.Handler) app.Handler {
 		}
 
 		var err error
-		if c.User, err = auth.ValidateWebToken(c.SessionID, c.DB, token[6:]); err != nil {
+		if c.Ctx["User"], err = auth.ValidateWebToken(c.SessionID, c.Ctx["DB"].(*db.DB), token[6:]); err != nil {
 			log.Error(c.SessionID, "Auth", err, "Validating token")
 			return app.ErrNotAuthorized
 		}

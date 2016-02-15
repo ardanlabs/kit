@@ -31,7 +31,7 @@ func Mongo(h app.Handler) app.Handler {
 		}
 
 		log.Dev(c.SessionID, "Mongo", "******> Capture Mongo Session")
-		c.DB = mgoDB
+		c.Ctx["DB"] = mgoDB
 		defer func() {
 			log.Dev(c.SessionID, "Mongo", "******> Release Mongo Session")
 			mgoDB.CloseMGO("Mongo")
