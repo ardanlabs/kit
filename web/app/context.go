@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/ardanlabs/kit/log"
 )
@@ -34,6 +35,7 @@ type jsonError struct {
 type Context struct {
 	http.ResponseWriter
 	Request   *http.Request
+	Now       time.Time
 	Params    map[string]string
 	SessionID string
 	Status    int

@@ -87,11 +87,10 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 	// The function to execute for each request.
 	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
-		start := time.Now()
-
 		c := Context{
 			ResponseWriter: w,
 			Request:        r,
+			Now:            time.Now(),
 			Params:         p,
 			SessionID:      uuid.New(),
 			Ctx:            make(map[string]interface{}),
@@ -119,7 +118,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 			c.Error(err)
 		}
 
-		log.User(c.SessionID, "Request", "Completed : Status[%d] Duration[%s]", c.Status, time.Since(start))
+		log.User(c.SessionID, "Request", "Completed : Status[%d] Duration[%s]", c.Status, time.Since(c.Now))
 	}
 
 	// Add this handler for the specified verb and route.
