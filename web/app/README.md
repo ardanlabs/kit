@@ -110,6 +110,7 @@ pair, this makes for really easy, convenient routing.
 type Context struct {
     http.ResponseWriter
     Request   *http.Request
+    Now       time.Time
     Params    map[string]string
     SessionID string
     Status    int
