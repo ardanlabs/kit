@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 	"testing"
 
 	"github.com/ardanlabs/kit/cfg"
@@ -29,11 +30,14 @@ var (
 
 // logdash is the central buffer where all logs are stored.
 var logdash bytes.Buffer
+var loglock sync.RWMutex
 
 //==============================================================================
 
 // ResetLog resets the contents of logdash.
 func ResetLog() {
+	loglock.Lock()
+	defer loglock.Unlock()
 	logdash.Reset()
 }
 
@@ -44,6 +48,8 @@ func DisplayLog() {
 		return
 	}
 
+	loglock.RLock()
+	defer loglock.RUnlock()
 	logdash.WriteTo(os.Stdout)
 }
 
