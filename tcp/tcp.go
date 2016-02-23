@@ -202,7 +202,7 @@ func (t *TCP) Start(context interface{}) error {
 					break
 				}
 
-				// temporary is declared to test for the existance of
+				// temporary is declared to test for the existence of
 				// the method coming from the net package.
 				type temporary interface {
 					Temporary() bool
