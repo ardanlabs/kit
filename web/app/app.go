@@ -165,7 +165,7 @@ func Init(p cfg.Provider) {
 	log.Init(os.Stderr, logLevel)
 
 	// Log all the configuration options
-	log.User("startup", "Init", "\n\nConfig Settings: %s\n", cfg.Log())
+	log.User("startup", "Init", "\n\nConfig Settings:\n%s\n", cfg.Log())
 
 	// Load user defined custom headers. HEADERS should be key:value,key:value
 	if hs, err := cfg.String("HEADERS"); err == nil {
