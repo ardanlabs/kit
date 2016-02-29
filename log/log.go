@@ -29,6 +29,12 @@ const (
 
 //==============================================================================
 
+// defaultLogOffset sets the default log level for use with the log offset
+// functions.
+const defaultLogOffset = 2
+
+//==============================================================================
+
 // Logger contains a standard logger for all logging.
 type Logger struct {
 	*log.Logger
@@ -55,7 +61,7 @@ func (l *Logger) Dev(context interface{}, funcName string, format string, a ...i
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -70,7 +76,7 @@ func (l *Logger) User(context interface{}, funcName string, format string, a ...
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -85,7 +91,7 @@ func (l *Logger) Error(context interface{}, funcName string, err error, format s
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -100,7 +106,7 @@ func (l *Logger) Fatal(context interface{}, funcName string, format string, a ..
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -110,22 +116,9 @@ func (l *Logger) Fatal(context interface{}, funcName string, format string, a ..
 
 //==============================================================================
 
-// l defines the default log variable for the global log functions.
-var l Logger
-
-// Init initializes the default logger to allow usage of the global log
-// functions.
-func Init(w io.Writer, level func() int) {
-	l.mu.Lock()
-	{
-		l.Logger = log.New(w, "", log.Ldate|log.Ltime|log.Lshortfile)
-		l.level = level
-	}
-	l.mu.Unlock()
-}
-
-// Dev logs trace information for developers.
-func Dev(context interface{}, funcName string, format string, a ...interface{}) {
+// DevOffset logs trace information for developers with a offset option to
+// expand the caller level.
+func (l *Logger) DevOffset(context interface{}, offset int, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() == DEV {
@@ -133,14 +126,15 @@ func Dev(context interface{}, funcName string, format string, a ...interface{}) 
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset+offset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
 }
 
-// User logs trace information for users.
-func User(context interface{}, funcName string, format string, a ...interface{}) {
+// UserOffset logs trace information for users with a offset option to expand the
+// caller level.
+func (l *Logger) UserOffset(context interface{}, offset int, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -148,14 +142,15 @@ func User(context interface{}, funcName string, format string, a ...interface{})
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset+offset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
 }
 
-// Error logs trace information that are errors.
-func Error(context interface{}, funcName string, err error, format string, a ...interface{}) {
+// ErrorOffset logs trace information that are errors with a offset option to
+// expand the caller level.
+func (l *Logger) ErrorOffset(context interface{}, offset int, funcName string, err error, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -163,14 +158,15 @@ func Error(context interface{}, funcName string, err error, format string, a ...
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+			l.Output(defaultLogOffset+offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
 }
 
-// Fatal logs trace information for users and terminates the app.
-func Fatal(context interface{}, funcName string, format string, a ...interface{}) {
+// FatalOffset logs trace information for users and terminates the app with a
+// offset expand the caller level.
+func (l *Logger) FatalOffset(context interface{}, offset int, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -178,12 +174,10 @@ func Fatal(context interface{}, funcName string, format string, a ...interface{}
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset+offset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
 
 	os.Exit(1)
 }
-
-//==============================================================================
