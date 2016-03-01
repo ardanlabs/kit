@@ -13,8 +13,6 @@ import (
 	"io"
 	"net/http"
 	"time"
-
-	"github.com/ardanlabs/kit/log"
 )
 
 // Invalid describes a validation error belonging to a specific field.

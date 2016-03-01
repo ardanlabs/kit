@@ -3,8 +3,6 @@ package session
 import (
 	"time"
 
-	"github.com/ardanlabs/kit/log"
-
 	"gopkg.in/mgo.v2/bson"
 )
 

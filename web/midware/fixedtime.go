@@ -3,7 +3,6 @@ package midware
 import (
 	"time"
 
-	"github.com/ardanlabs/kit/log"
 	"github.com/ardanlabs/kit/web/app"
 )
 

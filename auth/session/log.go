@@ -1,4 +1,4 @@
-package midware
+package session
 
 import (
 	"os"

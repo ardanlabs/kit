@@ -9,7 +9,6 @@ import (
 
 	"github.com/ardanlabs/kit/db"
 	"github.com/ardanlabs/kit/db/mongo"
-	"github.com/ardanlabs/kit/log"
 
 	"github.com/pborman/uuid"
 	"gopkg.in/mgo.v2"

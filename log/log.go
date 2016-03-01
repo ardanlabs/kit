@@ -15,11 +15,11 @@ import (
 // 	Dev(interface{}, string, string, ...interface{})
 // 	User(interface{}, string, string, ...interface{})
 // 	Fatal(interface{}, string, string, ...interface{})
-// 	Error(interface{}, string, string, ...interface{})
+// 	Error(interface{}, string,error, string, ...interface{})
 // 	DevOffset(interface{}, int,string, string, ...interface{})
 // 	UserOffset(interface{}, int,string, string, ...interface{})
 // 	FatalOffset(interface{}, int,string, string, ...interface{})
-// 	ErrorOffset(interface{}, int,string, string, ...interface{})
+// 	ErrorOffset(interface{}, int,string,error, string, ...interface{})
 // }
 
 //==============================================================================

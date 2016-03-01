@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/log"
+	kitlog "github.com/ardanlabs/kit/log"
 	"github.com/dimfeld/httptreemux"
 	"github.com/pborman/uuid"
 )
@@ -52,6 +52,14 @@ type (
 	// A Middleware is a type that wraps a handler to remove boilerplate or other
 	// concerns not direct to any given Handler.
 	Middleware func(Handler) Handler
+
+	// logger provides the internal midware package log interface.
+	logger interface {
+		Dev(interface{}, string, string, ...interface{})
+		User(interface{}, string, string, ...interface{})
+		Fatal(interface{}, string, string, ...interface{})
+		Error(interface{}, string, error, string, ...interface{})
+	}
 )
 
 // app maintains some framework state.
@@ -145,6 +153,9 @@ func (a *App) CORS() {
 
 //==============================================================================
 
+// log provides the default log instance for the midware package.
+var log logger
+
 // Init is called to initialize the application.
 func Init(p cfg.Provider) {
 
@@ -158,11 +169,12 @@ func Init(p cfg.Provider) {
 	logLevel := func() int {
 		ll, err := cfg.Int(cfgLoggingLevel)
 		if err != nil {
-			return log.USER
+			return kitlog.USER
 		}
 		return ll
 	}
-	log.Init(os.Stderr, logLevel)
+
+	log = kitlog.New(os.Stdout, logLevel)
 
 	// Log all the configuration options
 	log.User("startup", "Init", "\n\nConfig Settings:\n%s\n", cfg.Log())
