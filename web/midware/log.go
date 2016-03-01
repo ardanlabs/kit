@@ -20,7 +20,7 @@ type logger interface {
 //==============================================================================
 
 // cfgLogLevel defines the key to retrieve the log level for the logger.
-var cfgLogLevel = "LOG_LEVEL"
+var cfgLogLevel = "LOGGING_LEVEL"
 
 // log provides the default log instance for the midware package.
 var log logger
