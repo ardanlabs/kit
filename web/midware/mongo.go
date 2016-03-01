@@ -3,7 +3,6 @@ package midware
 import (
 	"github.com/ardanlabs/kit/cfg"
 	"github.com/ardanlabs/kit/db"
-	"github.com/ardanlabs/kit/log"
 	"github.com/ardanlabs/kit/web/app"
 )
 

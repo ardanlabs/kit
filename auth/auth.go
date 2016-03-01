@@ -10,7 +10,6 @@ import (
 	"github.com/ardanlabs/kit/auth/session"
 	"github.com/ardanlabs/kit/db"
 	"github.com/ardanlabs/kit/db/mongo"
-	"github.com/ardanlabs/kit/log"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
