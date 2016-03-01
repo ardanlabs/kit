@@ -31,7 +31,7 @@ const (
 
 // defaultLogOffset sets the default log level for use with the log offset
 // functions.
-const defaultLogOffset = 1
+const defaultLogOffset = 2
 
 //==============================================================================
 
@@ -61,7 +61,7 @@ func (l *Logger) Dev(context interface{}, funcName string, format string, a ...i
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -76,7 +76,7 @@ func (l *Logger) User(context interface{}, funcName string, format string, a ...
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -91,7 +91,7 @@ func (l *Logger) Error(context interface{}, funcName string, err error, format s
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -106,7 +106,7 @@ func (l *Logger) Fatal(context interface{}, funcName string, format string, a ..
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(2, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+			l.Output(defaultLogOffset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()

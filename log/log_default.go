@@ -23,22 +23,22 @@ func Init(w io.Writer, level func() int) {
 
 // Dev logs trace information for developers.
 func Dev(context interface{}, funcName string, format string, a ...interface{}) {
-	l.DevOffset(context, 2, funcName, format, a...)
+	l.DevOffset(context, 1, funcName, format, a...)
 }
 
 // User logs trace information for users.
 func User(context interface{}, funcName string, format string, a ...interface{}) {
-	l.UserOffset(context, 2, funcName, format, a...)
+	l.UserOffset(context, 1, funcName, format, a...)
 }
 
 // Error logs trace information that are errors.
 func Error(context interface{}, funcName string, err error, format string, a ...interface{}) {
-	l.ErrorOffset(context, 2, funcName, err, format, a...)
+	l.ErrorOffset(context, 1, funcName, err, format, a...)
 }
 
 // Fatal logs trace information for users and terminates the app.
 func Fatal(context interface{}, funcName string, format string, a ...interface{}) {
-	l.FatalOffset(context, 2, funcName, format, a...)
+	l.FatalOffset(context, 1, funcName, format, a...)
 }
 
 //==============================================================================
