@@ -8,36 +8,12 @@ import (
 	"sync"
 )
 
-//==============================================================================
-
-// Log provides a log interface for the log package.
-// type Log interface {
-// 	Dev(interface{}, string, string, ...interface{})
-// 	User(interface{}, string, string, ...interface{})
-// 	Fatal(interface{}, string, string, ...interface{})
-// 	Error(interface{}, string, string, ...interface{})
-// 	DevOffset(interface{}, int,string, string, ...interface{})
-// 	UserOffset(interface{}, int,string, string, ...interface{})
-// 	FatalOffset(interface{}, int,string, string, ...interface{})
-// 	ErrorOffset(interface{}, int,string, string, ...interface{})
-// }
-
-//==============================================================================
-
 // Level constants that define the supported usable LogLevel.
 const (
 	NONE int = iota
 	DEV
 	USER
 )
-
-//==============================================================================
-
-// defaultLogOffset sets the default log level for use with the log offset
-// functions.
-const defaultLogOffset = 2
-
-//==============================================================================
 
 // Logger contains a standard logger for all logging.
 type Logger struct {
@@ -46,15 +22,20 @@ type Logger struct {
 	mu    sync.RWMutex
 }
 
-// New returns a instance of a logger.
-func New(w io.Writer, level func() int) *Logger {
-	lm := Logger{
-		Logger: log.New(w, "", log.Ldate|log.Ltime|log.Lshortfile),
-		level:  level,
-	}
+//==============================================================================
 
-	return &lm
+// New returns a instance of a logger.
+func New(w io.Writer, levelHandler func() int) *Logger {
+	return &Logger{
+		Logger: log.New(w, "", log.Ldate|log.Ltime|log.Lshortfile),
+		level:  levelHandler,
+	}
 }
+
+//==============================================================================
+
+// mLevel sets the default log level for use with the log methods.
+const mLevel = 2
 
 // Dev logs trace information for developers.
 func (l *Logger) Dev(context interface{}, funcName string, format string, a ...interface{}) {
@@ -65,7 +46,7 @@ func (l *Logger) Dev(context interface{}, funcName string, format string, a ...i
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
+			l.Output(mLevel, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -80,7 +61,7 @@ func (l *Logger) User(context interface{}, funcName string, format string, a ...
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+			l.Output(mLevel, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -95,7 +76,7 @@ func (l *Logger) Error(context interface{}, funcName string, err error, format s
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+			l.Output(mLevel, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -110,7 +91,7 @@ func (l *Logger) Fatal(context interface{}, funcName string, format string, a ..
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+			l.Output(mLevel, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -130,7 +111,7 @@ func (l *Logger) DevOffset(context interface{}, offset int, funcName string, for
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset+offset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
+			l.Output(offset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -146,7 +127,7 @@ func (l *Logger) UserOffset(context interface{}, offset int, funcName string, fo
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset+offset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+			l.Output(offset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -162,7 +143,7 @@ func (l *Logger) ErrorOffset(context interface{}, offset int, funcName string, e
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset+offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+			l.Output(offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -178,7 +159,7 @@ func (l *Logger) FatalOffset(context interface{}, offset int, funcName string, f
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(defaultLogOffset+offset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+			l.Output(offset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
