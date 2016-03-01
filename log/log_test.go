@@ -172,9 +172,9 @@ func TestLogLevelDEVOffset(t *testing.T) {
 			log2 := fmt.Sprintf("%s log_test.go:176: USER : context : FuncName : Message 2 with format: A, B\n", dt)
 			log3 := fmt.Sprintf("%s log_test.go:177: ERROR : context : FuncName : An error : Message 3 with format: C, D\n", dt)
 
-			log.DevOffset("context", 3, "FuncName", "Message 1 no format")
-			log.UserOffset("context", 3, "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			log.ErrorOffset("context", 3, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
+			log.DevOffset("context", 0, "FuncName", "Message 1 no format")
+			log.UserOffset("context", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			log.ErrorOffset("context", 0, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
 			if logdest.String() == log1+log2+log3 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)
@@ -202,9 +202,9 @@ func TestLogLevelUserOffset(t *testing.T) {
 			log1 := fmt.Sprintf("%s log_test.go:206: USER : context : FuncName : Message 2 with format: A, B\n", dt)
 			log2 := fmt.Sprintf("%s log_test.go:207: ERROR : context : FuncName : An error : Message 3 with format: C, D\n", dt)
 
-			log.DevOffset("context", 3, "FuncName", "Message 1 no format")
-			log.UserOffset("context", 3, "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			log.ErrorOffset("context", 3, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
+			log.DevOffset("context", 0, "FuncName", "Message 1 no format")
+			log.UserOffset("context", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			log.ErrorOffset("context", 0, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
 			if logdest.String() == log1+log2 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)

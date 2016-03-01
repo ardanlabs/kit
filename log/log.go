@@ -111,7 +111,7 @@ func (l *Logger) DevOffset(context interface{}, offset int, funcName string, for
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(offset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
+			l.Output(mLevel+offset, fmt.Sprintf("DEV : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -127,7 +127,7 @@ func (l *Logger) UserOffset(context interface{}, offset int, funcName string, fo
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(offset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
+			l.Output(mLevel+offset, fmt.Sprintf("USER : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -143,7 +143,7 @@ func (l *Logger) ErrorOffset(context interface{}, offset int, funcName string, e
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
+			l.Output(mLevel+offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", context, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -159,7 +159,7 @@ func (l *Logger) FatalOffset(context interface{}, offset int, funcName string, f
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(offset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
+			l.Output(mLevel+offset, fmt.Sprintf("FATAL : %s : %s : %s", context, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
