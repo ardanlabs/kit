@@ -15,6 +15,25 @@ const (
 	USER
 )
 
+const (
+	// Ldate enables the date in the local time zone: 2009/01/23
+	Ldate = 1 << iota
+	// Ltime enables the time in the local time zone: 01:23:23
+	Ltime
+	// Lmicroseconds enables microsecond resolution: 01:23:23.123123.  assumes Ltime.
+	Lmicroseconds
+	// Llongfile enables full file name and line number: /a/b/c/d.go:23
+	Llongfile
+	// Lshortfile enables final file name element and line number: d.go:23. overrides Llongfile
+	Lshortfile
+	// LUTC enables if Ldate or Ltime is set, use UTC rather than the local time zone
+	LUTC
+	// LstdFlags enables initial values for the standard logger
+	LstdFlags = Ldate | Ltime
+	// Ldefault enables intial values for the default kit logger
+	Ldefault = log.Ldate | log.Ltime | log.Lshortfile
+)
+
 // Logger contains a standard logger for all logging.
 type Logger struct {
 	*log.Logger
@@ -25,9 +44,13 @@ type Logger struct {
 //==============================================================================
 
 // New returns a instance of a logger.
-func New(w io.Writer, levelHandler func() int) *Logger {
+func New(w io.Writer, levelHandler func() int, flags int) *Logger {
+	if flags == 0 {
+		flags = Ldefault
+	}
+
 	return &Logger{
-		Logger: log.New(w, "", log.Ldate|log.Ltime|log.Lshortfile),
+		Logger: log.New(w, "", flags),
 		level:  levelHandler,
 	}
 }

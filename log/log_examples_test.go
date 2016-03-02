@@ -13,7 +13,7 @@ func ExampleDev(t *testing.T) {
 
 	// Init the log package for stdout. Hardcode the logging level
 	// function to use USER level logging.
-	log.Init(os.Stdout, func() int { return log.USER })
+	log.Init(os.Stdout, func() int { return log.USER }, log.Ldefault)
 
 	// Write a simple log line with no formatting.
 	log.User("context", "ExampleDev", "This is a simple line with no formatting")
