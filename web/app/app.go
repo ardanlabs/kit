@@ -162,7 +162,7 @@ func Init(p cfg.Provider) {
 		}
 		return ll
 	}
-	log.Init(os.Stderr, logLevel)
+	log.Init(os.Stderr, logLevel, log.Ldefault)
 
 	// Log all the configuration options
 	log.User("startup", "Init", "\n\nConfig Settings:\n%s\n", cfg.Log())

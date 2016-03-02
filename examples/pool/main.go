@@ -43,7 +43,7 @@ func init() {
 		}
 		return ll
 	}
-	log.Init(os.Stderr, logLevel)
+	log.Init(os.Stderr, logLevel, log.Ldefault)
 
 	// Log all the configuration options
 	log.User("startup", "init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
