@@ -45,10 +45,6 @@ type Logger struct {
 
 // New returns a instance of a logger.
 func New(w io.Writer, levelHandler func() int, flags int) *Logger {
-	if flags == 0 {
-		flags = Ldefault
-	}
-
 	return &Logger{
 		Logger: log.New(w, "", flags),
 		level:  levelHandler,
