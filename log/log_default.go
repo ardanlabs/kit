@@ -1,9 +1,6 @@
 package log
 
-import (
-	"io"
-	"log"
-)
+import "io"
 
 // l defines the default log variable for the global log functions.
 var l Logger
@@ -12,11 +9,13 @@ var l Logger
 
 // Init initializes the default logger to allow usage of the global log
 // functions.
-func Init(w io.Writer, level func() int) {
+func Init(w io.Writer, level func() int, flags int) {
 	l.mu.Lock()
 	{
-		l.Logger = log.New(w, "", log.Ldate|log.Ltime|log.Lshortfile)
-		l.level = level
+		dl := New(w, level, flags)
+
+		l.Logger = dl.Logger
+		l.level = dl.level
 	}
 	l.mu.Unlock()
 }

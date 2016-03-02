@@ -40,7 +40,7 @@ func TestLogLevelUSER(t *testing.T) {
 	{
 		t.Log("\tWhen we set the logging level to USER.")
 		{
-			log.Init(&logdest, func() int { return log.USER })
+			log.Init(&logdest, func() int { return log.USER }, log.Ldefault)
 			resetLog()
 			defer displayLog()
 
@@ -70,7 +70,7 @@ func TestLogLevelDEV(t *testing.T) {
 	{
 		t.Log("\tWhen we set the logging level to DEV.")
 		{
-			log.Init(&logdest, func() int { return log.DEV })
+			log.Init(&logdest, func() int { return log.DEV }, log.Ldefault)
 			resetLog()
 			defer displayLog()
 
@@ -101,7 +101,7 @@ func TestLogInstanceInDev(t *testing.T) {
 	{
 		t.Log("\tWhen we set the logging level to DEV.")
 		{
-			lg := log.New(&logdest, func() int { return log.DEV })
+			lg := log.New(&logdest, func() int { return log.DEV }, log.Ldefault)
 			resetLog()
 			defer displayLog()
 
@@ -132,7 +132,7 @@ func TestLogInstanceInUser(t *testing.T) {
 	{
 		t.Log("\tWhen we set the logging level to USER.")
 		{
-			lg := log.New(&logdest, func() int { return log.USER })
+			lg := log.New(&logdest, func() int { return log.USER }, log.Ldefault)
 			resetLog()
 			defer displayLog()
 
@@ -162,7 +162,7 @@ func TestLogLevelDEVOffset(t *testing.T) {
 	{
 		t.Log("\tWhen we set the logging level to DEV.")
 		{
-			log.Init(&logdest, func() int { return log.DEV })
+			log.Init(&logdest, func() int { return log.DEV }, log.Ldefault)
 			resetLog()
 			defer displayLog()
 
@@ -193,7 +193,7 @@ func TestLogLevelUserOffset(t *testing.T) {
 	{
 		t.Log("\tWhen we set the logging level to DEV.")
 		{
-			log.Init(&logdest, func() int { return log.USER })
+			log.Init(&logdest, func() int { return log.USER }, log.Ldefault)
 			resetLog()
 			defer displayLog()
 
