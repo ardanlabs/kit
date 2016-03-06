@@ -58,7 +58,7 @@ func Init(cfgKey string) {
 		}
 		return ll
 	}
-	log.Init(&logdash, logLevel)
+	log.Init(&logdash, logLevel, log.Ldefault)
 }
 
 // InitMongo initializes the mongodb connections for testing.
