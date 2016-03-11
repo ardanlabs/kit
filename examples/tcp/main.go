@@ -45,6 +45,11 @@ func init() {
 
 //==============================================================================
 
+// Event writes tcp events.
+func Event(context interface{}, event string, format string, a ...interface{}) {
+	log.User("*EVENT*", event, format, a...)
+}
+
 func main() {
 	const context = "startup"
 
@@ -62,6 +67,10 @@ func main() {
 			RecvMaxPoolSize: func() int { return 100 },
 			SendMinPoolSize: func() int { return 2 },
 			SendMaxPoolSize: func() int { return 100 },
+		},
+
+		OptEvent: tcp.OptEvent{
+			Event: Event,
 		},
 	}
 

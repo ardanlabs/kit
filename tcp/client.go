@@ -8,8 +8,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/ardanlabs/kit/log"
 )
 
 // client represents a single networked connection.
@@ -27,7 +25,7 @@ type client struct {
 // newClient creates a new client for an incoming connection.
 func newClient(context string, t *TCP, conn net.Conn) *client {
 	ipAddress := conn.RemoteAddr().String()
-	log.Dev(context, "newClient", "Started : IPAddress[%s]", ipAddress)
+	t.Event(context, "newClient", "IPAddress[%s]", ipAddress)
 
 	// Ask the user to bind the reader and writer they want to
 	// use for this connection.
@@ -51,24 +49,21 @@ func newClient(context string, t *TCP, conn net.Conn) *client {
 	c.wg.Add(1)
 	go c.read()
 
-	log.Dev(context, "newClient", "Completed")
 	return &c
 }
 
 // drop closes the client connection and read operation.
 func (c *client) drop() {
-	log.Dev(c.context, "drop", "Started")
-
 	// Close the connection.
 	c.conn.Close()
 	c.wg.Wait()
 
-	log.Dev(c.context, "drop", "Completed")
+	c.t.Event(c.context, "drop", "Client Dropped")
 }
 
 // read waits for a message and sends it to the user for procesing.
 func (c *client) read() {
-	log.Dev(c.context, "read", "Started : Read Processing")
+	c.t.Event(c.context, "read", "Read Processing")
 
 close:
 	for {
@@ -78,7 +73,7 @@ close:
 
 		if err != nil {
 			if atomic.LoadInt32(&c.t.shuttingDown) == 0 {
-				log.Error(c.context, "read", err, "Completed")
+				c.t.Event(c.context, "read", "ERROR : %v", err)
 			}
 
 			// temporary is declared to test for the existence of
@@ -123,12 +118,13 @@ close:
 		c.t.recv.Do(c.context, &r)
 	}
 
-	log.Dev(c.context, "read", "Shutting Down Client Routine")
+	c.t.Event(c.context, "read", "Shutting Down Client Routine")
 
 	// Remove from the list of connections.
 	c.t.remove(c.context, c.conn)
 
 	c.wg.Done()
-	log.Dev(c.context, "read", "Completed")
+
+	c.t.Event(c.context, "read", "Client Routine Down")
 	return
 }

@@ -28,6 +28,11 @@ type OptRateLimit struct {
 	RateLimit func() time.Duration // Connection rate limit per single connection.
 }
 
+// OptEvent defines an handler used to provide events.
+type OptEvent struct {
+	Event func(context interface{}, event string, format string, a ...interface{})
+}
+
 // Config provides a data structure of required configuration parameters.
 type Config struct {
 	NetType string // "tcp", tcp4" or "tcp6"
@@ -53,6 +58,7 @@ type Config struct {
 	// *************************************************************************
 
 	OptRateLimit
+	OptEvent
 }
 
 // Validate checks the configuration to required items.
@@ -82,4 +88,11 @@ func (cfg *Config) Validate() error {
 	}
 
 	return nil
+}
+
+// Event fires events back to the user for important events.
+func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{}) {
+	if cfg.OptEvent.Event != nil {
+		cfg.OptEvent.Event(context, event, format, a...)
+	}
 }
