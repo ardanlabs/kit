@@ -45,7 +45,7 @@ func main() {
 		}
 		return ll
 	}
-	log.Init(os.Stderr, logLevel)
+	log.Init(os.Stderr, logLevel,log.Ldefault)
 
 	cfg := mongo.Config{
 		Host:     cfg.MustString(cfgMongoHost),
