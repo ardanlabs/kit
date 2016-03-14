@@ -9,7 +9,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ardanlabs/kit/log"
 	"github.com/ardanlabs/kit/pool"
 )
 
@@ -53,22 +52,16 @@ type UDP struct {
 
 // New creates a new manager to service clients.
 func New(context interface{}, name string, cfg Config) (*UDP, error) {
-	log.Dev(context, "New", "Started : Name[%s] NetType[%s] Addr[%s] RecvMaxPoolSize[%d] SendMaxPoolSize[%d]", name, cfg.NetType, cfg.Addr, cfg.RecvMaxPoolSize, cfg.SendMaxPoolSize)
-
 	// Validate the configuration.
 	if err := cfg.Validate(); err != nil {
-		log.Error(context, "New", err, "Completed")
 		return nil, err
 	}
 
 	// Resolve the addr that is provided.
 	udpAddr, err := net.ResolveUDPAddr(cfg.NetType, cfg.Addr)
 	if err != nil {
-		log.Error(context, "New", err, "Completed")
 		return nil, err
 	}
-
-	log.Dev(context, "New", "Address[ %s ] Zone[%s]", join(udpAddr.IP.String(), udpAddr.Port), udpAddr.Zone)
 
 	// Need a work pool to handle the received messages.
 	var recv *pool.Pool
@@ -82,7 +75,6 @@ func New(context interface{}, name string, cfg Config) (*UDP, error) {
 
 		var err error
 		if recv, err = pool.New(context, name+"-Recv", recvCfg); err != nil {
-			log.Error(context, "New", err, "Completed")
 			return nil, err
 		}
 	}
@@ -99,7 +91,6 @@ func New(context interface{}, name string, cfg Config) (*UDP, error) {
 
 		var err error
 		if send, err = pool.New(context, name+"-Send", sendCfg); err != nil {
-			log.Error(context, "New", err, "Completed")
 			return nil, err
 		}
 	}
@@ -108,7 +99,6 @@ func New(context interface{}, name string, cfg Config) (*UDP, error) {
 	// only have to check one of the two configuration options for this.
 	var userPools bool
 	if cfg.RecvPool != nil {
-		log.Dev(context, "New", "Using User Pools")
 		userPools = true
 	}
 
@@ -126,7 +116,6 @@ func New(context interface{}, name string, cfg Config) (*UDP, error) {
 		userPools: userPools,
 	}
 
-	log.Dev(context, "New", "Completed")
 	return &udp, nil
 }
 
@@ -137,16 +126,12 @@ func join(ip string, port int) string {
 
 // Start begins to accept data.
 func (d *UDP) Start(context interface{}) error {
-	log.Dev(context, "Start", "Started : IPAddress[ %s ]", join(d.ipAddress, d.port))
-
 	d.listenerMu.Lock()
 	{
 		// If the listener has been started already, return an error.
 		if d.listener != nil {
-			err := errors.New("This UDP has already been started")
-			log.Error(context, "Start", err, "Completed")
 			d.listenerMu.Unlock()
-			return err
+			return errors.New("This UDP has already been started")
 		}
 	}
 	d.listenerMu.Unlock()
@@ -168,7 +153,6 @@ func (d *UDP) Start(context interface{}) error {
 					var err error
 					d.listener, err = net.ListenUDP(d.NetType, d.udpAddr)
 					if err != nil {
-						log.Error(context, "Start", err, "Completed")
 						panic(err)
 					}
 
@@ -178,7 +162,7 @@ func (d *UDP) Start(context interface{}) error {
 
 					waitStart.Done()
 
-					log.Dev(context, "accept-routine", "Waiting For Data : IPAddress[ %s ]", join(d.ipAddress, d.port))
+					d.Event(context, "accept", "Waiting For Data : IPAddress[ %s ]", join(d.ipAddress, d.port))
 				}
 			}
 			d.listenerMu.Unlock()
@@ -197,7 +181,7 @@ func (d *UDP) Start(context interface{}) error {
 					break
 				}
 
-				log.Error(context, "accept-routine", err, "Recover")
+				d.Event(context, "accept", "ERROR : %v", err)
 
 				if e, ok := err.(temporary); ok && !e.Temporary() {
 					d.listenerMu.Lock()
@@ -240,32 +224,26 @@ func (d *UDP) Start(context interface{}) error {
 			d.recv.Do(req.context(context), &req)
 		}
 
-		log.Dev(context, "accept-routine", "Completed : Shutting Down Accept Routine")
-
 		d.wg.Done()
-		log.Dev(context, "accept-routine", "Completed")
+		d.Event(context, "accept", "Shutdown : IPAddress[ %s ]", join(d.ipAddress, d.port))
+
 		return
 	}()
 
 	// Wait for the goroutine to initialize itself.
 	waitStart.Wait()
 
-	log.Dev(context, "Start", "Completed")
 	return nil
 }
 
 // Stop shuts down the manager and closes all connections.
 func (d *UDP) Stop(context interface{}) error {
-	log.Dev(context, "Stop", "Started : IPAddress[ %s ]", join(d.ipAddress, d.port))
-
 	d.listenerMu.Lock()
 	{
 		// If the listener has been stopped already, return an error.
 		if d.listener == nil {
-			err := errors.New("This UDP has already been stopped")
-			log.Error(context, "Stop", err, "Completed")
 			d.listenerMu.Unlock()
-			return err
+			return errors.New("This UDP has already been stopped")
 		}
 	}
 	d.listenerMu.Unlock()
@@ -284,21 +262,16 @@ func (d *UDP) Stop(context interface{}) error {
 	if !d.userPools {
 		d.recv.Shutdown(context)
 		d.send.Shutdown(context)
-	} else {
-		log.Dev(context, "Stop", "User pools being used, not shutting them down.")
 	}
 
 	// Wait for the accept routine to terminate.
 	d.wg.Wait()
 
-	log.Dev(context, "Stop", "Completed")
 	return nil
 }
 
 // Do will post the request to be sent by the client worker pool.
 func (d *UDP) Do(context interface{}, r *Response) error {
-	log.Dev(context, "Do", "Started : Local[ %s ] Remote[%s]", join(d.ipAddress, d.port), r.UDPAddr.String())
-
 	// Set the unexported fields.
 	r.udp = d
 	r.context = context
@@ -306,7 +279,6 @@ func (d *UDP) Do(context interface{}, r *Response) error {
 	// Send this to the client work pool for processing.
 	d.send.Do(context, r)
 
-	log.Dev(context, "Do", "Completed")
 	return nil
 }
 

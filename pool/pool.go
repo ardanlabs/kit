@@ -6,8 +6,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/ardanlabs/kit/log"
 )
 
 const (
@@ -49,11 +47,33 @@ type Stat struct {
 	MaxRoutines int64 // High water mark of routines the pool has been at.
 }
 
+//==============================================================================
+
+// OptEvent defines an handler used to provide events.
+type OptEvent struct {
+	Event func(context interface{}, event string, format string, a ...interface{})
+}
+
 // Config provides configuration for the pool.
 type Config struct {
 	MinRoutines func() int // Initial and minimum number of routines always in the pool.
 	MaxRoutines func() int // Maximum number of routines we will ever grow the pool to.
+
+	// *************************************************************************
+	// ** Not Required, optional                                              **
+	// *************************************************************************
+
+	OptEvent
 }
+
+// Event fires events back to the user for important events.
+func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{}) {
+	if cfg.OptEvent.Event != nil {
+		cfg.OptEvent.Event(context, event, format, a...)
+	}
+}
+
+//==============================================================================
 
 // Pool provides a pool of routines that can execute any Worker
 // tasks that are submitted.
@@ -81,8 +101,6 @@ type Pool struct {
 
 // New creates a new Pool.
 func New(context interface{}, name string, cfg Config) (*Pool, error) {
-	log.Dev(context, "New", "Started : Name[%s]", name)
-
 	if cfg.MinRoutines == nil {
 		return nil, ErrNilMinRoutines
 	}
@@ -110,14 +128,11 @@ func New(context interface{}, name string, cfg Config) (*Pool, error) {
 	p.manager(context)
 	p.add(context, cfg.MinRoutines())
 
-	log.Dev(context, "New", "Completed")
 	return &p, nil
 }
 
 // Shutdown waits for all the workers to finish.
 func (p *Pool) Shutdown(context interface{}) {
-	log.Dev(context, "Shutdown", "Started : Name[%s]", p.Name)
-
 	// If a reset or change is being made, we need to wait.
 	for atomic.LoadInt64(&p.updatePending) > 0 {
 		time.Sleep(time.Second)
@@ -125,8 +140,6 @@ func (p *Pool) Shutdown(context interface{}) {
 
 	close(p.shutdown)
 	p.wg.Wait()
-
-	log.Dev(context, "Shutdown", "Completed")
 }
 
 // Do waits for the goroutine pool to take the work to be executed.
@@ -183,8 +196,6 @@ func (p *Pool) Stats() Stat {
 // NOTE: since our pools are auto-adjustable, we will not give the user ability
 // to add routines.
 func (p *Pool) add(context interface{}, routines int) error {
-	log.Dev(context, "add", "Started : routines[%d]", routines)
-
 	if routines == 0 {
 		return ErrInvalidAdd
 	}
@@ -202,7 +213,6 @@ func (p *Pool) add(context interface{}, routines int) error {
 		p.control <- cmd
 	}
 
-	log.Dev(context, "add", "Completed")
 	return nil
 }
 
@@ -210,16 +220,12 @@ func (p *Pool) add(context interface{}, routines int) error {
 // NOTE: since our pools are auto-adjustable, we will not give the user ability
 // to reset the number of routines.
 func (p *Pool) reset(context interface{}, routines int) {
-	log.Dev(context, "reset", "Started : routines[%d]", routines)
-
 	if routines < 0 {
 		routines = 0
 	}
 
 	current := int(atomic.LoadInt64(&p.routines))
 	p.add(context, routines-current)
-
-	log.Dev(context, "reset", "Completed")
 }
 
 // work performs the users work and keeps stats.
@@ -270,7 +276,7 @@ func (p *Pool) execute(id int, dw doWork) {
 			buf := make([]byte, 10000)
 			runtime.Stack(buf, false)
 
-			log.Dev(dw.context, "execute", string(buf))
+			p.Event(dw.context, "execute", "ERROR : %s", string(buf))
 		}
 	}()
 
