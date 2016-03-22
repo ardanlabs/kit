@@ -3,6 +3,7 @@ package mongo
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2"
@@ -22,9 +23,12 @@ type Config struct {
 // New creates a new master session.
 func New(cfg Config) (*mgo.Session, error) {
 
+	// Can be provided a comma delimited set of hosts.
+	hosts := strings.Split(cfg.Host, ",")
+
 	// We need this object to establish a session to our MongoDB.
 	mongoDBDialInfo := mgo.DialInfo{
-		Addrs:    []string{cfg.Host},
+		Addrs:    hosts,
 		Timeout:  60 * time.Second,
 		Database: cfg.AuthDB,
 		Username: cfg.User,
