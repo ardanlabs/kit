@@ -70,8 +70,10 @@ func main() {
 		Name: "test task",
 	}
 
+	rn := runner.New(time.Second)
+
 	// Start the job running with a specified duration.
-	if err := runner.Run(context, time.Second, &t); err != nil {
+	if err := rn.Run(context, &t); err != nil {
 		switch err {
 		case runner.ErrTimeout:
 
