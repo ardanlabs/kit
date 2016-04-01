@@ -8,12 +8,13 @@ import (
 	"time"
 
 	"github.com/ardanlabs/kit/runner"
-	"github.com/ardanlabs/kit/tests"
 )
 
-func init() {
-	tests.Init("KIT")
-}
+// Success and failure markers.
+var (
+	success = "\u2713"
+	failed  = "\u2717"
+)
 
 //==============================================================================
 
@@ -63,9 +64,6 @@ func (t *task) KillAfter(dur time.Duration) {
 
 // TestCompleted tests when jobs complete properly.
 func TestCompleted(t *testing.T) {
-	tests.ResetLog()
-	defer tests.DisplayLog()
-
 	t.Log("Given the need to test a successful task run.")
 	{
 		t.Log("\tWhen using a task that will complete in time.")
@@ -73,42 +71,39 @@ func TestCompleted(t *testing.T) {
 			var job task
 			job.KillAfter(time.Millisecond)
 
-			if err := runner.Run(tests.Context, time.Second, &job); err != nil {
-				t.Fatalf("\t%s\tShould not receive an error : %v", tests.Failed, err)
+			r := runner.New(time.Second)
+
+			if err := r.Run("context", &job); err != nil {
+				t.Fatalf("\t%s\tShould not receive an error : %v", failed, err)
 			}
-			t.Logf("\t%s\tShould not receive an error.", tests.Success)
+			t.Logf("\t%s\tShould not receive an error.", success)
 		}
 	}
 }
 
 // TestError tests when jobs complete properly but with errors.
 func TestError(t *testing.T) {
-	tests.ResetLog()
-	defer tests.DisplayLog()
-
 	t.Log("Given the need to test a successful task run with error.")
 	{
 		t.Log("\tWhen using a task that will complete in time.")
 		{
-			Err := errors.New("An error")
 			job := task{
-				err: Err,
+				err: errors.New("Error"),
 			}
 			job.KillAfter(time.Millisecond)
 
-			if err := runner.Run(tests.Context, time.Second, &job); err != Err {
-				t.Fatalf("\t%s\tShould receive our error : %v", tests.Failed, err)
+			r := runner.New(time.Second)
+
+			if err := r.Run("context", &job); err == nil {
+				t.Fatalf("\t%s\tShould receive our error : %v", failed, err)
 			}
-			t.Logf("\t%s\tShould receive our error.", tests.Success)
+			t.Logf("\t%s\tShould receive our error.", success)
 		}
 	}
 }
 
 // TestTimeout tests when jobs timeout.
 func TestTimeout(t *testing.T) {
-	tests.ResetLog()
-	defer tests.DisplayLog()
-
 	t.Log("Given the need to test a task that timesout.")
 	{
 		t.Log("\tWhen using a task that will timeout.")
@@ -119,19 +114,18 @@ func TestTimeout(t *testing.T) {
 			// Need the job method to quit as soon as we are done.
 			defer job.Kill()
 
-			if err := runner.Run(tests.Context, time.Millisecond, &job); err != runner.ErrTimeout {
-				t.Fatalf("\t%s\tShould receive a timeout error : %v", tests.Failed, err)
+			r := runner.New(time.Millisecond)
+
+			if err := r.Run("context", &job); err != runner.ErrTimeout {
+				t.Fatalf("\t%s\tShould receive a timeout error : %v", failed, err)
 			}
-			t.Logf("\t%s\tShould receive a timeout error.", tests.Success)
+			t.Logf("\t%s\tShould receive a timeout error.", success)
 		}
 	}
 }
 
 // TestSignaled tests when jobs is requested to shutdown.
 func TestSignaled(t *testing.T) {
-	tests.ResetLog()
-	defer tests.DisplayLog()
-
 	t.Log("Given the need to test a task that is requested to shutdown.")
 	{
 		t.Log("\tWhen using a task that should see the signal.")
@@ -147,10 +141,19 @@ func TestSignaled(t *testing.T) {
 				syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 			}()
 
-			if err := runner.Run(tests.Context, 3*time.Second, &job); err != runner.ErrSignaled {
-				t.Fatalf("\t%s\tShould receive a signaled error : %v", tests.Failed, err)
+			r := runner.New(3 * time.Second)
+
+			if err := r.Run("context", &job); err != nil {
+				t.Errorf("\t%s\tShould receive no error : %v", failed, err)
+			} else {
+				t.Logf("\t%s\tShould receive no error.", success)
 			}
-			t.Logf("\t%s\tShould receive a signaled error.", tests.Success)
+
+			if !r.CheckShutdown() {
+				t.Errorf("\t%s\tShould show the check shutdown flag is set.", failed)
+			} else {
+				t.Logf("\t%s\tShould show the check shutdown flag is set.", success)
+			}
 		}
 	}
 }
