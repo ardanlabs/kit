@@ -60,6 +60,26 @@ const (
 ```
 Level constants that define the supported usable LogLevel.
 
+``` go
+const (
+    // Ldate enables the date in the local time zone: 2009/01/23
+    Ldate = 1 << iota
+    // Ltime enables the time in the local time zone: 01:23:23
+    Ltime
+    // Lmicroseconds enables microsecond resolution: 01:23:23.123123.  assumes Ltime.
+    Lmicroseconds
+    // Llongfile enables full file name and line number: /a/b/c/d.go:23
+    Llongfile
+    // Lshortfile enables final file name element and line number: d.go:23. overrides Llongfile
+    Lshortfile
+    // LUTC enables if Ldate or Ltime is set, use UTC rather than the local time zone
+    LUTC
+    // LstdFlags enables initial values for the standard logger
+    LstdFlags = Ldate | Ltime
+    // Ldefault enables intial values for the default kit logger
+    Ldefault = log.Ldate | log.Ltime | log.Lshortfile
+)
+```
 
 
 ## func Dev
@@ -109,7 +129,7 @@ offset expand the caller level.
 
 ## func Init
 ``` go
-func Init(w io.Writer, level func() int)
+func Init(w io.Writer, level func() int, flags int)
 ```
 Init initializes the default logger to allow usage of the global log
 functions.
@@ -150,7 +170,7 @@ Logger contains a standard logger for all logging.
 
 ### func New
 ``` go
-func New(w io.Writer, levelHandler func() int) *Logger
+func New(w io.Writer, levelHandler func() int, flags int) *Logger
 ```
 New returns a instance of a logger.
 

@@ -125,6 +125,8 @@ type Config struct {
 
     OptUserPool
     OptIntPool
+
+    OptEvent
 }
 ```
 Config provides a data structure of required configuration parameters.
@@ -136,6 +138,14 @@ Config provides a data structure of required configuration parameters.
 
 
 
+
+
+
+### func (\*Config) Event
+``` go
+func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})
+```
+Event fires events back to the user for important events.
 
 
 
@@ -156,6 +166,24 @@ type ConnHandler interface {
 ```
 ConnHandler is implemented by the user to bind the listener
 to a reader and writer for processing.
+
+
+
+
+
+
+
+
+
+
+
+## type OptEvent
+``` go
+type OptEvent struct {
+    Event func(context interface{}, event string, format string, a ...interface{})
+}
+```
+OptEvent defines an handler used to provide events.
 
 
 

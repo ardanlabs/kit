@@ -20,21 +20,6 @@ var (
 Error variables for the different states.
 
 
-## func CheckShutdown
-``` go
-func CheckShutdown(context interface{}) bool
-```
-CheckShutdown checks the shutdown flag to determine
-if we have been asked to interrupt processing.
-
-
-## func Run
-``` go
-func Run(context interface{}, timeout time.Duration, job Jobber) error
-```
-Run performs the execution of the specified job.
-
-
 
 ## type Jobber
 ``` go
@@ -52,6 +37,47 @@ processing a user job.
 
 
 
+
+
+
+## type Runner
+``` go
+type Runner struct {
+    // contains filtered or unexported fields
+}
+```
+Runner maintains state for the running process.
+
+
+
+
+
+
+
+
+
+### func New
+``` go
+func New(timeout time.Duration) *Runner
+```
+New returns a new Runner value for use.
+
+
+
+
+### func (\*Runner) CheckShutdown
+``` go
+func (r *Runner) CheckShutdown() bool
+```
+CheckShutdown can be used to check if a shutdown request has been issued.
+
+
+
+### func (\*Runner) Run
+``` go
+func (r *Runner) Run(context interface{}, job Jobber) error
+```
+Run performs the execution of the specified job.
 
 
 

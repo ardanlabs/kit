@@ -76,9 +76,37 @@ Set of error variables for start up.
 type Config struct {
     MinRoutines func() int // Initial and minimum number of routines always in the pool.
     MaxRoutines func() int // Maximum number of routines we will ever grow the pool to.
+
+    OptEvent
 }
 ```
 Config provides configuration for the pool.
+
+
+
+
+
+
+
+
+
+
+
+### func (\*Config) Event
+``` go
+func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})
+```
+Event fires events back to the user for important events.
+
+
+
+## type OptEvent
+``` go
+type OptEvent struct {
+    Event func(context interface{}, event string, format string, a ...interface{})
+}
+```
+OptEvent defines an handler used to provide events.
 
 
 

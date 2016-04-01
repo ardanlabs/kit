@@ -107,7 +107,7 @@ Set of user status codes.
 ``` go
 const Collection = "auth_users"
 ```
-collection contains the name of the auth_users collection.
+Collection contains the name of the auth_users collection.
 
 
 

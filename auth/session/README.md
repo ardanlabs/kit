@@ -14,7 +14,7 @@ PublicID is not private, it is not used directly.
 ``` go
 const Collection = "auth_sessions"
 ```
-collections contains the name of the user collection.
+Collection contains the name of the user collection.
 
 
 
