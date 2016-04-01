@@ -82,6 +82,9 @@ func (c *Context) Respond(data interface{}, code int) {
 	// Set the content type.
 	c.Header().Set("Content-Type", "application/json")
 
+	// Write the status code.
+	c.WriteHeader(code)
+
 	// Marshal the data into a JSON string.
 	jsonData, err := json.Marshal(data)
 	if err != nil {
