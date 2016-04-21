@@ -159,7 +159,7 @@ func (p *Pool) Do(context interface{}, work Worker) {
 // DoWait waits for the goroutine pool to take the work to be executed or gives
 // up after the alloted duration. Only use when you want to throw away work and
 // not push back.
-func (p *Pool) DoWait(context interface{}, work Worker, duration time.Duration) error {
+func (p *Pool) DoWait(context interface{}, work Worker, duration <-chan time.Time) error {
 	dw := doWork{
 		context: context,
 		do:      work,
@@ -174,7 +174,7 @@ func (p *Pool) DoWait(context interface{}, work Worker, duration time.Duration) 
 		atomic.AddInt64(&p.pending, -1)
 		return nil
 
-	case <-time.After(duration):
+	case <-duration:
 		atomic.AddInt64(&p.pending, -1)
 		return errors.New("Timedout waiting to post work")
 	}
