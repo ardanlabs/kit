@@ -20,6 +20,7 @@ func GetCommands(db *db.DB) *cobra.Command {
 
 	addCreate()
 	addGet()
+	addList()
 	addStatus()
 	return userCmd
 }
