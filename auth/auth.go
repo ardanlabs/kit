@@ -236,6 +236,30 @@ func GetUserWebToken(context interface{}, db *db.DB, publicID string) (string, e
 	return token, nil
 }
 
+// GetUsers retrieves all user records with an optional filter for only active
+// users.
+func GetUsers(context interface{}, db *db.DB, activeOnly bool) ([]User, error) {
+	log.Dev(context, "GetUsers", "Started : activeOnly[%t]", activeOnly)
+
+	var users []User
+	f := func(c *mgo.Collection) error {
+		var q bson.M
+		if activeOnly {
+			q = bson.M{"status": StatusActive}
+		}
+		log.Dev(context, "GetUsers", "MGO : db.%s.findAll(%s)", c.Name, mongo.Query(q))
+		return c.Find(q).All(&users)
+	}
+
+	if err := db.ExecuteMGO(context, Collection, f); err != nil {
+		log.Error(context, "GetUsers", err, "Completed")
+		return nil, err
+	}
+
+	log.Dev(context, "GetUsers", "Completed")
+	return users, nil
+}
+
 //==============================================================================
 
 // UpdateUser updates an existing user to the database.
