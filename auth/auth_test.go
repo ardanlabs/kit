@@ -144,16 +144,7 @@ func TestCreateUser(t *testing.T) {
 			}
 			t.Logf("\t%s\tShould be able to retrieve the user by PublicID.", tests.Success)
 
-			// Remove the objectid to be able to compare the values.
-			u2.ID = ""
-
-			// Need to remove the nanoseconds to be able to compare the values.
-			u1.DateModified = u1.DateModified.Add(-time.Duration(u1.DateModified.Nanosecond()))
-			u1.DateCreated = u1.DateCreated.Add(-time.Duration(u1.DateCreated.Nanosecond()))
-			u2.DateModified = u2.DateModified.Add(-time.Duration(u2.DateModified.Nanosecond()))
-			u2.DateCreated = u2.DateCreated.Add(-time.Duration(u2.DateCreated.Nanosecond()))
-
-			if !reflect.DeepEqual(*u1, *u2) {
+			if !equal(u1, u2) {
 				t.Logf("\t%+v", *u1)
 				t.Logf("\t%+v", *u2)
 				t.Fatalf("\t%s\tShould be able to get back the same user.", tests.Failed)
@@ -167,14 +158,7 @@ func TestCreateUser(t *testing.T) {
 			}
 			t.Logf("\t%s\tShould be able to retrieve the user by Email.", tests.Success)
 
-			// Remove the objectid to be able to compare the values.
-			u3.ID = ""
-
-			// Need to remove the nanoseconds to be able to compare the values.
-			u3.DateModified = u3.DateModified.Add(-time.Duration(u3.DateModified.Nanosecond()))
-			u3.DateCreated = u3.DateCreated.Add(-time.Duration(u3.DateCreated.Nanosecond()))
-
-			if !reflect.DeepEqual(*u1, *u3) {
+			if !equal(u1, u3) {
 				t.Logf("\t%+v", *u1)
 				t.Logf("\t%+v", *u3)
 				t.Fatalf("\t%s\tShould be able to get back the same user.", tests.Failed)
@@ -1117,6 +1101,129 @@ func TestNoSession(t *testing.T) {
 	}
 }
 
+// TestGetUsers tests the GetUser function which returns all users
+func TestGetUsers(t *testing.T) {
+	tests.ResetLog()
+	defer tests.DisplayLog()
+
+	db, err := db.NewMGO(tests.Context, tests.TestSession)
+	if err != nil {
+		t.Fatalf("\t%s\tShould be able to get a Mongo session : %v", tests.Failed, err)
+	}
+	defer db.CloseMGO(tests.Context)
+
+	var publicIDs []string
+	defer func() {
+		for _, id := range publicIDs {
+			if err := removeUser(db, id); err != nil {
+				t.Fatalf("\t%s\tShould be able to remove test user %s : %v", tests.Failed, id, err)
+			}
+			t.Logf("\t%s\tShould be able to remove test user %s.", tests.Success, id)
+		}
+	}()
+
+	t.Log("Given the need to list users in the DB.")
+	{
+		t.Log("\tWhen using three test users.")
+		{
+			u1, err := auth.NewUser(auth.NUser{
+				Status:   auth.StatusActive,
+				FullName: "Test Kennedy",
+				Email:    "bill@ardanlabs.com",
+				Password: "_Password124",
+			})
+			if err != nil {
+				t.Fatalf("\t%s\tShould be able to build new user 1 : %v", tests.Failed, err)
+			}
+			t.Logf("\t%s\tShould be able to build new user 1.", tests.Success)
+
+			u2, err := auth.NewUser(auth.NUser{
+				Status:   auth.StatusActive,
+				FullName: "Test Disabled",
+				Email:    "disabled@ardanlabs.com",
+				Password: "_Password125",
+			})
+			if err != nil {
+				t.Fatalf("\t%s\tShould be able to build new user 2 : %v", tests.Failed, err)
+			}
+			t.Logf("\t%s\tShould be able to build new user 2.", tests.Success)
+
+			u2.Status = auth.StatusDisabled
+
+			u3, err := auth.NewUser(auth.NUser{
+				Status:   auth.StatusActive,
+				FullName: "Test Gonzo",
+				Email:    "ed@ardanlabs.com",
+				Password: "_Password88",
+			})
+			if err != nil {
+				t.Fatalf("\t%s\tShould be able to build new user 3 : %v", tests.Failed, err)
+			}
+			t.Logf("\t%s\tShould be able to build new user 3.", tests.Success)
+
+			for i, u := range []*auth.User{u1, u2, u3} {
+				if err := auth.CreateUser(tests.Context, db, u); err != nil {
+					t.Fatalf("\t%s\tShould be able to create user %d : %v", tests.Failed, i, err)
+				}
+				t.Logf("\t%s\tShould be able to create user %d.", tests.Success, i)
+
+				// We need to do this so we can clean up after.
+				publicIDs = append(publicIDs, u.PublicID)
+			}
+
+			t.Log("\t\tWhen querying for all users.")
+			{
+				users, err := auth.GetUsers(tests.Context, db, false)
+				if err != nil {
+					t.Fatalf("\t\t%s\tShould be able to get users : %v", tests.Failed, err)
+				}
+				t.Logf("\t\t%s\tShould be able to get users.", tests.Success)
+
+				if len(users) != 3 {
+					t.Fatalf("\t\t%s\tShould be able to get back 3 users : got %d", tests.Failed, len(users))
+				} else {
+					t.Logf("\t\t%s\tShould be able to get back 3 users.", tests.Success)
+				}
+
+				for i, u := range []*auth.User{u1, u2, u3} {
+					if !equal(u, &users[i]) {
+						t.Logf("\t\t%+v", *u)
+						t.Logf("\t\t%+v", users[i])
+						t.Fatalf("\t%s\tShould be able to get back the same user %d.", tests.Failed, i)
+					} else {
+						t.Logf("\t%s\tShould be able to get back the same user %d.", tests.Success, i)
+					}
+				}
+			}
+
+			t.Log("\t\tWhen querying for only active users.")
+			{
+				users, err := auth.GetUsers(tests.Context, db, true)
+				if err != nil {
+					t.Fatalf("\t\t%s\tShould be able to get active users : %v", tests.Failed, err)
+				}
+				t.Logf("\t\t%s\tShould be able to get active users.", tests.Success)
+
+				if len(users) != 2 {
+					t.Fatalf("\t\t%s\tShould be able to get back 2 users : got %d", tests.Failed, len(users))
+				} else {
+					t.Logf("\t\t%s\tShould be able to get back 2 users.", tests.Success)
+				}
+
+				for i, u := range []*auth.User{u1, u3} {
+					if !equal(u, &users[i]) {
+						t.Logf("\t\t%+v", *u)
+						t.Logf("\t\t%+v", users[i])
+						t.Fatalf("\t%s\tShould be able to get back the same user %d.", tests.Failed, i)
+					} else {
+						t.Logf("\t%s\tShould be able to get back the same user %d.", tests.Success, i)
+					}
+				}
+			}
+		}
+	}
+}
+
 //==============================================================================
 
 func ensureIndexes() {
@@ -1163,4 +1270,20 @@ func removeUser(db *db.DB, publicID string) error {
 	}
 
 	return nil
+}
+
+// equal is a helper function for comparing a User defined in the test with a
+// User pulled from the db. It will remove bson IDs and Nanoseconds from time
+// fields before doing a deep equality comparison.
+func equal(a, b *auth.User) bool {
+	// Remove the objectIDs to be able to compare the values.
+	a.ID, b.ID = "", ""
+
+	// Need to remove the nanoseconds to be able to compare the values.
+	a.DateModified = a.DateModified.Add(-time.Duration(a.DateModified.Nanosecond()))
+	a.DateCreated = a.DateCreated.Add(-time.Duration(a.DateCreated.Nanosecond()))
+	b.DateModified = b.DateModified.Add(-time.Duration(b.DateModified.Nanosecond()))
+	b.DateCreated = b.DateCreated.Add(-time.Duration(b.DateCreated.Nanosecond()))
+
+	return reflect.DeepEqual(*a, *b)
 }
