@@ -78,9 +78,11 @@
 			"revisionTime": "2016-01-06T09:33:57-05:00"
 		},
 		{
+			"checksumSHA1": "YzHkxW3fGe5Oc5AVatDNn1g5Ung=",
+			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/check.v1",
 			"path": "gopkg.in/check.v1",
-			"revision": "11d3bc7aa68e238947792f30573146a3231fc0f1",
-			"revisionTime": "2015-07-29T10:04:31+02:00"
+			"revision": "4f90aeace3a26ad7021961c297b22c42160c7b25",
+			"revisionTime": "2016-01-05T16:49:36Z"
 		},
 		{
 			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/go-playground/assert.v1",
@@ -121,9 +123,11 @@
 			"revisionTime": "2016-02-23T13:38:14Z"
 		},
 		{
+			"checksumSHA1": "lQZENi8ObYZ1A30w9u77ZZCpg6c=",
+			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/yaml.v2",
 			"path": "gopkg.in/yaml.v2",
-			"revision": "53feefa2559fb8dfa8d81baad31be332c97d6c77",
-			"revisionTime": "2015-09-24T11:23:14-03:00"
+			"revision": "a83829b6f1293c91addabc89d0571c246397bbf4",
+			"revisionTime": "2016-03-01T20:40:22Z"
 		}
 	],
 	"rootPath": "github.com/ardanlabs/kit"
