@@ -25,6 +25,8 @@ type node struct {
 
 	addSlash   bool
 	isCatchAll bool
+	// If true, the head handler was set implicitly, so let it also be set explicitly.
+	implicitHead bool
 	// If this node is the end of the URL, then call the handler, if applicable.
 	leafHandler map[string]HandlerFunc
 
@@ -40,18 +42,22 @@ func (n *node) sortStaticChild(i int) {
 	}
 }
 
-func (n *node) setHandler(verb string, handler HandlerFunc) {
+func (n *node) setHandler(verb string, handler HandlerFunc, implicitHead bool) {
 	if n.leafHandler == nil {
 		n.leafHandler = make(map[string]HandlerFunc)
 	}
 	_, ok := n.leafHandler[verb]
-	if ok {
+	if ok && (verb != "HEAD" || !n.implicitHead) {
 		panic(fmt.Sprintf("%s already handles %s", n.path, verb))
 	}
 	n.leafHandler[verb] = handler
+
+	if verb == "HEAD" {
+		n.implicitHead = implicitHead
+	}
 }
 
-func (n *node) addPath(path string, wildcards []string) *node {
+func (n *node) addPath(path string, wildcards []string, inStaticToken bool) *node {
 	leaf := len(path) == 0
 	if leaf {
 		if wildcards != nil {
@@ -84,6 +90,7 @@ func (n *node) addPath(path string, wildcards []string) *node {
 	var tokenEnd int
 
 	if c == '/' {
+		// Done processing the previous token, so reset inStaticToken to false.
 		thisToken = "/"
 		tokenEnd = 1
 	} else if nextSlash == -1 {
@@ -95,7 +102,7 @@ func (n *node) addPath(path string, wildcards []string) *node {
 	}
 	remainingPath := path[tokenEnd:]
 
-	if c == '*' {
+	if c == '*' && !inStaticToken {
 		// Token starts with a *, so it's a catch-all
 		thisToken = thisToken[1:]
 		if n.catchAllChild == nil {
@@ -103,7 +110,7 @@ func (n *node) addPath(path string, wildcards []string) *node {
 		}
 
 		if path[1:] != n.catchAllChild.path {
-			panic(fmt.Sprintf("Catch-all name in %s doesn't match %s",
+			panic(fmt.Sprintf("Catch-all name in %s doesn't match %s. You probably tried to define overlapping catchalls",
 				path, n.catchAllChild.path))
 		}
 
@@ -119,7 +126,7 @@ func (n *node) addPath(path string, wildcards []string) *node {
 		n.catchAllChild.leafWildcardNames = wildcards
 
 		return n.catchAllChild
-	} else if c == ':' {
+	} else if c == ':' && !inStaticToken {
 		// Token starts with a :
 		thisToken = thisToken[1:]
 
@@ -133,12 +140,26 @@ func (n *node) addPath(path string, wildcards []string) *node {
 			n.wildcardChild = &node{path: "wildcard"}
 		}
 
-		return n.wildcardChild.addPath(remainingPath, wildcards)
+		return n.wildcardChild.addPath(remainingPath, wildcards, false)
 
 	} else {
-		if strings.ContainsAny(thisToken, ":*") {
-			panic("* or : in middle of path component " + path)
+		// if strings.ContainsAny(thisToken, ":*") {
+		// 	panic("* or : in middle of path component " + path)
+		// }
+
+		unescaped := false
+		if len(thisToken) >= 2 && !inStaticToken {
+			if thisToken[0] == '\\' && (thisToken[1] == '*' || thisToken[1] == ':' || thisToken[1] == '\\') {
+				// The token starts with a character escaped by a backslash. Drop the backslash.
+				c = thisToken[1]
+				thisToken = thisToken[1:]
+				unescaped = true
+			}
 		}
+
+		// Set inStaticToken to ensure that the rest of this token is not mistaken
+		// for a wildcard if a prefix split occurs at a '*' or ':'.
+		inStaticToken = (c != '/')
 
 		// Do we have an existing node that starts with the same letter?
 		for i, index := range n.staticIndices {
@@ -146,9 +167,14 @@ func (n *node) addPath(path string, wildcards []string) *node {
 				// Yes. Split it based on the common prefix of the existing
 				// node and the new one.
 				child, prefixSplit := n.splitCommonPrefix(i, thisToken)
+
 				child.priority++
 				n.sortStaticChild(i)
-				return child.addPath(path[prefixSplit:], wildcards)
+				if unescaped {
+					// Account for the removed backslash.
+					prefixSplit++
+				}
+				return child.addPath(path[prefixSplit:], wildcards, inStaticToken)
 			}
 		}
 
@@ -162,7 +188,7 @@ func (n *node) addPath(path string, wildcards []string) *node {
 			n.staticIndices = append(n.staticIndices, c)
 			n.staticChild = append(n.staticChild, child)
 		}
-		return child.addPath(remainingPath, wildcards)
+		return child.addPath(remainingPath, wildcards, inStaticToken)
 	}
 }
 
@@ -206,16 +232,16 @@ func (n *node) splitCommonPrefix(existingNodeIndex int, path string) (*node, int
 	return newNode, i
 }
 
-func (n *node) search(path string) (found *node, params []string) {
+func (n *node) search(method, path string) (found *node, handler HandlerFunc, params []string) {
 	// if test != nil {
 	// 	test.Logf("Searching for %s in %s", path, n.dumpTree("", ""))
 	// }
 	pathLen := len(path)
 	if pathLen == 0 {
 		if len(n.leafHandler) == 0 {
-			return nil, nil
+			return nil, nil, nil
 		} else {
-			return n, nil
+			return n, n.leafHandler[method], nil
 		}
 	}
 
@@ -227,13 +253,15 @@ func (n *node) search(path string) (found *node, params []string) {
 			childPathLen := len(child.path)
 			if pathLen >= childPathLen && child.path == path[:childPathLen] {
 				nextPath := path[childPathLen:]
-				found, params = child.search(nextPath)
+				found, handler, params = child.search(method, nextPath)
 			}
 			break
 		}
 	}
 
-	if found != nil {
+	// If we found a node and it had a valid handler, then return here. Otherwise
+	// let's remember that we found this one, but look for a better match.
+	if handler != nil {
 		return
 	}
 
@@ -248,36 +276,52 @@ func (n *node) search(path string) (found *node, params []string) {
 		nextToken := path[nextSlash:]
 
 		if len(thisToken) > 0 { // Don't match on empty tokens.
-			found, params = n.wildcardChild.search(nextToken)
-			if found != nil {
+			wcNode, wcHandler, wcParams := n.wildcardChild.search(method, nextToken)
+			if wcHandler != nil || (found == nil && wcNode != nil) {
 				unescaped, err := url.QueryUnescape(thisToken)
 				if err != nil {
 					unescaped = thisToken
 				}
 
-				if params == nil {
-					params = []string{unescaped}
+				if wcParams == nil {
+					wcParams = []string{unescaped}
 				} else {
-					params = append(params, unescaped)
+					wcParams = append(wcParams, unescaped)
 				}
 
-				return
+				if wcHandler != nil {
+					return wcNode, wcHandler, wcParams
+				}
+
+				// Didn't actually find a handler here, so remember that we
+				// found a node but also see if we can fall through to the
+				// catchall.
+				found = wcNode
+				handler = wcHandler
+				params = wcParams
 			}
 		}
 	}
 
 	catchAllChild := n.catchAllChild
 	if catchAllChild != nil {
-		// Hit the catchall, so just assign the whole remaining path.
-		unescaped, err := url.QueryUnescape(path)
-		if err != nil {
-			unescaped = path
+		// Hit the catchall, so just assign the whole remaining path if it
+		// has a matching handler.
+		handler = catchAllChild.leafHandler[method]
+		// Found a handler, or we found a catchall node without a handler.
+		// Either way, return it since there's nothing left to check after this.
+		if handler != nil || found == nil {
+			unescaped, err := url.QueryUnescape(path)
+			if err != nil {
+				unescaped = path
+			}
+
+			return catchAllChild, handler, []string{unescaped}
 		}
 
-		return catchAllChild, []string{unescaped}
 	}
 
-	return nil, nil
+	return found, handler, params
 }
 
 func (n *node) dumpTree(prefix, nodeType string) string {

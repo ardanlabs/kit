@@ -20,7 +20,7 @@ var tp, te, tt, t1, tr []string
 var rootPersPre, echoPre, echoPersPre, timesPersPre []string
 var flagb1, flagb2, flagb3, flagbr, flagbp bool
 var flags1, flags2a, flags2b, flags3, outs string
-var flagi1, flagi2, flagi3, flagir int
+var flagi1, flagi2, flagi3, flagi4, flagir int
 var globalFlag1 bool
 var flagEcho, rootcalled bool
 var versionUsed int
@@ -96,7 +96,7 @@ var cmdTimes = &Command{
 
 var cmdRootNoRun = &Command{
 	Use:   "cobra-test",
-	Short: "The root can run it's own function",
+	Short: "The root can run its own function",
 	Long:  "The root description for help",
 	PersistentPreRun: func(cmd *Command, args []string) {
 		rootPersPre = args
@@ -111,7 +111,7 @@ var cmdRootSameName = &Command{
 
 var cmdRootWithRun = &Command{
 	Use:   "cobra-test",
-	Short: "The root can run it's own function",
+	Short: "The root can run its own function",
 	Long:  "The root description for help",
 	Run: func(cmd *Command, args []string) {
 		tr = args
@@ -123,6 +123,14 @@ var cmdSubNoRun = &Command{
 	Use:   "subnorun",
 	Short: "A subcommand without a Run function",
 	Long:  "A long output about a subcommand without a Run function",
+}
+
+var cmdCustomFlags = &Command{
+	Use:   "customflags [flags] -- REMOTE_COMMAND",
+	Short: "A command that expects flags in a custom location",
+	Long:  "A long output about a command that expects flags in a custom location",
+	Run: func(cmd *Command, args []string) {
+	},
 }
 
 var cmdVersion1 = &Command{
@@ -143,6 +151,12 @@ var cmdVersion2 = &Command{
 	},
 }
 
+var cmdColon = &Command{
+	Use: "cmd:colon",
+	Run: func(cmd *Command, args []string) {
+	},
+}
+
 func flagInit() {
 	cmdEcho.ResetFlags()
 	cmdPrint.ResetFlags()
@@ -151,10 +165,12 @@ func flagInit() {
 	cmdRootSameName.ResetFlags()
 	cmdRootWithRun.ResetFlags()
 	cmdSubNoRun.ResetFlags()
+	cmdCustomFlags.ResetFlags()
 	cmdRootNoRun.PersistentFlags().StringVarP(&flags2a, "strtwo", "t", "two", strtwoParentHelp)
 	cmdEcho.Flags().IntVarP(&flagi1, "intone", "i", 123, "help message for flag intone")
 	cmdTimes.Flags().IntVarP(&flagi2, "inttwo", "j", 234, "help message for flag inttwo")
 	cmdPrint.Flags().IntVarP(&flagi3, "intthree", "i", 345, "help message for flag intthree")
+	cmdCustomFlags.Flags().IntVar(&flagi4, "intfour", 456, "help message for flag intfour")
 	cmdEcho.PersistentFlags().StringVarP(&flags1, "strone", "s", "one", "help message for flag strone")
 	cmdEcho.PersistentFlags().BoolVarP(&flagbp, "persistentbool", "p", false, "help message for flag persistentbool")
 	cmdTimes.PersistentFlags().StringVarP(&flags2b, "strtwo", "t", "2", strtwoChildHelp)
@@ -174,6 +190,7 @@ func commandInit() {
 	cmdRootSameName.ResetCommands()
 	cmdRootWithRun.ResetCommands()
 	cmdSubNoRun.ResetCommands()
+	cmdCustomFlags.ResetCommands()
 }
 
 func initialize() *Command {
@@ -248,12 +265,24 @@ func simpleTester(c *Command, input string) resulter {
 	return resulter{err, output, c}
 }
 
+func simpleTesterC(c *Command, input string) resulter {
+	buf := new(bytes.Buffer)
+	// Testing flag with invalid input
+	c.SetOutput(buf)
+	c.SetArgs(strings.Split(input, " "))
+
+	cmd, err := c.ExecuteC()
+	output := buf.String()
+
+	return resulter{err, output, cmd}
+}
+
 func fullTester(c *Command, input string) resulter {
 	buf := new(bytes.Buffer)
 	// Testing flag with invalid input
 	c.SetOutput(buf)
 	cmdEcho.AddCommand(cmdTimes)
-	c.AddCommand(cmdPrint, cmdEcho, cmdSubNoRun, cmdDeprecated)
+	c.AddCommand(cmdPrint, cmdEcho, cmdSubNoRun, cmdCustomFlags, cmdDeprecated)
 	c.SetArgs(strings.Split(input, " "))
 
 	err := c.Execute()
@@ -423,6 +452,14 @@ func TestGrandChildSameName(t *testing.T) {
 	}
 }
 
+func TestUsage(t *testing.T) {
+	x := fullSetupTest("help")
+	checkResultContains(t, x, cmdRootWithRun.Use+" [flags]")
+	x = fullSetupTest("help customflags")
+	checkResultContains(t, x, cmdCustomFlags.Use)
+	checkResultOmits(t, x, cmdCustomFlags.Use+" [flags]")
+}
+
 func TestFlagLong(t *testing.T) {
 	noRRSetupTest("echo --intone=13 something -- here")
 
@@ -561,6 +598,41 @@ func TestInvalidSubcommandFlags(t *testing.T) {
 
 }
 
+func TestSubcommandExecuteC(t *testing.T) {
+	cmd := initializeWithRootCmd()
+	double := &Command{
+		Use: "double message",
+		Run: func(c *Command, args []string) {
+			msg := strings.Join(args, " ")
+			c.Println(msg, msg)
+		},
+	}
+
+	echo := &Command{
+		Use: "echo message",
+		Run: func(c *Command, args []string) {
+			msg := strings.Join(args, " ")
+			c.Println(msg, msg)
+		},
+	}
+
+	cmd.AddCommand(double, echo)
+
+	result := simpleTesterC(cmd, "double hello world")
+	checkResultContains(t, result, "hello world hello world")
+
+	if result.Command.Name() != "double" {
+		t.Errorf("invalid cmd returned from ExecuteC: should be 'double' but got %s", result.Command.Name())
+	}
+
+	result = simpleTesterC(cmd, "echo msg to be echoed")
+	checkResultContains(t, result, "msg to be echoed")
+
+	if result.Command.Name() != "echo" {
+		t.Errorf("invalid cmd returned from ExecuteC: should be 'echo' but got %s", result.Command.Name())
+	}
+}
+
 func TestSubcommandArgEvaluation(t *testing.T) {
 	cmd := initializeWithRootCmd()
 
@@ -590,7 +662,7 @@ func TestSubcommandArgEvaluation(t *testing.T) {
 func TestPersistentFlags(t *testing.T) {
 	fullSetupTest("echo -s something -p more here")
 
-	// persistentFlag should act like normal flag on it's own command
+	// persistentFlag should act like normal flag on its own command
 	if strings.Join(te, " ") != "more here" {
 		t.Errorf("flags didn't leave proper args remaining..%s given", te)
 	}
@@ -601,7 +673,7 @@ func TestPersistentFlags(t *testing.T) {
 		t.Errorf("persistent bool flag not parsed correctly. Expected true, had %v", flagbp)
 	}
 
-	// persistentFlag should act like normal flag on it's own command
+	// persistentFlag should act like normal flag on its own command
 	fullSetupTest("echo times -s again -c -p test here")
 
 	if strings.Join(tt, " ") != "test here" {
@@ -680,7 +752,7 @@ func TestVisitParents(t *testing.T) {
 }
 
 func TestRunnableRootCommandNilInput(t *testing.T) {
-	empty_arg := make([]string, 0)
+	var emptyArg []string
 	c := initializeWithRootCmd()
 
 	buf := new(bytes.Buffer)
@@ -688,7 +760,7 @@ func TestRunnableRootCommandNilInput(t *testing.T) {
 	c.SetOutput(buf)
 	cmdEcho.AddCommand(cmdTimes)
 	c.AddCommand(cmdPrint, cmdEcho)
-	c.SetArgs(empty_arg)
+	c.SetArgs(emptyArg)
 
 	err := c.Execute()
 	if err != nil {
@@ -791,7 +863,7 @@ func TestFlagAccess(t *testing.T) {
 }
 
 func TestNoNRunnableRootCommandNilInput(t *testing.T) {
-	args := make([]string, 0)
+	var args []string
 	c := initialize()
 
 	buf := new(bytes.Buffer)

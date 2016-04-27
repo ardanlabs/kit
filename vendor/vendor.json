@@ -3,128 +3,121 @@
 	"ignore": "",
 	"package": [
 		{
-			"path": "github.com/cpuguy83/go-md2man/md2man",
-			"revision": "71acacd42f85e5e82f70a55327789582a5200a90",
-			"revisionTime": "2015-08-03T11:35:22-04:00"
-		},
-		{
+			"checksumSHA1": "zZKFQ2lcwqkOhs3gIs3NKeLG2i8=",
 			"path": "github.com/dgrijalva/jwt-go",
 			"revision": "a2c85815a77d0f951e33ba4db5ae93629a1530af",
-			"revisionTime": "2016-04-12T17:36:00-07:00"
+			"revisionTime": "2016-04-13T00:36:00Z"
 		},
 		{
+			"checksumSHA1": "Lq5Fge0XqpxRfzbuh25XkVjFkF4=",
 			"path": "github.com/dimfeld/httppath",
 			"revision": "c8e499c3ef3c3e272ed8bdcc1ccf39f73c88debc",
-			"revisionTime": "2014-05-15T11:47:37-05:00"
+			"revisionTime": "2014-05-15T16:47:37Z"
 		},
 		{
+			"checksumSHA1": "iAwtd1Tei5DW5S0D2lmnYqEjGZE=",
 			"path": "github.com/dimfeld/httptreemux",
-			"revision": "f74b8868fbe8534a40358ce27b77818eeea2d6e0",
-			"revisionTime": "2015-12-08T16:55:51-06:00"
+			"revision": "612c3d8e47f5a166d9346b694cf2aeb68eff5369",
+			"revisionTime": "2016-04-05T15:43:20Z"
 		},
 		{
+			"checksumSHA1": "40vJyUB4ezQSn/NSadsKEOrudMc=",
 			"path": "github.com/inconshreveable/mousetrap",
 			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
-			"revisionTime": "2014-10-17T13:07:13-07:00"
+			"revisionTime": "2014-10-17T20:07:13Z"
 		},
 		{
+			"checksumSHA1": "jam7OmzX4/mUJkR3iOPW5/+2IQ4=",
 			"path": "github.com/pborman/uuid",
-			"revision": "cccd189d45f7ac3368a0d127efb7f4d08ae0b655",
-			"revisionTime": "2015-08-24T14:28:02-07:00"
+			"revision": "c55201b036063326c5b1b89ccfe45a184973d073",
+			"revisionTime": "2016-02-16T16:37:10Z"
 		},
 		{
-			"path": "github.com/russross/blackfriday",
-			"revision": "300106c228d52c8941d4b3de6054a6062a86dda3",
-			"revisionTime": "2015-11-17T09:23:12+02:00"
-		},
-		{
-			"path": "github.com/shurcooL/sanitized_anchor_name",
-			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
-			"revisionTime": "2015-10-27T17:19:15-07:00"
-		},
-		{
+			"checksumSHA1": "ku3yr3pk9GtdfQ6JvaZYcfLs7Wo=",
 			"path": "github.com/spf13/cobra",
-			"revision": "9324f3657d033e6978fed178989ef71418e6a9a6",
-			"revisionTime": "2015-11-14T22:46:43-07:00"
+			"revision": "9a8186dbb51a58b06720d2189657fa8adc12f1a1",
+			"revisionTime": "2016-03-31T18:52:16Z"
 		},
 		{
+			"checksumSHA1": "jkxp5XpJBo+7vomeX/zMyNFC2AY=",
 			"path": "github.com/spf13/pflag",
-			"revision": "08b1a584251b5b62f458943640fc8ebd4d50aaa5",
-			"revisionTime": "2015-10-13T15:06:43-05:00"
+			"revision": "cb88ea77998c3f024757528e3305022ab50b43be",
+			"revisionTime": "2016-03-17T00:02:28Z"
 		},
 		{
+			"checksumSHA1": "5HymxKSV8zcw6eiNV5Z/MZBPmuU=",
 			"path": "golang.org/x/crypto/bcrypt",
-			"revision": "346896d57731cb5670b36c6178fc5519f3225980",
-			"revisionTime": "2015-06-18T15:57:31-07:00"
+			"revision": "285fb2ed20d1dc450fc743a1b3ff7c36bef372b9",
+			"revisionTime": "2016-04-26T12:32:32Z"
 		},
 		{
+			"checksumSHA1": "iuAAm/pl3SoUWM39eUWX7Os+yPg=",
 			"path": "golang.org/x/crypto/blowfish",
-			"revision": "346896d57731cb5670b36c6178fc5519f3225980",
-			"revisionTime": "2015-06-18T15:57:31-07:00"
+			"revision": "285fb2ed20d1dc450fc743a1b3ff7c36bef372b9",
+			"revisionTime": "2016-04-26T12:32:32Z"
 		},
 		{
+			"checksumSHA1": "JOJHxFm3ArTV3oUSH6Q2sjeMnrs=",
 			"path": "golang.org/x/crypto/pbkdf2",
-			"revision": "346896d57731cb5670b36c6178fc5519f3225980",
-			"revisionTime": "2015-06-18T15:57:31-07:00"
+			"revision": "285fb2ed20d1dc450fc743a1b3ff7c36bef372b9",
+			"revisionTime": "2016-04-26T12:32:32Z"
 		},
 		{
+			"checksumSHA1": "VF8aIOMNmMESQoEskizCQ6QFvVM=",
 			"path": "golang.org/x/crypto/scrypt",
-			"revision": "346896d57731cb5670b36c6178fc5519f3225980",
-			"revisionTime": "2015-06-18T15:57:31-07:00"
+			"revision": "285fb2ed20d1dc450fc743a1b3ff7c36bef372b9",
+			"revisionTime": "2016-04-26T12:32:32Z"
 		},
 		{
+			"checksumSHA1": "8MQPi1qBuFKaQW+1+CZ3Zcer9VY=",
 			"path": "gopkg.in/bluesuncorp/validator.v8",
-			"revision": "e8d470cd7a944d716c5527fb382487b6e314022d",
-			"revisionTime": "2016-01-06T09:33:57-05:00"
+			"revision": "014792cf3e266caff1e916876be12282b33059e0",
+			"revisionTime": "2016-02-23T20:26:51Z"
 		},
 		{
 			"checksumSHA1": "YzHkxW3fGe5Oc5AVatDNn1g5Ung=",
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/check.v1",
 			"path": "gopkg.in/check.v1",
 			"revision": "4f90aeace3a26ad7021961c297b22c42160c7b25",
 			"revisionTime": "2016-01-05T16:49:36Z"
 		},
 		{
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/go-playground/assert.v1",
+			"checksumSHA1": "/BNO6QsjA8Gc+7zgjsx34Md3lBc=",
 			"path": "gopkg.in/go-playground/assert.v1",
 			"revision": "81e18c3a1062114068407f67a360d6eb6b429715",
-			"revisionTime": "2015-09-24T06:57:13-04:00"
+			"revisionTime": "2015-09-24T10:57:13Z"
 		},
 		{
+			"checksumSHA1": "do740rZ2tRC1bOxq5Qo2SPJ3i64=",
 			"path": "gopkg.in/go-playground/validator.v8",
 			"revision": "4c79e698231042063ef780f52bd0295392de42d7",
-			"revisionTime": "2016-02-02T20:01:43-05:00"
+			"revisionTime": "2016-02-03T01:01:43Z"
 		},
 		{
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/mgo.v2",
+			"checksumSHA1": "bwoDoFgIlpD57NfX1zuf0W3Gut0=",
 			"path": "gopkg.in/mgo.v2",
-			"revision": "547dc79326ed904c42940deac38d9747ec936659",
-			"revisionTime": "2016-02-07T00:08:42-02:00"
+			"revision": "b6e2fa371e64216a45e61072a96d4e3859f169da",
+			"revisionTime": "2016-02-23T13:38:14Z"
 		},
 		{
 			"checksumSHA1": "yzTCdSDCTv/hik3PQSJ4IJHp2to=",
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/mgo.v2/bson",
 			"path": "gopkg.in/mgo.v2/bson",
 			"revision": "b6e2fa371e64216a45e61072a96d4e3859f169da",
 			"revisionTime": "2016-02-23T13:38:14Z"
 		},
 		{
 			"checksumSHA1": "CkCDTsyN2Lbj1cL8+oaYKoPpI9w=",
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/mgo.v2/internal/sasl",
 			"path": "gopkg.in/mgo.v2/internal/sasl",
 			"revision": "b6e2fa371e64216a45e61072a96d4e3859f169da",
 			"revisionTime": "2016-02-23T13:38:14Z"
 		},
 		{
 			"checksumSHA1": "fOxeCpKRYNTTM2VCrsU2S/KEd1s=",
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/mgo.v2/internal/scram",
 			"path": "gopkg.in/mgo.v2/internal/scram",
 			"revision": "b6e2fa371e64216a45e61072a96d4e3859f169da",
 			"revisionTime": "2016-02-23T13:38:14Z"
 		},
 		{
 			"checksumSHA1": "lQZENi8ObYZ1A30w9u77ZZCpg6c=",
-			"origin": "github.com/ardanlabs/kit/vendor/gopkg.in/yaml.v2",
 			"path": "gopkg.in/yaml.v2",
 			"revision": "a83829b6f1293c91addabc89d0571c246397bbf4",
 			"revisionTime": "2016-03-01T20:40:22Z"

@@ -1,13 +1,13 @@
 Package validator
 ================
-
-![Validator](logo.png)
-
+<img align="right" src="https://raw.githubusercontent.com/go-playground/validator/v8/logo.png">
 [![Join the chat at https://gitter.im/bluesuncorp/validator](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/go-playground/validator?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://semaphoreci.com/api/v1/projects/ec20115f-ef1b-4c7d-9393-cc76aba74eb4/523019/badge.svg)](https://semaphoreci.com/joeybloggs/validator)
-[![Coverage Status](https://coveralls.io/repos/go-playground/validator/badge.svg?branch=v8-development&service=github)](https://coveralls.io/github/go-playground/validator?branch=v8-development)
+![Project status](https://img.shields.io/badge/version-8.17.1-green.svg)
+[![Build Status](https://semaphoreci.com/api/v1/projects/ec20115f-ef1b-4c7d-9393-cc76aba74eb4/530054/badge.svg)](https://semaphoreci.com/joeybloggs/validator)
+[![Coverage Status](https://coveralls.io/repos/go-playground/validator/badge.svg?branch=v8&service=github)](https://coveralls.io/github/go-playground/validator?branch=v8)
 [![Go Report Card](http://goreportcard.com/badge/go-playground/validator)](http://goreportcard.com/report/go-playground/validator)
 [![GoDoc](https://godoc.org/gopkg.in/go-playground/validator.v8?status.svg)](https://godoc.org/gopkg.in/go-playground/validator.v8)
+![License](https://img.shields.io/dub/l/vibe-d.svg)
 
 Package validator implements value validations for structs and individual fields based on tags.
 
@@ -308,39 +308,47 @@ func validateStruct() {
 
 Benchmarks
 ------
-###### Run on MacBook Pro (Retina, 15-inch, Late 2013) 2.6 GHz Intel Core i7 16 GB 1600 MHz DDR3 using Go version go1.5.2 darwin/amd64
+###### Run on MacBook Pro (Retina, 15-inch, Late 2013) 2.6 GHz Intel Core i7 16 GB 1600 MHz DDR3 using Go version go1.5.3 darwin/amd64
 ```go
 go test -cpu=4 -bench=. -benchmem=true
 PASS
-BenchmarkFieldSuccess-4                            	10000000	       176 ns/op	       0 B/op	       0 allocs/op
-BenchmarkFieldFailure-4                            	 2000000	       727 ns/op	     432 B/op	       4 allocs/op
-BenchmarkFieldDiveSuccess-4                        	  500000	      3220 ns/op	     480 B/op	      27 allocs/op
-BenchmarkFieldDiveFailure-4                        	  500000	      3823 ns/op	     912 B/op	      31 allocs/op
-BenchmarkFieldCustomTypeSuccess-4                  	 5000000	       368 ns/op	      32 B/op	       2 allocs/op
-BenchmarkFieldCustomTypeFailure-4                  	 2000000	       699 ns/op	     432 B/op	       4 allocs/op
-BenchmarkFieldOrTagSuccess-4                       	 1000000	      1265 ns/op	      16 B/op	       1 allocs/op
-BenchmarkFieldOrTagFailure-4                       	 1000000	      1182 ns/op	     464 B/op	       6 allocs/op
-BenchmarkStructLevelValidationSuccess-4            	 2000000	       739 ns/op	     176 B/op	       6 allocs/op
-BenchmarkStructLevelValidationFailure-4            	 1000000	      1368 ns/op	     640 B/op	      11 allocs/op
-BenchmarkStructSimpleCustomTypeSuccess-4           	 2000000	       965 ns/op	      80 B/op	       5 allocs/op
-BenchmarkStructSimpleCustomTypeFailure-4           	 1000000	      1561 ns/op	     688 B/op	      11 allocs/op
-BenchmarkStructPartialSuccess-4                    	 1000000	      1285 ns/op	     384 B/op	      10 allocs/op
-BenchmarkStructPartialFailure-4                    	 1000000	      1879 ns/op	     832 B/op	      15 allocs/op
-BenchmarkStructExceptSuccess-4                     	 2000000	      1038 ns/op	     336 B/op	       7 allocs/op
-BenchmarkStructExceptFailure-4                     	 1000000	      1330 ns/op	     384 B/op	      10 allocs/op
-BenchmarkStructSimpleCrossFieldSuccess-4           	 1000000	      1081 ns/op	     128 B/op	       6 allocs/op
-BenchmarkStructSimpleCrossFieldFailure-4           	 1000000	      1737 ns/op	     592 B/op	      11 allocs/op
-BenchmarkStructSimpleCrossStructCrossFieldSuccess-4	 1000000	      1790 ns/op	     192 B/op	      10 allocs/op
-BenchmarkStructSimpleCrossStructCrossFieldFailure-4	  500000	      2431 ns/op	     656 B/op	      15 allocs/op
-BenchmarkStructSimpleSuccess-4                     	 2000000	       950 ns/op	      48 B/op	       3 allocs/op
-BenchmarkStructSimpleFailure-4                     	 1000000	      1672 ns/op	     688 B/op	      11 allocs/op
-BenchmarkStructSimpleSuccessParallel-4             	 5000000	       271 ns/op	      48 B/op	       3 allocs/op
-BenchmarkStructSimpleFailureParallel-4             	 2000000	       670 ns/op	     688 B/op	      11 allocs/op
-BenchmarkStructComplexSuccess-4                    	  300000	      5828 ns/op	     544 B/op	      32 allocs/op
-BenchmarkStructComplexFailure-4                    	  200000	     11382 ns/op	    3912 B/op	      77 allocs/op
-BenchmarkStructComplexSuccessParallel-4            	 1000000	      1739 ns/op	     544 B/op	      32 allocs/op
-BenchmarkStructComplexFailureParallel-4            	  300000	      4682 ns/op	    3912 B/op	      77 allocs/op
+BenchmarkFieldSuccess-4                            	10000000	       167 ns/op	       0 B/op	       0 allocs/op
+BenchmarkFieldFailure-4                            	 2000000	       701 ns/op	     432 B/op	       4 allocs/op
+BenchmarkFieldDiveSuccess-4                        	  500000	      2937 ns/op	     480 B/op	      27 allocs/op
+BenchmarkFieldDiveFailure-4                        	  500000	      3536 ns/op	     912 B/op	      31 allocs/op
+BenchmarkFieldCustomTypeSuccess-4                  	 5000000	       341 ns/op	      32 B/op	       2 allocs/op
+BenchmarkFieldCustomTypeFailure-4                  	 2000000	       679 ns/op	     432 B/op	       4 allocs/op
+BenchmarkFieldOrTagSuccess-4                       	 1000000	      1157 ns/op	      16 B/op	       1 allocs/op
+BenchmarkFieldOrTagFailure-4                       	 1000000	      1109 ns/op	     464 B/op	       6 allocs/op
+BenchmarkStructLevelValidationSuccess-4            	 2000000	       694 ns/op	     176 B/op	       6 allocs/op
+BenchmarkStructLevelValidationFailure-4            	 1000000	      1311 ns/op	     640 B/op	      11 allocs/op
+BenchmarkStructSimpleCustomTypeSuccess-4           	 2000000	       894 ns/op	      80 B/op	       5 allocs/op
+BenchmarkStructSimpleCustomTypeFailure-4           	 1000000	      1496 ns/op	     688 B/op	      11 allocs/op
+BenchmarkStructPartialSuccess-4                    	 1000000	      1229 ns/op	     384 B/op	      10 allocs/op
+BenchmarkStructPartialFailure-4                    	 1000000	      1838 ns/op	     832 B/op	      15 allocs/op
+BenchmarkStructExceptSuccess-4                     	 2000000	       961 ns/op	     336 B/op	       7 allocs/op
+BenchmarkStructExceptFailure-4                     	 1000000	      1218 ns/op	     384 B/op	      10 allocs/op
+BenchmarkStructSimpleCrossFieldSuccess-4           	 2000000	       954 ns/op	     128 B/op	       6 allocs/op
+BenchmarkStructSimpleCrossFieldFailure-4           	 1000000	      1569 ns/op	     592 B/op	      11 allocs/op
+BenchmarkStructSimpleCrossStructCrossFieldSuccess-4	 1000000	      1588 ns/op	     192 B/op	      10 allocs/op
+BenchmarkStructSimpleCrossStructCrossFieldFailure-4	 1000000	      2217 ns/op	     656 B/op	      15 allocs/op
+BenchmarkStructSimpleSuccess-4                     	 2000000	       925 ns/op	      48 B/op	       3 allocs/op
+BenchmarkStructSimpleFailure-4                     	 1000000	      1650 ns/op	     688 B/op	      11 allocs/op
+BenchmarkStructSimpleSuccessParallel-4             	 5000000	       261 ns/op	      48 B/op	       3 allocs/op
+BenchmarkStructSimpleFailureParallel-4             	 2000000	       758 ns/op	     688 B/op	      11 allocs/op
+BenchmarkStructComplexSuccess-4                    	  300000	      5868 ns/op	     544 B/op	      32 allocs/op
+BenchmarkStructComplexFailure-4                    	  200000	     10767 ns/op	    3912 B/op	      77 allocs/op
+BenchmarkStructComplexSuccessParallel-4            	 1000000	      1559 ns/op	     544 B/op	      32 allocs/op
+BenchmarkStructComplexFailureParallel-4            	  500000	      3747 ns/op	    3912 B/op	      77 allocs
 ```
+
+Complimentary Software
+----------------------
+
+Here is a list of software that compliments using this library either pre or post validation.
+
+* [Gorilla Schema](https://github.com/gorilla/schema) - Package gorilla/schema fills a struct with form values.
+* [Conform](https://github.com/leebenson/conform) - Trims, sanitizes & scrubs data based on struct tags.
 
 How to Contribute
 ------
