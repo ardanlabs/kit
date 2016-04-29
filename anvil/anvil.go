@@ -55,7 +55,7 @@ func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
 	}
 
 	// Trying to reduce the cost of unmarshaling the map into our struct so
-	// doing it manually. Calling Marshal/Unmarshal will cost.
+	// doing it manually. Calling Marshal/Unmarshal will cost more.
 
 	var claims Claims
 
@@ -96,23 +96,34 @@ func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
 // and extracting the JWT payload. It returns a PEM document for validating and
 // extracting the JWT's claims.
 func RetrievePEM(host string) ([]byte, error) {
+
+	// Ask Anvil for the public keys.
 	r, err := http.Get(host + "/jwks")
 	if err != nil {
 		return nil, err
 	}
 
+	// Validate we successful requested them.
 	if r.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("Invalid Status: %d %s", r.StatusCode, r.Status)
 	}
 
 	defer r.Body.Close()
 
-	var jwk JWK
-	if err := json.NewDecoder(r.Body).Decode(&jwk); err != nil {
+	// Decode the two keys we will receive, `sig` and `enc`.
+	var jwks []JWK
+	if err := json.NewDecoder(r.Body).Decode(&jwks); err != nil {
 		return nil, err
 	}
 
-	return JWKToPEM(jwk)
+	// Find the `sig` key since this is what we need.
+	for _, jwk := range jwks {
+		if jwk.Use == "sig" {
+			return JWKToPEM(jwk)
+		}
+	}
+
+	return nil, errors.New("Sig keys not found")
 }
 
 // JWKToPEM takes an Anvil JWK and converts it to the PEM format.
