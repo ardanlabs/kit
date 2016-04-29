@@ -1,0 +1,167 @@
+// Package anvil provides support for validating an Anvil JWT and extracting
+// the claims for authorization.
+// https://superdry.apphb.com/tools/online-rsa-key-converter
+package anvil
+
+import (
+	"bytes"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/json"
+	"encoding/pem"
+	"errors"
+	"fmt"
+	"math/big"
+	"net/http"
+
+	jwt "github.com/dgrijalva/jwt-go"
+)
+
+// JWK contains the JSON WEB KEY required to encrypt the JWT received on
+// every request.
+type JWK struct {
+	KeyType   string `json:"kty"` // Key Type: RSA
+	Use       string `json:"use"` // Verifiying signatures for `sig` or `enc`
+	Algorithm string `json:"alg"` // Algorithm to use: RS256
+	Modulus   string `json:"n"`   // The modulus section of the key
+	Exponent  string `json:"e"`   // The exponent of the key
+}
+
+// Claims is the payload we are looking to get on each request.
+type Claims struct {
+	Jti   string
+	Iss   string
+	Sub   string
+	Aud   string
+	Exp   int64
+	Iat   int64
+	Scope string // This is where we find the authorization markers.
+}
+
+// ValidateFromRequest takes a request and extracts the JWT. Then it performs
+// validation and returns the claims if everything is valid.
+func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
+	f := func(token *jwt.Token) (interface{}, error) {
+		return pem, nil
+	}
+
+	token, err := jwt.ParseFromRequest(r, f)
+	if err != nil {
+		return Claims{}, nil
+	}
+
+	if !token.Valid {
+		return Claims{}, errors.New("Token is invalid")
+	}
+
+	data, err := json.Marshal(token.Claims)
+	if err != nil {
+		return Claims{}, err
+	}
+
+	var claims Claims
+	if err := json.Unmarshal(data, &claims); err != nil {
+		return Claims{}, err
+	}
+
+	return claims, nil
+}
+
+//==============================================================================
+
+// RetrievePEM makes a call to Anvil and retrieves the public key for validating
+// and extracting the JWT payload. It returns a PEM document for validating and
+// extracting the JWT's claims.
+func RetrievePEM(host string) ([]byte, error) {
+	r, err := http.Get(host + "/jwks")
+	if err != nil {
+		return nil, err
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Invalid Status: %d %s", r.StatusCode, r.Status)
+	}
+
+	defer r.Body.Close()
+
+	var jwk JWK
+	if err := json.NewDecoder(r.Body).Decode(&jwk); err != nil {
+		return nil, err
+	}
+
+	return JWKToPEM(jwk)
+}
+
+// JWKToPEM takes an Anvil JWK and converts it to the PEM format.
+func JWKToPEM(jwk JWK) ([]byte, error) {
+
+	// Convert the Modulus into a Big Integer.
+	n, err := base64RawURLEncToBigInt(jwk.Modulus)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert the Exponent into a Big Integer.
+	e, err := base64RawURLEncToBigInt(jwk.Modulus)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create an rsa public key value based on the JWK received from Anvil.
+	key := rsa.PublicKey{
+		N: n,
+		E: int(e.Int64()),
+	}
+
+	// Serialize a public key to DER-encoded PKIX format.
+	pubBytes, err := x509.MarshalPKIXPublicKey(&key)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a PEM block value using the serialized DER-encoded PKIX format.
+	block := pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: pubBytes,
+	}
+
+	// Generate the PEM document.
+	var buf bytes.Buffer
+	if err := pem.Encode(&buf, &block); err != nil {
+		return nil, err
+	}
+
+	// Return the PEM document.
+	return buf.Bytes(), nil
+}
+
+//==============================================================================
+
+// base64StdEncToBigInt takes a base64 standard encoded string and converts
+// it to a Big Int.
+func base64StdEncToBigInt(str string) (*big.Int, error) {
+	decoded, err := base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		return nil, err
+	}
+
+	var bint big.Int
+	bint.SetBytes([]byte(decoded))
+
+	return &bint, nil
+}
+
+// base64RawURLEncToBigInt takes a base64 raw url encoded string and converts
+// it to a Big Int.
+func base64RawURLEncToBigInt(str string) (*big.Int, error) {
+	decoded, err := base64.RawURLEncoding.DecodeString(str)
+	if err != nil {
+		return nil, err
+	}
+
+	var bint big.Int
+	bint.SetBytes([]byte(decoded))
+
+	return &bint, nil
+}
