@@ -41,15 +41,20 @@ type Claims struct {
 // ValidateFromRequest takes a request and extracts the JWT. Then it performs
 // validation and returns the claims if everything is valid.
 func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
+
+	// Function is required to return the PEM that is needed to
+	// validate the JWT and extract the claims.
 	f := func(token *jwt.Token) (interface{}, error) {
 		return pem, nil
 	}
 
+	// Parse the request, looking for the JWT and peforming transformations.
 	token, err := jwt.ParseFromRequest(r, f)
 	if err != nil {
-		return Claims{}, nil
+		return Claims{}, err
 	}
 
+	// Was the token valid.
 	if !token.Valid {
 		return Claims{}, errors.New("Token is invalid")
 	}
@@ -86,6 +91,8 @@ func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
 	if v, exists := token.Claims["Scope"]; exists {
 		claims.Scope = v.(string)
 	}
+
+	fmt.Println("***********", claims)
 
 	return claims, nil
 }
@@ -129,13 +136,13 @@ func RetrievePEM(host string) ([]byte, error) {
 // JWKToPEM takes an Anvil JWK and converts it to the PEM format.
 func JWKToPEM(jwk JWK) ([]byte, error) {
 
-	// Convert the Modulus into a Big Integer.
+	// Convert the Modulus into a Big Int.
 	n, err := base64RawURLEncToBigInt(jwk.Modulus)
 	if err != nil {
 		return nil, err
 	}
 
-	// Convert the Exponent into a Big Integer.
+	// Convert the Exponent into a Big Int.
 	e, err := base64RawURLEncToBigInt(jwk.Modulus)
 	if err != nil {
 		return nil, err

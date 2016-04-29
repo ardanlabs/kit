@@ -59,6 +59,33 @@ func mockServer() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(f))
 }
 
+// mockHandler executes the full path of the package for processing
+// Anvil based JWTs.
+func mockHandler(rw http.ResponseWriter, r *http.Request) {
+	server := mockServer()
+	defer server.Close()
+
+	pem, err := anvil.RetrievePEM(server.URL)
+	if err != nil {
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(501)
+		json.NewEncoder(rw).Encode(struct{ Error string }{err.Error()})
+		return
+	}
+
+	claims, err := anvil.ValidateFromRequest(r, pem)
+	if err != nil {
+		rw.Header().Set("Content-Type", "application/json")
+		rw.WriteHeader(502)
+		json.NewEncoder(rw).Encode(struct{ Error string }{err.Error()})
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.WriteHeader(200)
+	json.NewEncoder(rw).Encode(claims)
+}
+
 //==============================================================================
 
 // TestRetrievePEM validates we can retrieve the JWKs and convert them to a
@@ -86,6 +113,46 @@ func TestRetrievePEM(t *testing.T) {
 			} else {
 				t.Logf("\t%s\tShould have the correct PEM document.", succeed)
 			}
+		}
+	}
+}
+
+// TestValidateFromRequest validates a JWT can be processed from a request and
+// validated with proper claims extraction.
+func TestValidateFromRequest(t *testing.T) {
+	http.HandleFunc("/api", mockHandler)
+
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest("GET", "/api", nil)
+	r.Header.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJhNTdjNTI4ZTFiNDkzNWNiODYxYSIsImlzcyI6Imh0dHBzOi8vZm9yZ2UuYW52aWwuaW8iLCJzdWIiOiI0ZTVhYjg3NS1mZWViLTRiYWItODlhMS1jY2MwNjBhNDZiZjciLCJhdWQiOiI2YzVmNWEwZC05Mzk1LTQ0ZGMtYTQ1OC0yOGYyNmM0OTNmOTMiLCJleHAiOjE0NjA5OTcxNTksImlhdCI6MTQ2MDk5MzU1OSwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSByZWFsbSJ9.PAnBQRgZ-EtetYrR1pb7AHY3A43QB_quTC24DC6SGnACehuOHhLgZ7e6XxS1aZsaHI5Jt0MW4bJMA1mMfGYOOl7naSlFFnEbWWo4YOkZjoG--cDDWh4N5Aim1Y8cUQszyTZahxizx9NglAmzwUr31EEyTF8Yj0xp9FlWUqX0Dr9YHqj7iwU01fKruZ-9iG2ckhnvQ3mfLwKq-lJ0cBj8iGQYLktZ33GDrwvNcRdBnbHl-q_5pgKENbsXPpN6_FuaJrZa-GgnSbcrVM3tHNngubLxtCgueKzKBsppxTWsBRKSWa1lx6ZnBDbkSDOk1wsaQQeIZqwefxSB8q6lrVOoVqeZeRgAYJgoqW8zdX7kX_LCoEZ8i0-f0AQpemPHfa-K0XtSE3ENrz-9gWNbbxtgcnr3RPXmY4ke5-m2G4cb7F9iilgX9U8BOCBvdwaEtiA4O3YUnHlOGCGWV7dPN034iC69-TRUNlXt83GD-algAEnL-q_FrlvTFuNa0WyNgH4BJ8Si0BWUphqkrj4WDAgl4O8gfevEb-rMGtPlbcoAJnSpPUBDjFyZzZdeLJzM-B8uenKCBCL3LqtcFpp8k7_I3Q9bUC9fbjawG1IBVtZEucxWGvytOXVuo8S_VS7z3iGVvuDUEWYTPITsO2EE5VG3kFy8KTIjwOUBULVt7buXvus")
+
+	http.DefaultServeMux.ServeHTTP(w, r)
+
+	t.Log("Given the need to validate JWTs from Anvil.")
+	{
+		t.Log("\tTest 0:\tWhen making a stadard web api call.")
+		{
+			if w.Code != 200 {
+				t.Errorf("\t%s\tShould receive a status code of 200 for the response. Received[%d].", failed, w.Code)
+
+				if w.Code >= 501 {
+					var rspErr struct{ Error string }
+					if err := json.NewDecoder(w.Body).Decode(&rspErr); err != nil {
+						t.Fatalf("\t%s\tShould be able to decode the error response : %v", failed, err)
+					}
+
+					t.Fatalf("\t%s\t%+v", failed, rspErr)
+				}
+			}
+			t.Logf("\t%s\tShould receive a status code of 200 for the response.", succeed)
+
+			var claims anvil.Claims
+			if err := json.NewDecoder(w.Body).Decode(&claims); err != nil {
+				t.Fatalf("\t%s\tShould be able to decode the claims response : %v", failed, err)
+			}
+			t.Logf("\t%s\tShould be able to decode the claims response.", succeed)
+
+			t.Logf("%+v", claims)
 		}
 	}
 }
