@@ -1,6 +1,5 @@
 // Package anvil provides support for validating an Anvil JWT and extracting
 // the claims for authorization.
-// https://superdry.apphb.com/tools/online-rsa-key-converter
 package anvil
 
 import (
@@ -55,14 +54,37 @@ func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
 		return Claims{}, errors.New("Token is invalid")
 	}
 
-	data, err := json.Marshal(token.Claims)
-	if err != nil {
-		return Claims{}, err
-	}
+	// Trying to reduce the cost of unmarshaling the map into our struct so
+	// doing it manually. Calling Marshal/Unmarshal will cost.
 
 	var claims Claims
-	if err := json.Unmarshal(data, &claims); err != nil {
-		return Claims{}, err
+
+	if v, exists := token.Claims["Jti"]; exists {
+		claims.Jti = v.(string)
+	}
+
+	if v, exists := token.Claims["Iss"]; exists {
+		claims.Iss = v.(string)
+	}
+
+	if v, exists := token.Claims["Sub"]; exists {
+		claims.Sub = v.(string)
+	}
+
+	if v, exists := token.Claims["Aud"]; exists {
+		claims.Aud = v.(string)
+	}
+
+	if v, exists := token.Claims["Exp"]; exists {
+		claims.Exp = int64(v.(int))
+	}
+
+	if v, exists := token.Claims["Iat"]; exists {
+		claims.Iat = int64(v.(int))
+	}
+
+	if v, exists := token.Claims["Scope"]; exists {
+		claims.Scope = v.(string)
 	}
 
 	return claims, nil
