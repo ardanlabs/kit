@@ -3,12 +3,9 @@
 package anvil
 
 import (
-	"bytes"
 	"crypto/rsa"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"math/big"
@@ -17,14 +14,18 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-// JWK contains the JSON WEB KEY required to encrypt the JWT received on
+// key contains the JSON WEB KEY required to encrypt the JWT received on
 // every request.
-type JWK struct {
-	KeyType   string `json:"kty"` // Key Type: RSA
+type key struct {
+	Type      string `json:"kty"` // Key Type: RSA
 	Use       string `json:"use"` // Verifiying signatures for `sig` or `enc`
 	Algorithm string `json:"alg"` // Algorithm to use: RS256
 	Modulus   string `json:"n"`   // The modulus section of the key
 	Exponent  string `json:"e"`   // The exponent of the key
+}
+
+type keys struct {
+	Set []key `json:"keys"`
 }
 
 // Claims is the payload we are looking to get on each request.
@@ -40,18 +41,18 @@ type Claims struct {
 
 // ValidateFromRequest takes a request and extracts the JWT. Then it performs
 // validation and returns the claims if everything is valid.
-func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
+func ValidateFromRequest(r *http.Request, pk *rsa.PublicKey) (Claims, error) {
 
-	// Function is required to return the PEM that is needed to
+	// Function is required to return the Public Key that is needed to
 	// validate the JWT and extract the claims.
 	f := func(token *jwt.Token) (interface{}, error) {
-		return pem, nil
+		return pk, nil
 	}
 
 	// Parse the request, looking for the JWT and peforming transformations.
 	token, err := jwt.ParseFromRequest(r, f)
 	if err != nil {
-		return Claims{}, err
+		return Claims{}, fmt.Errorf("Parse Error: %v", err)
 	}
 
 	// Was the token valid.
@@ -64,45 +65,41 @@ func ValidateFromRequest(r *http.Request, pem []byte) (Claims, error) {
 
 	var claims Claims
 
-	if v, exists := token.Claims["Jti"]; exists {
+	if v, exists := token.Claims["jti"]; exists {
 		claims.Jti = v.(string)
 	}
 
-	if v, exists := token.Claims["Iss"]; exists {
+	if v, exists := token.Claims["iss"]; exists {
 		claims.Iss = v.(string)
 	}
 
-	if v, exists := token.Claims["Sub"]; exists {
+	if v, exists := token.Claims["sub"]; exists {
 		claims.Sub = v.(string)
 	}
 
-	if v, exists := token.Claims["Aud"]; exists {
+	if v, exists := token.Claims["aud"]; exists {
 		claims.Aud = v.(string)
 	}
 
-	if v, exists := token.Claims["Exp"]; exists {
-		claims.Exp = int64(v.(int))
+	if v, exists := token.Claims["exp"]; exists {
+		claims.Exp = int64(v.(float64))
 	}
 
-	if v, exists := token.Claims["Iat"]; exists {
-		claims.Iat = int64(v.(int))
+	if v, exists := token.Claims["iat"]; exists {
+		claims.Iat = int64(v.(float64))
 	}
 
-	if v, exists := token.Claims["Scope"]; exists {
+	if v, exists := token.Claims["scope"]; exists {
 		claims.Scope = v.(string)
 	}
-
-	fmt.Println("***********", claims)
 
 	return claims, nil
 }
 
 //==============================================================================
 
-// RetrievePEM makes a call to Anvil and retrieves the public key for validating
-// and extracting the JWT payload. It returns a PEM document for validating and
-// extracting the JWT's claims.
-func RetrievePEM(host string) ([]byte, error) {
+// RetrievePublicKey calls into Anvil to get the Public Key information.
+func RetrievePublicKey(host string) (*rsa.PublicKey, error) {
 
 	// Ask Anvil for the public keys.
 	r, err := http.Get(host + "/jwks")
@@ -118,32 +115,32 @@ func RetrievePEM(host string) ([]byte, error) {
 	defer r.Body.Close()
 
 	// Decode the two keys we will receive, `sig` and `enc`.
-	var jwks []JWK
-	if err := json.NewDecoder(r.Body).Decode(&jwks); err != nil {
+	var ks keys
+	if err := json.NewDecoder(r.Body).Decode(&ks); err != nil {
 		return nil, err
 	}
 
 	// Find the `sig` key since this is what we need.
-	for _, jwk := range jwks {
+	for _, jwk := range ks.Set {
 		if jwk.Use == "sig" {
-			return JWKToPEM(jwk)
+			return jwkToPK(jwk)
 		}
 	}
 
 	return nil, errors.New("Sig keys not found")
 }
 
-// JWKToPEM takes an Anvil JWK and converts it to the PEM format.
-func JWKToPEM(jwk JWK) ([]byte, error) {
+// jwkToPK converts the Anvil JWK into a RSA Public Key.
+func jwkToPK(k key) (*rsa.PublicKey, error) {
 
 	// Convert the Modulus into a Big Int.
-	n, err := base64RawURLEncToBigInt(jwk.Modulus)
+	n, err := base64RawURLEncToBigInt(k.Modulus)
 	if err != nil {
 		return nil, err
 	}
 
 	// Convert the Exponent into a Big Int.
-	e, err := base64RawURLEncToBigInt(jwk.Modulus)
+	e, err := base64RawURLEncToBigInt(k.Exponent)
 	if err != nil {
 		return nil, err
 	}
@@ -154,26 +151,7 @@ func JWKToPEM(jwk JWK) ([]byte, error) {
 		E: int(e.Int64()),
 	}
 
-	// Serialize a public key to DER-encoded PKIX format.
-	pubBytes, err := x509.MarshalPKIXPublicKey(&key)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create a PEM block value using the serialized DER-encoded PKIX format.
-	block := pem.Block{
-		Type:  "PUBLIC KEY",
-		Bytes: pubBytes,
-	}
-
-	// Generate the PEM document.
-	var buf bytes.Buffer
-	if err := pem.Encode(&buf, &block); err != nil {
-		return nil, err
-	}
-
-	// Return the PEM document.
-	return buf.Bytes(), nil
+	return &key, nil
 }
 
 //==============================================================================
