@@ -1,9 +1,9 @@
 package anvil_test
 
 /*
-curl -X POST http://10.0.1.26:3000/signin -d 'response_type=code&client_id=6b6efaae-0ab8-4152-8f92-a87c17921800&redirect_uri=https://anvil.coralproject.net&scope=openid%20profile%20email%20realm&provider=password&email=bill@thekennedyclan.net&password=Qfe^bJ9uD6cgnD-8' -H "referrer: https://anvil.coralproject.net/signin"
+curl -X POST http://10.0.1.26:3000/signin -d 'max_age=315569260&response_type=code&client_id=6b6efaae-0ab8-4152-8f92-a87c17921800&redirect_uri=https://anvil.coralproject.net&scope=openid%20profile%20email%20realm&provider=password&email=bill@thekennedyclan.net&password=Qfe^bJ9uD6cgnD-8' -H "referrer: https://anvil.coralproject.net/signin"
 Redirecting to https://anvil.coralproject.net?code=c9ce6c03ea6ad8dd3f0a%
-curl -X POST http://6b6efaae-0ab8-4152-8f92-a87c17921800:6dafd2b59d6954849a6c@10.0.1.26:3000/token -d 'grant_type=authorization_code&client_id=6b6efaae-0ab8-4152-8f92-a87c17921800&code=4789fdf9bed90994f350&redirect_uri=https://anvil.coralproject.net' -H "referrer: https://anvil.coralproject.net/token"
+curl -X POST http://6b6efaae-0ab8-4152-8f92-a87c17921800:6dafd2b59d6954849a6c@10.0.1.26:3000/token -d 'grant_type=authorization_code&client_id=6b6efaae-0ab8-4152-8f92-a87c17921800&code=a90673f4290562282150&redirect_uri=https://anvil.coralproject.net' -H "referrer: https://anvil.coralproject.net/token"
 */
 
 import (
@@ -122,11 +122,14 @@ func TestRetrievePublicKey(t *testing.T) {
 // TestValidateFromRequest validates a JWT can be processed from a request and
 // validated with proper claims extraction.
 func TestValidateFromRequest(t *testing.T) {
+
+	// This token is good for 10 years starting Apr 30th, 2016
+	token := "eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI0Nzk0NGMxNzYyODIxM2NhYzQ1YiIsImlzcyI6Imh0dHBzOi8vYW52aWwuY29yYWxwcm9qZWN0Lm5ldCIsInN1YiI6IjI3MzdmMjllLWE5NWItNGVhOC1iNGQxLTMxZDE2YjIzZGVlZSIsImF1ZCI6IjZiNmVmYWFlLTBhYjgtNDE1Mi04ZjkyLWE4N2MxNzkyMTgwMCIsImV4cCI6MTc3NzYxNjMwMCwiaWF0IjoxNDYyMDQ3MDQwLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHJlYWxtIn0.CnRO34IwOW1bUnJ2H9S8CZgHuHqRp6t7QNtp6d0B45O8iRxHwqnad_66yvDv2veRO_cAgKmW387SlxxF0xfwsKyo6KEe85BCUUwaY6Y7VCVUIduj6FwB_Ym2nJBeLslkaZjOjGgs_VMMq0p0fGLqyEqkcP8sRgCfBxVOLAku0mI5jDYXM6GB3cF451Q-usoEUOvdOVD0sSt0rH3_GvcVMik2npZadYH7fWZp0hBe2cUfLIOCH1srN-UjVPOXYRXH95XrnXiOtVcP2coso0IKeNrA2E8P8KMf_y6qLE65i1vChk6tlCNmf-h7QaoSd7OiKrKxSOMgETl2ezaa8q_wnfbADNshLDzCdSTl0qctvkGxw_4TsoRIECA3EFUk_ZxSHgQomJoRl78hCBcxopnQe5n7PF6RiUArgiAtmQgLDWX0klTYgLNW9YkRXG8kE85ziR_GvcXopkWbEg_CMC_0NheO1f3NtHvP0h1CNfhFxijQ7IX4YDcOgoV4qKOtQH_j0EQlid7NwUOcH7ieDGlglVa2OUYnPd-E-qq34VGpayNCD_19k9fFztUzYB1NWTFoLqZ1dVDOixwkKpTe1wOxa04VSIys1ibuo4bzycspikn8SQYaoaeLH3ZSAvEsbO59NPFYwbNIFTYd4JoQGsLp8h_UFBah_oDpu5FB7NjrU-U"
 	http.HandleFunc("/api", mockHandler)
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/api", nil)
-	r.Header.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIwYzRjZTc5YTRmZmM4ZmUzMWI1MyIsImlzcyI6Imh0dHBzOi8vYW52aWwuY29yYWxwcm9qZWN0Lm5ldCIsInN1YiI6IjI3MzdmMjllLWE5NWItNGVhOC1iNGQxLTMxZDE2YjIzZGVlZSIsImF1ZCI6IjZiNmVmYWFlLTBhYjgtNDE1Mi04ZjkyLWE4N2MxNzkyMTgwMCIsImV4cCI6MTQ2MjAzNzI0NywiaWF0IjoxNDYyMDMzNjQ3LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHJlYWxtIn0.YWjWwljbzq954IiRt9CZNdJzqBfLR70qObfsqBdM52c8WudhopOAd17XrVpeS8N56eShzakeFMr7CBIBVP1J6UpYEb-UEm-wTx9mvTBYhzAHr69ntATl-QQLgWCnxfGMkoFrLUhuK_QTVPa7HcePhgT9zowOxpv081UcSHpVZyr_dCwsmDagPGa1eHul8cwvttg4AvGcfsknzyJo5tM0Yp19Os14O-HvcBOSX6PULGfyq-h3mSYRWelEXB8iN-AfhvKjiqu5Wik_ol7Jud8cwT2msLoF2J33ZKXeHXfY-hVViKgU_IsuvPChN_SROXESzxztlG7hTfOnqDx-6b9P7o1g7GRoljh3iM9HJD-8tnmzL50xQ9H7Z78SjwRZ3WQ9tl6-hZOeaTnzXjuEdUU2C1dgQIUrm9NlF3nN432WVQqIICRupqOoV0siDIZykHW4qvql5MF5kU_zWy6KbkJiJRGWrfkwl6pWjQs4T4z4k7iyg8KeqDm6HHybUghmYBGXcEdx25wPNztLxy06WuHgzB4SA-z8Ipbr14odEbXd1cADl0nd1uZoLk0ONeZfaVYF8tZ1OR9ksjhKfOoInZG2xsUa7WPzpTJ-gjyh8bFnIwmi6RmQGtDktXsBjEul4cb87a4-vUunzh_xY7gck2LjGKM2hQESG_0_aJk4Ww8wKPI")
+	r.Header.Add("Authorization", "Bearer "+token)
 
 	http.DefaultServeMux.ServeHTTP(w, r)
 
