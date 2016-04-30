@@ -14,20 +14,6 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-// key contains the JSON WEB KEY required to encrypt the JWT received on
-// every request.
-type key struct {
-	Type      string `json:"kty"` // Key Type: RSA
-	Use       string `json:"use"` // Verifiying signatures for `sig` or `enc`
-	Algorithm string `json:"alg"` // Algorithm to use: RS256
-	Modulus   string `json:"n"`   // The modulus section of the key
-	Exponent  string `json:"e"`   // The exponent of the key
-}
-
-type keys struct {
-	Set []key `json:"keys"`
-}
-
 // Claims is the payload we are looking to get on each request.
 type Claims struct {
 	Jti   string
@@ -39,14 +25,83 @@ type Claims struct {
 	Scope string // This is where we find the authorization markers.
 }
 
+// key contains the JSON WEB KEY required to encrypt the JWT received on
+// every request.
+type key struct {
+	Type      string `json:"kty"` // Key Type: RSA
+	Use       string `json:"use"` // Verifiying signatures for `sig` or `enc`
+	Algorithm string `json:"alg"` // Algorithm to use: RS256
+	Modulus   string `json:"n"`   // The modulus section of the key
+	Exponent  string `json:"e"`   // The exponent of the key
+}
+
+// keys match the document returned by Anvil.io on the request.
+// curl http://HOST/jwks
+type keys struct {
+	Set []key `json:"keys"`
+}
+
+//==============================================================================
+
+// Anvil provides support for validating Anvil.io based JWTs and extracting
+// claims for authorization.
+type Anvil struct {
+	PublicKey *rsa.PublicKey
+}
+
+// New create a new Anvil value for use with handling JWTs from Anvil.io
+func New(host string) (*Anvil, error) {
+
+	// Ask Anvil.io for the public keys.
+	r, err := http.Get(host + "/jwks")
+	if err != nil {
+		return nil, err
+	}
+
+	// Validate we successfully received the keys.
+	if r.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Invalid Status: %d %s", r.StatusCode, r.Status)
+	}
+
+	defer r.Body.Close()
+
+	// Decode the document we received.
+	var ks keys
+	if err := json.NewDecoder(r.Body).Decode(&ks); err != nil {
+		return nil, err
+	}
+
+	// Find the `sig` key since this is what we need.
+	var jwk *key
+	for _, key := range ks.Set {
+		if key.Use == "sig" {
+			jwk = &key
+			break
+		}
+	}
+
+	// Did we find the `sig` key.
+	if jwk == nil {
+		return nil, errors.New("`Sig` key not found")
+	}
+
+	// Convert the `sig` key into an rsa public key.
+	pk, err := jwkToPK(*jwk)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Anvil{PublicKey: pk}, nil
+}
+
 // ValidateFromRequest takes a request and extracts the JWT. Then it performs
 // validation and returns the claims if everything is valid.
-func ValidateFromRequest(r *http.Request, pk *rsa.PublicKey) (Claims, error) {
+func (a *Anvil) ValidateFromRequest(r *http.Request) (Claims, error) {
 
-	// Function is required to return the Public Key that is needed to
+	// Function is required to return the public key that is needed to
 	// validate the JWT and extract the claims.
 	f := func(token *jwt.Token) (interface{}, error) {
-		return pk, nil
+		return a.PublicKey, nil
 	}
 
 	// Parse the request, looking for the JWT and peforming transformations.
@@ -98,39 +153,7 @@ func ValidateFromRequest(r *http.Request, pk *rsa.PublicKey) (Claims, error) {
 
 //==============================================================================
 
-// RetrievePublicKey calls into Anvil to get the Public Key information.
-func RetrievePublicKey(host string) (*rsa.PublicKey, error) {
-
-	// Ask Anvil for the public keys.
-	r, err := http.Get(host + "/jwks")
-	if err != nil {
-		return nil, err
-	}
-
-	// Validate we successful requested them.
-	if r.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Invalid Status: %d %s", r.StatusCode, r.Status)
-	}
-
-	defer r.Body.Close()
-
-	// Decode the two keys we will receive, `sig` and `enc`.
-	var ks keys
-	if err := json.NewDecoder(r.Body).Decode(&ks); err != nil {
-		return nil, err
-	}
-
-	// Find the `sig` key since this is what we need.
-	for _, jwk := range ks.Set {
-		if jwk.Use == "sig" {
-			return jwkToPK(jwk)
-		}
-	}
-
-	return nil, errors.New("Sig keys not found")
-}
-
-// jwkToPK converts the Anvil JWK into a RSA Public Key.
+// jwkToPK converts the Anvil JWK into a RSA public key.
 func jwkToPK(k key) (*rsa.PublicKey, error) {
 
 	// Convert the Modulus into a Big Int.
@@ -153,8 +176,6 @@ func jwkToPK(k key) (*rsa.PublicKey, error) {
 
 	return &key, nil
 }
-
-//==============================================================================
 
 // base64StdEncToBigInt takes a base64 standard encoded string and converts
 // it to a Big Int.

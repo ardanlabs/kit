@@ -3,7 +3,7 @@ package anvil_test
 /*
 curl -X POST http://10.0.1.26:3000/signin -d 'response_type=code&client_id=6b6efaae-0ab8-4152-8f92-a87c17921800&redirect_uri=https://anvil.coralproject.net&scope=openid%20profile%20email%20realm&provider=password&email=bill@thekennedyclan.net&password=Qfe^bJ9uD6cgnD-8' -H "referrer: https://anvil.coralproject.net/signin"
 Redirecting to https://anvil.coralproject.net?code=c9ce6c03ea6ad8dd3f0a%
-curl -X POST http://6b6efaae-0ab8-4152-8f92-a87c17921800:6dafd2b59d6954849a6c@10.0.1.26:3000/token -d 'grant_type=authorization_code&client_id=6b6efaae-0ab8-4152-8f92-a87c17921800&code=b8685e59be97d3cac019&redirect_uri=https://anvil.coralproject.net' -H "referrer: https://anvil.coralproject.net/token"
+curl -X POST http://6b6efaae-0ab8-4152-8f92-a87c17921800:6dafd2b59d6954849a6c@10.0.1.26:3000/token -d 'grant_type=authorization_code&client_id=6b6efaae-0ab8-4152-8f92-a87c17921800&code=4789fdf9bed90994f350&redirect_uri=https://anvil.coralproject.net' -H "referrer: https://anvil.coralproject.net/token"
 */
 
 import (
@@ -59,7 +59,7 @@ func mockHandler(rw http.ResponseWriter, r *http.Request) {
 	server := mockServer()
 	defer server.Close()
 
-	pk, err := anvil.RetrievePublicKey(server.URL)
+	a, err := anvil.New(server.URL)
 	if err != nil {
 		rw.Header().Set("Content-Type", "application/json")
 		rw.WriteHeader(501)
@@ -67,7 +67,7 @@ func mockHandler(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	claims, err := anvil.ValidateFromRequest(r, pk)
+	claims, err := a.ValidateFromRequest(r)
 	if err != nil {
 		rw.Header().Set("Content-Type", "application/json")
 		rw.WriteHeader(502)
@@ -91,17 +91,17 @@ func TestRetrievePublicKey(t *testing.T) {
 	{
 		t.Logf("\tTest 0:\tWhen reuqesting %q", server.URL)
 		{
-			pk, err := anvil.RetrievePublicKey(server.URL)
+			a, err := anvil.New(server.URL)
 			if err != nil {
-				t.Fatalf("\t%s\tShould be able to retrieve the PK : %v", failed, err)
+				t.Fatalf("\t%s\tShould be able to create an Anvil value : %v", failed, err)
 			}
-			t.Logf("\t%s\tShould be able to retrieve the PK.", succeed)
+			t.Logf("\t%s\tShould be able to create an Anvil value.", succeed)
 
-			ret, err := json.MarshalIndent(pk, "", "")
+			ret, err := json.MarshalIndent(a.PublicKey, "", "")
 			if err != nil {
-				t.Fatalf("\t%s\tShould be able to marshal the PK : %v", failed, err)
+				t.Fatalf("\t%s\tShould be able to marshal the public key : %v", failed, err)
 			}
-			t.Logf("\t%s\tShould be able to marshal the PK.", succeed)
+			t.Logf("\t%s\tShould be able to marshal the public key.", succeed)
 
 			// This is the expected result after Marshaling.
 			exp := `{
@@ -111,9 +111,9 @@ func TestRetrievePublicKey(t *testing.T) {
 			if string(ret) != exp {
 				t.Logf("\tRCV\n%+v", string(ret))
 				t.Logf("\tEXP\n%+v", exp)
-				t.Errorf("\t%s\tShould have the correct PK document.", failed)
+				t.Errorf("\t%s\tShould have the correct public key document.", failed)
 			} else {
-				t.Logf("\t%s\tShould have the correct PK document.", succeed)
+				t.Logf("\t%s\tShould have the correct public key document.", succeed)
 			}
 		}
 	}
@@ -126,7 +126,7 @@ func TestValidateFromRequest(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	r, _ := http.NewRequest("GET", "/api", nil)
-	r.Header.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI1ZGY0MzE4NmEyYjM4ZWI1Nzc4MSIsImlzcyI6Imh0dHBzOi8vYW52aWwuY29yYWxwcm9qZWN0Lm5ldCIsInN1YiI6IjI3MzdmMjllLWE5NWItNGVhOC1iNGQxLTMxZDE2YjIzZGVlZSIsImF1ZCI6IjZiNmVmYWFlLTBhYjgtNDE1Mi04ZjkyLWE4N2MxNzkyMTgwMCIsImV4cCI6MTQ2MjAyNjU1NCwiaWF0IjoxNDYyMDIyOTU0LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHJlYWxtIn0.uEEIYHroZFnYCF3P5tXNJvmbMydBDSlWDYzO2Cx9HC6O8QUr-9r7hmX2bt3t_GUb3VYHMFZLwedB4ZQ2KzDnld3VKrxLzzMf7aMUeCDkOoyiinBiCiy2SIWBHG4cicI2FN7ANWl3Ok21Mp1umTDJwYNbzSi-SnL0n6Mk3FH4_hJM6zKoKQ8qijRXSo8WD4OCjez5iwBZyBrCZPgc1tngB7R1hT57i5j0gDHjoRvGba0YQe-SFp19BvjGZ1h_DmDQi59DCtPvH6BnrVx79nobd6vIFNVuraC8UM72Rx3N2GhNHV_msJWp_wJZfkc8_1gYtrLjVFN8cOkXWJWbZ66LAFqFUNhCyCFwGr4b2FqYePcAYgdsM9gEIcPLtPfO-HthL2AOhGG_oF0VxmyHyGSloaqN3svk7coKdceSK-fAx0vVS3LyW62wSt1UkzzdxXZoGFOdgaB8k65feD6553SFuE2mIA5KwAVd9cHgeX5j6bX6TE_VDwPhTkLH199kzE66rOtoPIUpO3rQYHWdMFIONNHuJtSJmU-gNCF4GVBYCGqx8WiHNE4tKplVRuhpF28RYGEemjsdeStovvBJGKki7B3NcDY-eIopwY3qyBZ72lPONeLTP3zeldu7_O4MQsHOddXFoO_HuWRUgrMy38zIrcgJdoyRW9IHummZc2WS--8")
+	r.Header.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIwYzRjZTc5YTRmZmM4ZmUzMWI1MyIsImlzcyI6Imh0dHBzOi8vYW52aWwuY29yYWxwcm9qZWN0Lm5ldCIsInN1YiI6IjI3MzdmMjllLWE5NWItNGVhOC1iNGQxLTMxZDE2YjIzZGVlZSIsImF1ZCI6IjZiNmVmYWFlLTBhYjgtNDE1Mi04ZjkyLWE4N2MxNzkyMTgwMCIsImV4cCI6MTQ2MjAzNzI0NywiaWF0IjoxNDYyMDMzNjQ3LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIHJlYWxtIn0.YWjWwljbzq954IiRt9CZNdJzqBfLR70qObfsqBdM52c8WudhopOAd17XrVpeS8N56eShzakeFMr7CBIBVP1J6UpYEb-UEm-wTx9mvTBYhzAHr69ntATl-QQLgWCnxfGMkoFrLUhuK_QTVPa7HcePhgT9zowOxpv081UcSHpVZyr_dCwsmDagPGa1eHul8cwvttg4AvGcfsknzyJo5tM0Yp19Os14O-HvcBOSX6PULGfyq-h3mSYRWelEXB8iN-AfhvKjiqu5Wik_ol7Jud8cwT2msLoF2J33ZKXeHXfY-hVViKgU_IsuvPChN_SROXESzxztlG7hTfOnqDx-6b9P7o1g7GRoljh3iM9HJD-8tnmzL50xQ9H7Z78SjwRZ3WQ9tl6-hZOeaTnzXjuEdUU2C1dgQIUrm9NlF3nN432WVQqIICRupqOoV0siDIZykHW4qvql5MF5kU_zWy6KbkJiJRGWrfkwl6pWjQs4T4z4k7iyg8KeqDm6HHybUghmYBGXcEdx25wPNztLxy06WuHgzB4SA-z8Ipbr14odEbXd1cADl0nd1uZoLk0ONeZfaVYF8tZ1OR9ksjhKfOoInZG2xsUa7WPzpTJ-gjyh8bFnIwmi6RmQGtDktXsBjEul4cb87a4-vUunzh_xY7gck2LjGKM2hQESG_0_aJk4Ww8wKPI")
 
 	http.DefaultServeMux.ServeHTTP(w, r)
 
