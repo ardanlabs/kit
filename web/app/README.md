@@ -61,6 +61,7 @@ Run is called to start the web service.
 ``` go
 type App struct {
     *httptreemux.TreeMux
+    Ctx map[string]interface{}
     // contains filtered or unexported fields
 }
 ```
@@ -115,6 +116,7 @@ type Context struct {
     SessionID string
     Status    int
     Ctx       map[string]interface{}
+    App       *App
 }
 ```
 Context contains data associated with a single request.
