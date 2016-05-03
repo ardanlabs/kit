@@ -40,6 +40,7 @@ type Context struct {
 	SessionID string
 	Status    int
 	Ctx       map[string]interface{}
+	App       *App
 }
 
 // Error handles all error responses for the API.

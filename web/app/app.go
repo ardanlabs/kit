@@ -68,6 +68,8 @@ var app = struct {
 // data/logic on this App struct
 type App struct {
 	*httptreemux.TreeMux
+	Ctx map[string]interface{}
+
 	mw []Middleware
 }
 
@@ -77,6 +79,7 @@ type App struct {
 func New(mw ...Middleware) *App {
 	return &App{
 		TreeMux: httptreemux.New(),
+		Ctx:     make(map[string]interface{}),
 		mw:      mw,
 	}
 }
@@ -94,6 +97,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 			Params:         p,
 			SessionID:      uuid.New(),
 			Ctx:            make(map[string]interface{}),
+			App:            a,
 		}
 
 		log.User(c.SessionID, "Request", "Started : Method[%s] URL[%s] RADDR[%s]", c.Request.Method, c.Request.URL.Path, c.Request.RemoteAddr)
