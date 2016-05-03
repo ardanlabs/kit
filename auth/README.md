@@ -139,6 +139,14 @@ func GetUserWebToken(context interface{}, db *db.DB, publicID string) (string, e
 GetUserWebToken return a token if one exists and is valid.
 
 
+## func GetUsers
+``` go
+func GetUsers(context interface{}, db *db.DB, activeOnly bool) ([]User, error)
+```
+GetUsers retrieves all user records with an optional filter for only active
+users.
+
+
 ## func UpdateUser
 ``` go
 func UpdateUser(context interface{}, db *db.DB, uu UpdUser) error
