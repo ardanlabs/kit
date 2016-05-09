@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/ardanlabs/kit/db/mongo"
 
@@ -90,11 +91,33 @@ func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collec
 	return f(db.database.C(colName))
 }
 
-// CollectionMGO is used to get a collection value..
+// ExecuteMGOTimeout is used to execute MongoDB commands with a timeout.
+func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colName string, f func(*mgo.Collection) error) error {
+	if db == nil || db.session == nil {
+		return errors.New("Invalid DB provided")
+	}
+
+	db.session.SetSocketTimeout(timeout)
+
+	return f(db.database.C(colName))
+}
+
+// CollectionMGO is used to get a collection value.
 func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error) {
 	if db == nil || db.session == nil {
 		return nil, errors.New("Invalid DB provided")
 	}
+
+	return db.database.C(colName), nil
+}
+
+// CollectionMGOTimeout is used to get a collection value with a timeout.
+func (db *DB) CollectionMGOTimeout(context interface{}, timeout time.Duration, colName string) (*mgo.Collection, error) {
+	if db == nil || db.session == nil {
+		return nil, errors.New("Invalid DB provided")
+	}
+
+	db.session.SetSocketTimeout(timeout)
 
 	return db.database.C(colName), nil
 }
