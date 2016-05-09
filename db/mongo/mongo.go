@@ -16,6 +16,7 @@ type Config struct {
 	DB       string
 	User     string
 	Password string
+	Timeout  time.Duration
 }
 
 //==============================================================================
@@ -26,10 +27,16 @@ func New(cfg Config) (*mgo.Session, error) {
 	// Can be provided a comma delimited set of hosts.
 	hosts := strings.Split(cfg.Host, ",")
 
+	// Set the default timeout for the session.
+	timeout := cfg.Timeout
+	if timeout == 0 {
+		timeout = 60 * time.Second
+	}
+
 	// We need this object to establish a session to our MongoDB.
 	mongoDBDialInfo := mgo.DialInfo{
 		Addrs:    hosts,
-		Timeout:  60 * time.Second,
+		Timeout:  timeout,
 		Database: cfg.AuthDB,
 		Username: cfg.User,
 		Password: cfg.Password,
