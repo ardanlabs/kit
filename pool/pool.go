@@ -83,7 +83,7 @@ type Pool struct {
 
 	tasks    chan doWork    // Unbuffered channel that work is sent into.
 	control  chan int       // Unbuffered channel that work for the manager is send into.
-	kill     chan struct{}  // Unbuffered channel to signal for a goroutine to die.
+	kill     chan bool      // Unbuffered channel to signal for a goroutine to die.
 	shutdown chan struct{}  // Closed when the Work pool is being shutdown.
 	wg       sync.WaitGroup // Manages the number of routines for shutdown.
 
@@ -121,7 +121,7 @@ func New(context interface{}, name string, cfg Config) (*Pool, error) {
 
 		tasks:    make(chan doWork),
 		control:  make(chan int),
-		kill:     make(chan struct{}),
+		kill:     make(chan bool),
 		shutdown: make(chan struct{}),
 	}
 
@@ -341,7 +341,7 @@ func (p *Pool) manager(context interface{}) {
 
 				// Send a kill to all the existing routines.
 				for i := 0; i < routines; i++ {
-					p.kill <- struct{}{}
+					p.kill <- true
 				}
 
 				// Decrement the waitgroup and kill the manager.
@@ -378,7 +378,7 @@ func (p *Pool) manager(context interface{}) {
 					}
 
 					// Send a kill signal to remove a routine.
-					p.kill <- struct{}{}
+					p.kill <- true
 				}
 			}
 		}
