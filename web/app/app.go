@@ -15,6 +15,7 @@ import (
 
 	"github.com/ardanlabs/kit/cfg"
 	"github.com/ardanlabs/kit/log"
+	"github.com/braintree/manners"
 	"github.com/dimfeld/httptreemux"
 	"github.com/pborman/uuid"
 )
@@ -196,13 +197,16 @@ func Run(defaultHost string, routes http.Handler) {
 	// Create this goroutine to run the web server.
 	go func() {
 		log.Dev("listener", "Run", "Listening on: %s", host)
-		http.ListenAndServe(host, routes)
+		manners.ListenAndServe(host, routes)
 	}()
 
 	// Listen for an interrupt signal from the OS.
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt)
 	<-sigChan
+
+	log.Dev("shutdown", "Run", "Starting shutdown...")
+	manners.Close()
 
 	log.Dev("shutdown", "Run", "Complete")
 }

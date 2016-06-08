@@ -3,6 +3,12 @@
 	"ignore": "",
 	"package": [
 		{
+			"checksumSHA1": "Mhcn2hul4Cem30FwweAhndf54+k=",
+			"path": "github.com/braintree/manners",
+			"revision": "82a8879fc5fd0381fa8b2d8033b19bf255252088",
+			"revisionTime": "2016-04-18T04:36:13Z"
+		},
+		{
 			"checksumSHA1": "zZKFQ2lcwqkOhs3gIs3NKeLG2i8=",
 			"path": "github.com/dgrijalva/jwt-go",
 			"revision": "a2c85815a77d0f951e33ba4db5ae93629a1530af",
