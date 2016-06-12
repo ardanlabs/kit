@@ -194,19 +194,21 @@ func Run(defaultHost string, routes http.Handler) {
 		host = defaultHost
 	}
 
-	// Create this goroutine to run the web server.
+	// Support for shutting down cleanly.
 	go func() {
-		log.Dev("listener", "Run", "Listening on: %s", host)
-		manners.ListenAndServe(host, routes)
+
+		// Listen for an interrupt signal from the OS.
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, os.Interrupt)
+		<-sigChan
+
+		// We have been asked to shutdown the server.
+		log.Dev("shutdown", "Run", "Starting shutdown...")
+		manners.Close()
 	}()
 
-	// Listen for an interrupt signal from the OS.
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, os.Interrupt)
-	<-sigChan
-
-	log.Dev("shutdown", "Run", "Starting shutdown...")
-	manners.Close()
+	log.Dev("listener", "Run", "Listening on: %s", host)
+	manners.ListenAndServe(host, routes)
 
 	log.Dev("shutdown", "Run", "Complete")
 }
