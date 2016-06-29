@@ -58,7 +58,15 @@ CloseMGO closes a DB value being used with MongoDB.
 ``` go
 func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error)
 ```
-CollectionMGO is used to get a collection value..
+CollectionMGO is used to get a collection value.
+
+
+
+### func (\*DB) CollectionMGOTimeout
+``` go
+func (db *DB) CollectionMGOTimeout(context interface{}, timeout time.Duration, colName string) (*mgo.Collection, error)
+```
+CollectionMGOTimeout is used to get a collection value with a timeout.
 
 
 
@@ -67,6 +75,14 @@ CollectionMGO is used to get a collection value..
 func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error
 ```
 ExecuteMGO is used to execute MongoDB commands.
+
+
+
+### func (\*DB) ExecuteMGOTimeout
+``` go
+func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colName string, f func(*mgo.Collection) error) error
+```
+ExecuteMGOTimeout is used to execute MongoDB commands with a timeout.
 
 
 

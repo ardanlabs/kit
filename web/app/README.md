@@ -51,7 +51,7 @@ Init is called to initialize the application.
 
 ## func Run
 ``` go
-func Run(defaultHost string, routes http.Handler)
+func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time.Duration)
 ```
 Run is called to start the web service.
 

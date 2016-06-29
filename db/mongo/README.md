@@ -32,6 +32,7 @@ type Config struct {
     DB       string
     User     string
     Password string
+    Timeout  time.Duration
 }
 ```
 Config provides configuration values.

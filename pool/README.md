@@ -159,7 +159,7 @@ Do waits for the goroutine pool to take the work to be executed.
 func (p *Pool) DoWait(context interface{}, work Worker, duration <-chan time.Time) error
 ```
 DoWait waits for the goroutine pool to take the work to be executed or gives
-up after the alloted duration. Only use when you want to throw away work and
+up after the allotted duration. Only use when you want to throw away work and
 not push back.
 
 
