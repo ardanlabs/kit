@@ -185,7 +185,7 @@ func Init(p cfg.Provider) {
 }
 
 // Run is called to start the web service.
-func Run(defaultHost string, routes http.Handler) {
+func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time.Duration) {
 	log.Dev("startup", "Run", "Start : defaultHost[%s]", defaultHost)
 
 	// Check for a configured host value.
@@ -193,6 +193,15 @@ func Run(defaultHost string, routes http.Handler) {
 	if err != nil {
 		host = defaultHost
 	}
+
+	// Create a new server and set timeout values.
+	s := manners.NewWithServer(&http.Server{
+		Addr:           host,
+		Handler:        routes,
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		MaxHeaderBytes: 1 << 20,
+	})
 
 	// Support for shutting down cleanly.
 	go func() {
@@ -204,11 +213,11 @@ func Run(defaultHost string, routes http.Handler) {
 
 		// We have been asked to shutdown the server.
 		log.Dev("shutdown", "Run", "Starting shutdown...")
-		manners.Close()
+		s.Close()
 	}()
 
 	log.Dev("listener", "Run", "Listening on: %s", host)
-	manners.ListenAndServe(host, routes)
+	s.ListenAndServe()
 
 	log.Dev("shutdown", "Run", "Complete")
 }
