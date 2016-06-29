@@ -218,7 +218,7 @@ func TestSets(t *testing.T) {
 			} else {
 				t.Logf("\t\t%s Should find a value for the specified key %q.", success, key)
 			}
-			if timeVal != retTimeVal {
+			if timeVal.UnixNano() != retTimeVal.UnixNano() {
 				t.Log(timeVal)
 				t.Log(retTimeVal)
 				t.Errorf("\t\t%s Should return the time value %q that was set.", failed, timeVal)

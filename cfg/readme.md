@@ -367,6 +367,33 @@ Provide implements the Provider interface.
 
 
 
+## type FileProvider
+``` go
+type FileProvider struct {
+    Filename string
+}
+```
+FileProvider describes a file based loader which loads the configuration
+from a file listed.
+
+
+
+
+
+
+
+
+
+
+
+### func (FileProvider) Provide
+``` go
+func (fp FileProvider) Provide() (map[string]string, error)
+```
+Provide implements the Provider interface.
+
+
+
 ## type MapProvider
 ``` go
 type MapProvider struct {
