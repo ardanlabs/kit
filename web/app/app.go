@@ -88,6 +88,17 @@ func New(mw ...Middleware) *App {
 // Handle is our mechanism for mounting Handlers for a given HTTP verb and path
 // pair, this makes for really easy, convenient routing.
 func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
+	// Wrap up the application-wide first, this will call the first function
+	// of each middleware which will return a function of type Handler. Each
+	// Handler will then be wrapped up with the other handlers from the chain.
+	for i := len(a.mw) - 1; i >= 0; i-- {
+		handler = a.mw[i](handler)
+	}
+
+	// Then wrap with our route specific ones.
+	for i := len(mw) - 1; i >= 0; i-- {
+		handler = mw[i](handler)
+	}
 
 	// The function to execute for each request.
 	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
@@ -103,23 +114,8 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 		log.User(c.SessionID, "Request", "Started : Method[%s] URL[%s] RADDR[%s]", c.Request.Method, c.Request.URL.Path, c.Request.RemoteAddr)
 
-		// Wrap the handler in all associated middleware.
-		wrap := func(h Handler) Handler {
-			// Wrap up the application-wide first...
-			for i := len(a.mw) - 1; i >= 0; i-- {
-				h = a.mw[i](h)
-			}
-
-			// Then wrap with our route specific ones.
-			for i := len(mw) - 1; i >= 0; i-- {
-				h = mw[i](h)
-			}
-
-			return h
-		}
-
 		// Call the wrapped handler and handle any possible error.
-		if err := wrap(handler)(&c); err != nil {
+		if err := handler(&c); err != nil {
 			c.Error(err)
 		}
 
