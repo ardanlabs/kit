@@ -88,6 +88,7 @@ func New(mw ...Middleware) *App {
 // Handle is our mechanism for mounting Handlers for a given HTTP verb and path
 // pair, this makes for really easy, convenient routing.
 func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
+
 	// Wrap up the application-wide first, this will call the first function
 	// of each middleware which will return a function of type Handler. Each
 	// Handler will then be wrapped up with the other handlers from the chain.
