@@ -127,3 +127,15 @@ func MustURL(key string) *url.URL {
 func SetURL(key string, value *url.URL) {
 	c.SetURL(key, value)
 }
+
+func Duration(key string) (time.Duration, error) {
+	return c.Duration(key)
+}
+
+func MustDuration(key string) time.Duration {
+	return c.MustDuration(key)
+}
+
+func SetDuration(key string, value time.Duration) {
+	c.SetDuration(key, value)
+}
