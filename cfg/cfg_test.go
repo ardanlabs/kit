@@ -22,6 +22,7 @@ func TestExists(t *testing.T) {
 	t.Log("Given the need to read environment variables.")
 	{
 		uStr := "postgres://root:root@127.0.0.1:8080/postgres?sslmode=disable"
+		dStr := 2 * time.Minute
 
 		cfg.Init(cfg.MapProvider{
 			Map: map[string]string{
@@ -30,6 +31,7 @@ func TestExists(t *testing.T) {
 				"PORT":    "4034",
 				"FLAG":    "on",
 				"DSN":     uStr,
+				"TIMEOUT": dStr.String(),
 			},
 		})
 
@@ -49,6 +51,10 @@ func TestExists(t *testing.T) {
 				}
 			}
 
+			shouldNotPanic(t, "PROC_ID", func() {
+				cfg.MustInt("PROC_ID")
+			})
+
 			socket, err := cfg.String("SOCKET")
 
 			if err != nil {
@@ -62,6 +68,10 @@ func TestExists(t *testing.T) {
 					t.Logf("\t\t%s Should have key %q with value %q", success, "SOCKET", "./tmp/sockets.po")
 				}
 			}
+
+			shouldNotPanic(t, "SOCKET", func() {
+				cfg.MustString("SOCKET")
+			})
 
 			port, err := cfg.Int("PORT")
 
@@ -77,6 +87,10 @@ func TestExists(t *testing.T) {
 				}
 			}
 
+			shouldNotPanic(t, "PORT", func() {
+				cfg.MustInt("PORT")
+			})
+
 			flag, err := cfg.Bool("FLAG")
 
 			if err != nil {
@@ -84,12 +98,16 @@ func TestExists(t *testing.T) {
 			} else {
 				t.Logf("\t\t%s Should not return error when valid key %q", success, "FLAG")
 
-				if flag == false {
+				if !flag {
 					t.Errorf("\t\t%s Should have key %q with value %v", failed, "FLAG", true)
 				} else {
 					t.Logf("\t\t%s Should have key %q with value %v", success, "FLAG", true)
 				}
 			}
+
+			shouldNotPanic(t, "FLAG", func() {
+				cfg.MustBool("FLAG")
+			})
 
 			u, err := cfg.URL("DSN")
 
@@ -99,11 +117,33 @@ func TestExists(t *testing.T) {
 				t.Logf("\t\t%s Should not return error when valid key %q", success, "DSN")
 
 				if u.String() != uStr {
-					t.Errorf("\t\t%s Should have key %q with value %v", failed, "DSN", true)
+					t.Errorf("\t\t%s Should have key %q with value %v", failed, "DSN", uStr)
 				} else {
-					t.Logf("\t\t%s Should have key %q with value %v", success, "DSN", true)
+					t.Logf("\t\t%s Should have key %q with value %v", success, "DSN", uStr)
 				}
 			}
+
+			shouldNotPanic(t, "DSN", func() {
+				cfg.MustURL("DSN")
+			})
+
+			d, err := cfg.Duration("TIMEOUT")
+
+			if err != nil {
+				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "TIMEOUT")
+			} else {
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "TIMEOUT")
+
+				if d != dStr {
+					t.Errorf("\t\t%s Should have key %q with value %v", failed, "TIMEOUT", dStr)
+				} else {
+					t.Logf("\t\t%s Should have key %q with value %v", success, "TIMEOUT", dStr)
+				}
+			}
+
+			shouldNotPanic(t, "TIMEOUT", func() {
+				cfg.MustDuration("TIMEOUT")
+			})
 		}
 	}
 }
@@ -115,12 +155,7 @@ func TestNotExists(t *testing.T) {
 	t.Log("Given the need to panic when environment variables are missing.")
 	{
 		cfg.Init(cfg.MapProvider{
-			Map: map[string]string{
-				"PROC_ID": "322",
-				"SOCKET":  "./tmp/sockets.po",
-				"PORT":    "4034",
-				"FLAG":    "on",
-			},
+			Map: map[string]string{},
 		})
 
 		t.Log("\tWhen given a namspace key to search for that does NOT exist.")
@@ -129,21 +164,61 @@ func TestNotExists(t *testing.T) {
 				cfg.MustTime("STAMP")
 			})
 
+			if _, err := cfg.Time("STAMP"); err == nil {
+				t.Errorf("\t\t%s Should have error when giving unknown key %q.", failed, "STAMP")
+			} else {
+				t.Logf("\t\t%s Should have error when giving unknown key %q.", success, "STAMP")
+			}
+
 			shouldPanic(t, "PID", func() {
 				cfg.MustInt("PID")
 			})
+
+			if _, err := cfg.Int("PID"); err == nil {
+				t.Errorf("\t\t%s Should have error when giving unknown key %q.", failed, "PID")
+			} else {
+				t.Logf("\t\t%s Should have error when giving unknown key %q.", success, "PID")
+			}
 
 			shouldPanic(t, "DEST", func() {
 				cfg.MustString("DEST")
 			})
 
+			if _, err := cfg.String("DEST"); err == nil {
+				t.Errorf("\t\t%s Should have error when giving unknown key %q.", failed, "DEST")
+			} else {
+				t.Logf("\t\t%s Should have error when giving unknown key %q.", success, "DEST")
+			}
+
 			shouldPanic(t, "ACTIVE", func() {
 				cfg.MustBool("ACTIVE")
 			})
 
+			if _, err := cfg.Bool("ACTIVE"); err == nil {
+				t.Errorf("\t\t%s Should have error when giving unknown key %q.", failed, "ACTIVE")
+			} else {
+				t.Logf("\t\t%s Should have error when giving unknown key %q.", success, "ACTIVE")
+			}
+
 			shouldPanic(t, "SOCKET_DSN", func() {
 				cfg.MustURL("SOCKET_DSN")
 			})
+
+			if _, err := cfg.URL("SOCKET_DSN"); err == nil {
+				t.Errorf("\t\t%s Should have error when giving unknown key %q.", failed, "SOCKET_DSN")
+			} else {
+				t.Logf("\t\t%s Should have error when giving unknown key %q.", success, "SOCKET_DSN")
+			}
+
+			shouldPanic(t, "TIMEOUT", func() {
+				cfg.MustDuration("TIMEOUT")
+			})
+
+			if _, err := cfg.Duration("TIMEOUT"); err == nil {
+				t.Errorf("\t\t%s Should have error when giving unknown key %q.", failed, "TIMEOUT")
+			} else {
+				t.Logf("\t\t%s Should have error when giving unknown key %q.", success, "TIMEOUT")
+			}
 		}
 	}
 }
@@ -156,6 +231,20 @@ func shouldPanic(t *testing.T, context string, fx func()) {
 			t.Errorf("\t\t%s Should paniced when giving unknown key %q.", failed, context)
 		} else {
 			t.Logf("\t\t%s Should paniced when giving unknown key %q.", success, context)
+		}
+	}()
+
+	fx()
+}
+
+// shouldNotPanic receives a context string and a function to run, if the function
+// panics, it is considered a failure else a success.
+func shouldNotPanic(t *testing.T, context string, fx func()) {
+	defer func() {
+		if err := recover(); err == nil {
+			t.Logf("\t\t%s Should not have paniced when giving known key %q.", success, context)
+		} else {
+			t.Errorf("\t\t%s Should not have paniced when giving known key %q.", failed, context)
 		}
 	}()
 
@@ -257,9 +346,27 @@ func TestSets(t *testing.T) {
 			if urlVal.String() != retURLVal.String() {
 				t.Log(urlVal)
 				t.Log(retURLVal)
-				t.Errorf("\t\t%s Should return the bool value \"%v\" that was set.", failed, urlVal)
+				t.Errorf("\t\t%s Should return the url value \"%v\" that was set.", failed, urlVal)
 			} else {
-				t.Logf("\t\t%s Should return the bool value \"%v\" that was set.", success, urlVal)
+				t.Logf("\t\t%s Should return the url value \"%v\" that was set.", success, urlVal)
+			}
+
+			key = "key6"
+			dVal := 2 * time.Minute
+			cfg.SetDuration(key, dVal)
+
+			retDurVal, err := cfg.Duration(key)
+			if err != nil {
+				t.Errorf("\t\t%s Should find a value for the specified key %q.", failed, key)
+			} else {
+				t.Logf("\t\t%s Should find a value for the specified key %q.", success, key)
+			}
+			if dVal != retDurVal {
+				t.Log(dVal)
+				t.Log(retDurVal)
+				t.Errorf("\t\t%s Should return the bool value \"%v\" that was set.", failed, dVal)
+			} else {
+				t.Logf("\t\t%s Should return the bool value \"%v\" that was set.", success, dVal)
 			}
 		}
 	}
@@ -272,6 +379,7 @@ func TestNew(t *testing.T) {
 		t.Log("\tWhen instantiating configs")
 		{
 			uStr := "postgres://root:root@127.0.0.1:8080/postgres?sslmode=disable"
+			dStr := 2 * time.Minute
 			c, err := cfg.New(cfg.MapProvider{
 				Map: map[string]string{
 					"PROC_ID": "322",
@@ -279,6 +387,7 @@ func TestNew(t *testing.T) {
 					"PORT":    "4034",
 					"FLAG":    "on",
 					"DSN":     uStr,
+					"TIMEOUT": dStr.String(),
 				},
 			})
 			if err != nil {
@@ -336,7 +445,7 @@ func TestNew(t *testing.T) {
 			} else {
 				t.Logf("\t\t%s Should not return error when valid key %q", success, "FLAG")
 
-				if flag == false {
+				if !flag {
 					t.Errorf("\t\t%s Should have key %q with value %v", failed, "FLAG", true)
 				} else {
 					t.Logf("\t\t%s Should have key %q with value %v", success, "FLAG", true)
@@ -351,9 +460,23 @@ func TestNew(t *testing.T) {
 				t.Logf("\t\t%s Should not return error when valid key %q", success, "DSN")
 
 				if u.String() != uStr {
-					t.Errorf("\t\t%s Should have key %q with value %v", failed, "DSN", true)
+					t.Errorf("\t\t%s Should have key %q with value %v", failed, "DSN", uStr)
 				} else {
-					t.Logf("\t\t%s Should have key %q with value %v", success, "DSN", true)
+					t.Logf("\t\t%s Should have key %q with value %v", success, "DSN", uStr)
+				}
+			}
+
+			d, err := c.Duration("TIMEOUT")
+
+			if err != nil {
+				t.Errorf("\t\t%s Should not return error when valid key %q", failed, "TIMEOUT")
+			} else {
+				t.Logf("\t\t%s Should not return error when valid key %q", success, "TIMEOUT")
+
+				if d != dStr {
+					t.Errorf("\t\t%s Should have key %q with value %v", failed, "TIMEOUT", dStr)
+				} else {
+					t.Logf("\t\t%s Should have key %q with value %v", success, "TIMEOUT", dStr)
 				}
 			}
 		}

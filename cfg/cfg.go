@@ -296,3 +296,51 @@ func (c *Config) SetURL(key string, value *url.URL) {
 	}
 	c.mu.RUnlock()
 }
+
+// Duration returns the value of the given key as a Duration. It will return an
+// error if the key was not found or the value can't be converted to a Duration.
+func (c *Config) Duration(key string) (time.Duration, error) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	value, found := c.m[key]
+	if !found {
+		return time.Duration(0), fmt.Errorf("Unknown Key %s !", key)
+	}
+
+	d, err := time.ParseDuration(value)
+	if err != nil {
+		return d, err
+	}
+
+	return d, nil
+}
+
+// MustDuration returns the value of the given key as a Duration. It will panic
+// if the key was not found or the value can't be converted into a Duration.
+func (c *Config) MustDuration(key string) time.Duration {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+
+	value, found := c.m[key]
+	if !found {
+		panic(fmt.Errorf("Unknown Key %s !", key))
+	}
+
+	d, err := time.ParseDuration(value)
+	if err != nil {
+		panic(fmt.Sprintf("Key %q value is not a Duration", key))
+	}
+
+	return d
+}
+
+// SetDuration adds or modifies the configuration for a given duration at a
+// specific key.
+func (c *Config) SetDuration(key string, value time.Duration) {
+	c.mu.RLock()
+	{
+		c.m[key] = value.String()
+	}
+	c.mu.RUnlock()
+}

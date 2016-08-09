@@ -40,6 +40,11 @@ bool. It will return an error if the key was not found or the value can't be
 converted to a bool.
 
 
+## func Duration
+``` go
+func Duration(key string) (time.Duration, error)
+```
+
 ## func Init
 ``` go
 func Init(p Provider) error
@@ -74,6 +79,11 @@ MustBool calls the default Config and returns the bool value of a given key
 as a bool. It will panic if the key was not found or the value can't be
 converted to a bool.
 
+
+## func MustDuration
+``` go
+func MustDuration(key string) time.Duration
+```
 
 ## func MustInt
 ``` go
@@ -116,6 +126,11 @@ func SetBool(key string, value bool)
 ```
 SetBool adds or modifies the default Config for the specified key and value.
 
+
+## func SetDuration
+``` go
+func SetDuration(key string, value time.Duration)
+```
 
 ## func SetInt
 ``` go
@@ -209,6 +224,15 @@ error if the key was not found or the value can't be converted to a bool.
 
 
 
+### func (\*Config) Duration
+``` go
+func (c *Config) Duration(key string) (time.Duration, error)
+```
+Duration returns the value of the given key as a Duration. It will return an
+error if the key was not found or the value can't be converted to a Duration.
+
+
+
 ### func (\*Config) Int
 ``` go
 func (c *Config) Int(key string) (int, error)
@@ -233,6 +257,15 @@ func (c *Config) MustBool(key string) bool
 ```
 MustBool returns the bool value of a given key as a bool. It will panic if
 the key was not found or the value can't be converted to a bool.
+
+
+
+### func (\*Config) MustDuration
+``` go
+func (c *Config) MustDuration(key string) time.Duration
+```
+MustDuration returns the value of the given key as a Duration. It will panic
+if the key was not found or the value can't be converted into a Duration.
 
 
 
@@ -277,6 +310,15 @@ key was not found or the value can't be converted to a URL.
 func (c *Config) SetBool(key string, value bool)
 ```
 SetBool adds or modifies the configuration for the specified key and value.
+
+
+
+### func (\*Config) SetDuration
+``` go
+func (c *Config) SetDuration(key string, value time.Duration)
+```
+SetDuration adds or modifies the configuration for a given duration at a
+specific key.
 
 
 
