@@ -9,6 +9,7 @@ import (
 	"github.com/ardanlabs/kit/db/mongo"
 
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // Multiple master sessions can be created for different databases. Each master
@@ -100,6 +101,32 @@ func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colN
 	db.session.SetSocketTimeout(timeout)
 
 	return f(db.database.C(colName))
+}
+
+// BatchedQueryMGO returns an iterator capable of iterating over
+// all the results of a query in batches.
+func (db *DB) BatchedQueryMGO(context interface{}, colName string, q bson.M) (*mgo.Iter, error) {
+	if db == nil || db.session == nil {
+		return nil, errors.New("Invalid DB provided")
+	}
+
+	c := db.database.C(colName)
+
+	return c.Find(q).Iter(), nil
+}
+
+// BulkOperationMGO returns a bulk value that allows multiple orthogonal
+// changes to be delivered to the server.
+func (db *DB) BulkOperationMGO(context interface{}, colName string) (*mgo.Bulk, error) {
+	if db == nil || db.session == nil {
+		return nil, errors.New("Invalid DB provided")
+	}
+
+	c := db.database.C(colName)
+	tx := c.Bulk()
+	tx.Unordered()
+
+	return tx, nil
 }
 
 // CollectionMGO is used to get a collection value.
