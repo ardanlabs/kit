@@ -87,7 +87,7 @@ func (c *Context) Respond(data interface{}, code int) {
 	c.WriteHeader(code)
 
 	// Marshal the data into a JSON string.
-	jsonData, err := json.Marshal(data)
+	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		log.Error(c.SessionID, "api : Respond", err, "Marshalling JSON response")
 		jsonData = []byte("{}")
