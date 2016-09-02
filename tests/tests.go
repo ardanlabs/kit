@@ -3,6 +3,7 @@ package tests
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
@@ -78,4 +79,20 @@ func NewRequest(method, path string, body io.Reader) *http.Request {
 	r.RequestURI = path
 
 	return r
+}
+
+// IndentJSON takes a JSON payload as a string and re-indents it to make
+// comparing expected strings to tests strings during testing.
+func IndentJSON(j string) string {
+	var indented interface{}
+	if err := json.Unmarshal([]byte(j), &indented); err != nil {
+		return ""
+	}
+
+	data, err := json.MarshalIndent(indented, "", "  ")
+	if err != nil {
+		return ""
+	}
+
+	return string(data)
 }
