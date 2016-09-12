@@ -24,6 +24,10 @@ import (
 const (
 	cfgLoggingLevel = "LOGGING_LEVEL"
 	cfgHost         = "HOST"
+
+	// TraceIDHeader is the header added to outgoing requests which adds the
+	// traceID to it.
+	TraceIDHeader = "X-Trace-ID"
 )
 
 var (
@@ -114,6 +118,11 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 		}
 
 		log.User(c.SessionID, "Request", "Started : Method[%s] URL[%s] RADDR[%s]", c.Request.Method, c.Request.URL.Path, c.Request.RemoteAddr)
+
+		// Set the request id on the outgoing requests before any other header to
+		// ensure that the trace id is ALWAYS added to the request regardless of
+		// any error occuring or not.
+		c.Header().Set(TraceIDHeader, c.SessionID)
 
 		// Call the wrapped handler and handle any possible error.
 		if err := handler(&c); err != nil {

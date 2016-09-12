@@ -80,9 +80,6 @@ func (c *Context) Respond(data interface{}, code int) {
 		return
 	}
 
-	// Set the request id on the outgoing requests.
-	c.Header().Set("X-Request-ID", c.SessionID)
-
 	// Set the content type.
 	c.Header().Set("Content-Type", "application/json")
 
