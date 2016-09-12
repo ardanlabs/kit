@@ -3,13 +3,12 @@ package log_test
 import (
 	"errors"
 	"os"
-	"testing"
 
 	"github.com/ardanlabs/kit/log"
 )
 
 // ExampleDev shows how to use the log package.
-func ExampleDev(t *testing.T) {
+func ExampleDev() {
 
 	// Init the log package for stdout. Hardcode the logging level
 	// function to use USER level logging.
