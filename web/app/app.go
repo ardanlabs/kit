@@ -191,60 +191,36 @@ func Init(p cfg.Provider) {
 }
 
 // Run is called to start the web service.
-func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time.Duration) {
-	log.Dev("startup", "Run", "Start : defaultHost[%s]", defaultHost)
+func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error {
+	log.Dev("startup", "Run", "Start : defaultHost[%s]", host)
 
 	// Check for a configured host value.
-	host, err := cfg.String(cfgHost)
+	useHost, err := cfg.String(cfgHost)
 	if err != nil {
-		host = defaultHost
+		useHost = host
 	}
 
 	// Create a new server and set timeout values.
 	server := manners.NewWithServer(&http.Server{
-		Addr:           host,
+		Addr:           useHost,
 		Handler:        routes,
 		ReadTimeout:    readTimeout,
 		WriteTimeout:   writeTimeout,
 		MaxHeaderBytes: 1 << 20,
 	})
 
-	serverErrors := make(chan error)
-	osSignals := make(chan os.Signal)
-
-	// Start the server listening inside a seperate go-routine so we can capture
-	// any error that occurs.
 	go func() {
-		log.Dev("listener", "Run", "Listening on: %s", server.Addr)
-		if err := server.ListenAndServe(); err != nil {
-			serverErrors <- err
-		}
+
+		// Listen for an interrupt signal from the OS.
+		osSignals := make(chan os.Signal)
+		signal.Notify(osSignals, os.Interrupt)
+
+		sig := <-osSignals
+		log.User("shutdown", "Run", "Captured %v. Shutting Down...", sig)
+
+		// Shut down the API server.
+		server.Close()
 	}()
 
-	// Listen for an interrupt signal from the OS.
-	signal.Notify(osSignals, os.Interrupt)
-
-	// Block until the interrupt signal is recieved.
-	for {
-		select {
-		case err := <-serverErrors:
-			if err != nil {
-				log.Fatal("shutdown", "Run", "Error Occured: %s", err.Error())
-			}
-		case sig := <-osSignals:
-			log.User("shutdown", "Run", "Captured %v. Exiting...", sig)
-
-			// Shut down the API server.
-			server.BlockingClose()
-
-			// Close the channels we created.
-			close(serverErrors)
-			close(osSignals)
-
-			log.Dev("shutdown", "Run", "Complete")
-
-			// complete shutdown was sucesfull
-			return
-		}
-	}
+	return server.ListenAndServe()
 }
