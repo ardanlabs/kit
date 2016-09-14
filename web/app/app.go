@@ -201,7 +201,7 @@ func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time
 	}
 
 	// Create a new server and set timeout values.
-	s := manners.NewWithServer(&http.Server{
+	server := manners.NewWithServer(&http.Server{
 		Addr:           host,
 		Handler:        routes,
 		ReadTimeout:    readTimeout,
@@ -209,21 +209,42 @@ func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time
 		MaxHeaderBytes: 1 << 20,
 	})
 
-	// Support for shutting down cleanly.
+	serverErrors := make(chan error)
+	osSignals := make(chan os.Signal)
+
+	// Start the server listening inside a seperate go-routine so we can capture
+	// any error that occurs.
 	go func() {
-
-		// Listen for an interrupt signal from the OS.
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, os.Interrupt)
-		<-sigChan
-
-		// We have been asked to shutdown the server.
-		log.Dev("shutdown", "Run", "Starting shutdown...")
-		s.Close()
+		log.Dev("listener", "Run", "Listening on: %s", server.Addr)
+		if err := server.ListenAndServe(); err != nil {
+			serverErrors <- err
+		}
 	}()
 
-	log.Dev("listener", "Run", "Listening on: %s", host)
-	s.ListenAndServe()
+	// Listen for an interrupt signal from the OS.
+	signal.Notify(osSignals, os.Interrupt)
 
-	log.Dev("shutdown", "Run", "Complete")
+	// Block until the interrupt signal is recieved.
+	for {
+		select {
+		case err := <-serverErrors:
+			if err != nil {
+				log.Fatal("shutdown", "Run", "Error Occured: %s", err.Error())
+			}
+		case s := <-osSignals:
+			log.User("shutdown", "Run", "Captured %v. Exiting...", s)
+
+			// Shut down the API server.
+			server.BlockingClose()
+
+			// Close the channels we created.
+			close(serverErrors)
+			close(osSignals)
+
+			log.Dev("shutdown", "Run", "Complete")
+
+			// complete shutdown was sucesfull
+			return
+		}
+	}
 }
