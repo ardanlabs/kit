@@ -231,8 +231,8 @@ func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time
 			if err != nil {
 				log.Fatal("shutdown", "Run", "Error Occured: %s", err.Error())
 			}
-		case s := <-osSignals:
-			log.User("shutdown", "Run", "Captured %v. Exiting...", s)
+		case sig := <-osSignals:
+			log.User("shutdown", "Run", "Captured %v. Exiting...", sig)
 
 			// Shut down the API server.
 			server.BlockingClose()
