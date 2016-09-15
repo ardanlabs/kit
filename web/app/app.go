@@ -191,39 +191,36 @@ func Init(p cfg.Provider) {
 }
 
 // Run is called to start the web service.
-func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time.Duration) {
-	log.Dev("startup", "Run", "Start : defaultHost[%s]", defaultHost)
+func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error {
+	log.Dev("startup", "Run", "Start : defaultHost[%s]", host)
 
 	// Check for a configured host value.
-	host, err := cfg.String(cfgHost)
+	useHost, err := cfg.String(cfgHost)
 	if err != nil {
-		host = defaultHost
+		useHost = host
 	}
 
 	// Create a new server and set timeout values.
-	s := manners.NewWithServer(&http.Server{
-		Addr:           host,
+	server := manners.NewWithServer(&http.Server{
+		Addr:           useHost,
 		Handler:        routes,
 		ReadTimeout:    readTimeout,
 		WriteTimeout:   writeTimeout,
 		MaxHeaderBytes: 1 << 20,
 	})
 
-	// Support for shutting down cleanly.
 	go func() {
 
 		// Listen for an interrupt signal from the OS.
-		sigChan := make(chan os.Signal, 1)
-		signal.Notify(sigChan, os.Interrupt)
-		<-sigChan
+		osSignals := make(chan os.Signal)
+		signal.Notify(osSignals, os.Interrupt)
 
-		// We have been asked to shutdown the server.
-		log.Dev("shutdown", "Run", "Starting shutdown...")
-		s.Close()
+		sig := <-osSignals
+		log.User("shutdown", "Run", "Captured %v. Shutting Down...", sig)
+
+		// Shut down the API server.
+		server.Close()
 	}()
 
-	log.Dev("listener", "Run", "Listening on: %s", host)
-	s.ListenAndServe()
-
-	log.Dev("shutdown", "Run", "Complete")
+	return server.ListenAndServe()
 }

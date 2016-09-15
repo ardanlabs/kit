@@ -7,11 +7,14 @@ import (
 	"time"
 
 	"github.com/ardanlabs/kit/examples/web/routes"
+	"github.com/ardanlabs/kit/log"
 	"github.com/ardanlabs/kit/web/app"
 )
 
 func main() {
 	// Look at /kit/config for a set of possible config settings.
 
-	app.Run(":4000", routes.API(), 10*time.Second, 10*time.Second)
+	err := app.Run(":4000", routes.API(), 10*time.Second, 10*time.Second)
+
+	log.User("main", "main", "DOWN: %v", err)
 }
