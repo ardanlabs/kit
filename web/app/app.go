@@ -192,13 +192,14 @@ func Init(p cfg.Provider) {
 
 // Run is called to start the web service.
 func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error {
-	log.Dev("startup", "Run", "Start : defaultHost[%s]", host)
 
 	// Check for a configured host value.
 	useHost, err := cfg.String(cfgHost)
 	if err != nil {
 		useHost = host
 	}
+
+	log.Dev("startup", "Run", "Start : Using Host[%s]", useHost)
 
 	// Create a new server and set timeout values.
 	server := manners.NewWithServer(&http.Server{
