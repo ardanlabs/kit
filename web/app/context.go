@@ -128,18 +128,11 @@ func (c *Context) RespondError(error string, code int) {
 }
 
 // Proxy will setup a direct proxy inbetween this service and the destination
-// service. If the targetPath is empty, the path on the target will be set to
-// the targetURL's path concatenated with the request path.
-func (c *Context) Proxy(targetURL, targetPath string) error {
+// service.
+func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error {
 	target, err := url.Parse(targetURL)
 	if err != nil {
 		return err
-	}
-
-	// If the targetPath was not specified, then we need to source it from the
-	// request path and the target path together.
-	if targetPath == "" {
-		targetPath = singleJoiningSlash(target.Path, c.Request.URL.Path)
 	}
 
 	// Define our custom request director to ensure that the correct headers are
@@ -148,7 +141,7 @@ func (c *Context) Proxy(targetURL, targetPath string) error {
 	director := func(req *http.Request) {
 		req.URL.Scheme = target.Scheme
 		req.URL.Host = target.Host
-		req.URL.Path = targetPath
+		req.URL.Path = singleJoiningSlash(target.Path, req.URL.Path)
 
 		if target.RawQuery == "" || req.URL.RawQuery == "" {
 			req.URL.RawQuery = target.RawQuery + req.URL.RawQuery
@@ -159,10 +152,10 @@ func (c *Context) Proxy(targetURL, targetPath string) error {
 		// Set the headers on the incoming request by clearing them all out.
 		req.Header = make(http.Header)
 
-		// Set each of the expected headers that we want.
-		req.Header.Set("Content-Type", "application/json")
-
-		// TODO: add authorization headers here.
+		// Rewrite the request for the director if a rewrite function was passed.
+		if rewrite != nil {
+			rewrite(req)
+		}
 	}
 
 	// Create a new reverse proxy. We need to to this here because for the path
