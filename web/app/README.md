@@ -21,6 +21,17 @@ Current Status Codes:
 
 
 
+## Constants
+``` go
+const (
+
+    // TraceIDHeader is the header added to outgoing requests which adds the
+    // traceID to it.
+    TraceIDHeader = "X-Trace-ID"
+)
+```
+Web config environmental variables.
+
 
 ## Variables
 ``` go
@@ -51,7 +62,7 @@ Init is called to initialize the application.
 
 ## func Run
 ``` go
-func Run(defaultHost string, routes http.Handler, readTimeout, writeTimeout time.Duration)
+func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error
 ```
 Run is called to start the web service.
 
@@ -106,6 +117,16 @@ pair, this makes for really easy, convenient routing.
 
 
 
+### func (\*App) Use
+``` go
+func (a *App) Use(mw ...Middleware)
+```
+Use adds the set of provided middleware onto the Application middleware
+chain. Any route running off of this App will use all the middleware provided
+this way always regardless of the ordering of the Handle/Use functions.
+
+
+
 ## type Context
 ``` go
 type Context struct {
@@ -136,6 +157,15 @@ Context contains data associated with a single request.
 func (c *Context) Error(err error)
 ```
 Error handles all error responses for the API.
+
+
+
+### func (\*Context) Proxy
+``` go
+func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error
+```
+Proxy will setup a direct proxy inbetween this service and the destination
+service.
 
 
 
@@ -216,6 +246,54 @@ concerns not direct to any given Handler.
 
 
 
+
+
+
+## type ProxyResponseWriter
+``` go
+type ProxyResponseWriter struct {
+    Status int
+    http.ResponseWriter
+}
+```
+ProxyResponseWriter records the status code written by a call to the
+WriteHeader function on a http.ResponseWriter interface. This type also
+implements the http.ResponseWriter interface.
+
+
+
+
+
+
+
+
+
+
+
+### func (\*ProxyResponseWriter) Header
+``` go
+func (prw *ProxyResponseWriter) Header() http.Header
+```
+Header implements the http.ResponseWriter interface and simply relays the
+request.
+
+
+
+### func (\*ProxyResponseWriter) Write
+``` go
+func (prw *ProxyResponseWriter) Write(data []byte) (int, error)
+```
+Write implements the http.ResponseWriter interface and simply relays the
+request.
+
+
+
+### func (\*ProxyResponseWriter) WriteHeader
+``` go
+func (prw *ProxyResponseWriter) WriteHeader(status int)
+```
+WriteHeader implements the http.ResponseWriter interface and simply relays
+the request and records the status code written.
 
 
 
