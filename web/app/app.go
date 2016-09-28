@@ -59,6 +59,18 @@ type (
 	Middleware func(Handler) Handler
 )
 
+// wrapMiddleware wraps a handler with some middleware.
+func wrapMiddleware(handler Handler, mw []Middleware) Handler {
+	// Wrap with our group specific middleware.
+	for i := len(mw) - 1; i >= 0; i-- {
+		if mw[i] != nil {
+			handler = mw[i](handler)
+		}
+	}
+
+	return handler
+}
+
 // app maintains some framework state.
 var app = struct {
 	userHeaders map[string]string
@@ -67,6 +79,28 @@ var app = struct {
 }
 
 //==============================================================================
+
+// Group allows a segment of middleware to be shared amongst handlers.
+type Group struct {
+	app *App
+	mw  []Middleware
+}
+
+// Use adds the set of provided middleware onto the Application middleware chain.
+func (g *Group) Use(mw ...Middleware) {
+	g.mw = append(g.mw, mw...)
+}
+
+// Handle proxies the Handle function of the underlying App.
+func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
+
+	// Wrap up the route specific middleware last because rememeber, the
+	// middleware is wrapped backwards.
+	handler = wrapMiddleware(handler, mw)
+
+	// Wrap it with the App wrapper and additionally the group level middleware.
+	g.app.Handle(verb, path, handler, g.mw...)
+}
 
 // App is the entrypoint into our application and what configures our context
 // object for each of our http handlers. Feel free to add any configuration
@@ -89,6 +123,15 @@ func New(mw ...Middleware) *App {
 	}
 }
 
+// Group creates a new App Group based on the current App and provided
+// middleware.
+func (a *App) Group(mw ...Middleware) *Group {
+	return &Group{
+		app: a,
+		mw:  mw,
+	}
+}
+
 // Use adds the set of provided middleware onto the Application middleware
 // chain. Any route running off of this App will use all the middleware provided
 // this way always regardless of the ordering of the Handle/Use functions.
@@ -103,14 +146,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	// Wrap up the application-wide first, this will call the first function
 	// of each middleware which will return a function of type Handler. Each
 	// Handler will then be wrapped up with the other handlers from the chain.
-	for i := len(a.mw) - 1; i >= 0; i-- {
-		handler = a.mw[i](handler)
-	}
-
-	// Then wrap with our route specific ones.
-	for i := len(mw) - 1; i >= 0; i-- {
-		handler = mw[i](handler)
-	}
+	handler = wrapMiddleware(wrapMiddleware(handler, mw), a.mw)
 
 	// The function to execute for each request.
 	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
