@@ -108,6 +108,15 @@ CORS providing support for Cross-Origin Resource Sharing.
 
 
 
+### func (\*App) Group
+``` go
+func (a *App) Group(mw ...Middleware) *Group
+```
+Group creates a new App Group based on the current App and provided
+middleware.
+
+
+
 ### func (\*App) Handle
 ``` go
 func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware)
@@ -191,6 +200,40 @@ RespondError sends JSON describing the error
 func (c *Context) RespondInvalid(fields []Invalid)
 ```
 RespondInvalid sends JSON describing field validation errors.
+
+
+
+## type Group
+``` go
+type Group struct {
+    // contains filtered or unexported fields
+}
+```
+Group allows a segment of middleware to be shared amongst handlers.
+
+
+
+
+
+
+
+
+
+
+
+### func (\*Group) Handle
+``` go
+func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware)
+```
+Handle proxies the Handle function of the underlying App.
+
+
+
+### func (\*Group) Use
+``` go
+func (g *Group) Use(mw ...Middleware)
+```
+Use adds the set of provided middleware onto the Application middleware chain.
 
 
 

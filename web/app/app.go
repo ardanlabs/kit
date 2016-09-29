@@ -61,6 +61,7 @@ type (
 
 // wrapMiddleware wraps a handler with some middleware.
 func wrapMiddleware(handler Handler, mw []Middleware) Handler {
+
 	// Wrap with our group specific middleware.
 	for i := len(mw) - 1; i >= 0; i-- {
 		if mw[i] != nil {
