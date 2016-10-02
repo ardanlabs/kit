@@ -68,19 +68,6 @@ type Handler func(*Context) error
 // concerns not direct to any given Handler.
 type Middleware func(Handler) Handler
 
-// wrapMiddleware wraps a handler with some middleware.
-func wrapMiddleware(handler Handler, mw []Middleware) Handler {
-
-	// Wrap with our group specific middleware.
-	for i := len(mw) - 1; i >= 0; i-- {
-		if mw[i] != nil {
-			handler = mw[i](handler)
-		}
-	}
-
-	return handler
-}
-
 //==============================================================================
 
 // App is the entrypoint into our application and what configures our context
@@ -272,4 +259,19 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 	}()
 
 	return server.ListenAndServe()
+}
+
+//==============================================================================
+
+// wrapMiddleware wraps a handler with some middleware.
+func wrapMiddleware(handler Handler, mw []Middleware) Handler {
+
+	// Wrap with our group specific middleware.
+	for i := len(mw) - 1; i >= 0; i-- {
+		if mw[i] != nil {
+			handler = mw[i](handler)
+		}
+	}
+
+	return handler
 }
