@@ -1,39 +1,15 @@
 
-
 # db
-`import "github.com/ardanlabs/kit/db"`
+    import "github.com/ardanlabs/kit/db"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-* [Subdirectories](#pkg-subdirectories)
-
-## <a name="pkg-overview">Overview</a>
 Package db abstracts different database systems we can use.
 
 
 
 
-## <a name="pkg-index">Index</a>
-* [func RegMasterSession(context interface{}, name string, cfg mongo.Config) error](#RegMasterSession)
-* [type DB](#DB)
-  * [func NewMGO(context interface{}, name string) (*DB, error)](#NewMGO)
-  * [func (db *DB) BatchedQueryMGO(context interface{}, colName string, q bson.M) (*mgo.Iter, error)](#DB.BatchedQueryMGO)
-  * [func (db *DB) BulkOperationMGO(context interface{}, colName string) (*mgo.Bulk, error)](#DB.BulkOperationMGO)
-  * [func (db *DB) CloseMGO(context interface{})](#DB.CloseMGO)
-  * [func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error)](#DB.CollectionMGO)
-  * [func (db *DB) CollectionMGOTimeout(context interface{}, timeout time.Duration, colName string) (*mgo.Collection, error)](#DB.CollectionMGOTimeout)
-  * [func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error](#DB.ExecuteMGO)
-  * [func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colName string, f func(*mgo.Collection) error) error](#DB.ExecuteMGOTimeout)
 
 
-#### <a name="pkg-files">Package files</a>
-[db.go](/src/github.com/ardanlabs/kit/db/db.go) [mongo.go](/src/github.com/ardanlabs/kit/db/mongo.go) 
-
-
-
-
-
-## <a name="RegMasterSession">func</a> [RegMasterSession](/src/target/mongo.go?s=780:859#L26)
+## func RegMasterSession
 ``` go
 func RegMasterSession(context interface{}, name string, cfg mongo.Config) error
 ```
@@ -41,8 +17,7 @@ RegMasterSession adds a new master session to the set.
 
 
 
-
-## <a name="DB">type</a> [DB](/src/target/db.go?s=358:444#L2)
+## type DB
 ``` go
 type DB struct {
     // contains filtered or unexported fields
@@ -59,7 +34,9 @@ database is too different.
 
 
 
-### <a name="NewMGO">func</a> [NewMGO](/src/target/mongo.go?s=1363:1421#L49)
+
+
+### func NewMGO
 ``` go
 func NewMGO(context interface{}, name string) (*DB, error)
 ```
@@ -69,8 +46,7 @@ master session.
 
 
 
-
-### <a name="DB.BatchedQueryMGO">func</a> (\*DB) [BatchedQueryMGO](/src/target/mongo.go?s=2704:2799#L98)
+### func (\*DB) BatchedQueryMGO
 ``` go
 func (db *DB) BatchedQueryMGO(context interface{}, colName string, q bson.M) (*mgo.Iter, error)
 ```
@@ -79,8 +55,7 @@ all the results of a query in batches.
 
 
 
-
-### <a name="DB.BulkOperationMGO">func</a> (\*DB) [BulkOperationMGO](/src/target/mongo.go?s=3069:3155#L110)
+### func (\*DB) BulkOperationMGO
 ``` go
 func (db *DB) BulkOperationMGO(context interface{}, colName string) (*mgo.Bulk, error)
 ```
@@ -89,8 +64,7 @@ changes to be delivered to the server.
 
 
 
-
-### <a name="DB.CloseMGO">func</a> (\*DB) [CloseMGO](/src/target/mongo.go?s=1891:1934#L72)
+### func (\*DB) CloseMGO
 ``` go
 func (db *DB) CloseMGO(context interface{})
 ```
@@ -98,8 +72,7 @@ CloseMGO closes a DB value being used with MongoDB.
 
 
 
-
-### <a name="DB.CollectionMGO">func</a> (\*DB) [CollectionMGO](/src/target/mongo.go?s=3380:3469#L123)
+### func (\*DB) CollectionMGO
 ``` go
 func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error)
 ```
@@ -107,8 +80,7 @@ CollectionMGO is used to get a collection value.
 
 
 
-
-### <a name="DB.CollectionMGOTimeout">func</a> (\*DB) [CollectionMGOTimeout](/src/target/mongo.go?s=3674:3793#L132)
+### func (\*DB) CollectionMGOTimeout
 ``` go
 func (db *DB) CollectionMGOTimeout(context interface{}, timeout time.Duration, colName string) (*mgo.Collection, error)
 ```
@@ -116,8 +88,7 @@ CollectionMGOTimeout is used to get a collection value with a timeout.
 
 
 
-
-### <a name="DB.ExecuteMGO">func</a> (\*DB) [ExecuteMGO](/src/target/mongo.go?s=2011:2109#L77)
+### func (\*DB) ExecuteMGO
 ``` go
 func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error
 ```
@@ -125,12 +96,12 @@ ExecuteMGO is used to execute MongoDB commands.
 
 
 
-
-### <a name="DB.ExecuteMGOTimeout">func</a> (\*DB) [ExecuteMGOTimeout](/src/target/mongo.go?s=2306:2434#L86)
+### func (\*DB) ExecuteMGOTimeout
 ``` go
 func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colName string, f func(*mgo.Collection) error) error
 ```
 ExecuteMGOTimeout is used to execute MongoDB commands with a timeout.
+
 
 
 
