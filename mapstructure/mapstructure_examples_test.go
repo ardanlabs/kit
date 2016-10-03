@@ -238,7 +238,7 @@ func ExampleDecodeSlicePath() {
 	// []mapstructure.NameDoc{mapstructure.NameDoc{Name:"bill"}, mapstructure.NameDoc{Name:"lisa"}}
 }
 
-func ExampleDecodeWithEmbeddedSlice() {
+func ExampleDecode_embeddedSlice() {
 	document := `{
 	  "cobrandId": 10010352,
 	  "channelId": -1,
@@ -299,7 +299,7 @@ func ExampleDecodeWithEmbeddedSlice() {
 	// mapstructure.Items{Categories:[]string{"rabbit", "bunny", "frog"}, Peoples:[]mapstructure.People{mapstructure.People{Age:10, Animals:[]mapstructure.Animal{mapstructure.Animal{Barks:"yes"}, mapstructure.Animal{Barks:"no"}}}, mapstructure.People{Age:11, Animals:[]mapstructure.Animal(nil)}}}
 }
 
-func ExampleDecodeWithAbstractField() {
+func ExampleDecode_abstractField() {
 	var document = `{"Error":[{"errorDetail":"Invalid Cobrand Credentials"}]}`
 
 	type YodleeError struct {

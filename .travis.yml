@@ -1,0 +1,19 @@
+language: go
+
+services:
+  - mongodb
+
+go:
+  - 1.6
+  - 1.7
+  - tip
+
+install:
+  - go get -u github.com/golang/lint/golint
+
+before_script:
+  - for package in $(go list ./... | grep -v '/vendor/'); do golint -set_exit_status $package; done
+  - go vet $(go list ./... | grep -v '/vendor/')
+
+script:
+  - go test $(go list ./... | grep -v '/vendor/')

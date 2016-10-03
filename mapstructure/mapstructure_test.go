@@ -669,11 +669,23 @@ func TestMetadata(t *testing.T) {
 	}
 
 	expectedKeys := []string{"Vfoo", "Vbar.Vstring", "Vbar.Vuint", "Vbar"}
+
+	// We sort these keys here to ensure ethat the reflect.DeepEqual will act as
+	// expected.
+	sort.Sort(sort.StringSlice(md.Keys))
+	sort.Sort(sort.StringSlice(expectedKeys))
+
 	if !reflect.DeepEqual(md.Keys, expectedKeys) {
 		t.Fatalf("bad keys: %#v %#v", md.Keys, expectedKeys)
 	}
 
 	expectedUnused := []string{"Vbar.foo", "bar"}
+
+	// We sort these keys here to ensure ethat the reflect.DeepEqual will act as
+	// expected.
+	sort.Sort(sort.StringSlice(md.Unused))
+	sort.Sort(sort.StringSlice(expectedUnused))
+
 	if !reflect.DeepEqual(md.Unused, expectedUnused) {
 		t.Fatalf("bad unused: %#v", md.Unused)
 	}

@@ -1,4 +1,4 @@
-# Kit
+# Kit [![Build Status](https://travis-ci.org/ardanlabs/kit.svg?branch=master)](https://travis-ci.org/ardanlabs/kit)
 
 A set of common packages for building applications in Go.
 
