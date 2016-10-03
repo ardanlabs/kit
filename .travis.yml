@@ -4,13 +4,17 @@ services:
   - mongodb
 
 go:
-  - 1.7.1
+  - 1.5
+  - 1.6
+  - 1.7
   - tip
 
-before_script:
+install:
   - go get -u github.com/golang/lint/golint
-  - for package in $(go list ./... | grep -v vendor | uniq); do golint -set_exit_status $package; done
-  - go vet $(go list ./... | grep -v vendor | uniq)
+
+before_script:
+  - for package in $(go list ./... | grep -v '/vendor/'); do golint -set_exit_status $package; done
+  - go vet $(go list ./... | grep -v '/vendor/')
 
 script:
   - go test $(go list ./... | grep -v '/vendor/')
