@@ -20,16 +20,8 @@ const publicID = "6dcda2da-92c3-11e5-8994-feff819cdc9f"
 func init() {
 	os.Setenv("KIT_LOGGING_LEVEL", "1")
 
-	cfg := mongo.Config{
-		Host:     "ds027155.mongolab.com:27155",
-		AuthDB:   "kit",
-		DB:       "kit",
-		User:     "kit",
-		Password: "community",
-	}
-
 	tests.Init("KIT")
-	tests.InitMongo(cfg)
+	tests.InitMongo(mongo.Config{})
 
 	ensureIndexes()
 }

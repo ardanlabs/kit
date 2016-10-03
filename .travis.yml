@@ -1,0 +1,15 @@
+language: go
+
+services:
+  - mongodb
+
+go:
+  - 1.7.1
+  - tip
+
+before_script:
+  - for package in $(go list ./... | grep -v vendor | uniq); do golint $package; done
+  - go vet $(go list ./... | grep -v vendor | uniq)
+
+script:
+  - go test $(go list ./... | grep -v '/vendor/')
