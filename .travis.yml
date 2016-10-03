@@ -9,7 +9,7 @@ go:
 
 before_script:
   - go get -u github.com/golang/lint/golint
-  - for package in $(go list ./... | grep -v vendor | uniq); do golint $package; done
+  - for package in $(go list ./... | grep -v vendor | uniq); do golint golint -set_exit_status $package; done
   - go vet $(go list ./... | grep -v vendor | uniq)
 
 script:
