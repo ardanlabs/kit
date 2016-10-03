@@ -24,11 +24,13 @@ import (
 const (
 	cfgLoggingLevel = "LOGGING_LEVEL"
 	cfgHost         = "HOST"
-
-	// TraceIDHeader is the header added to outgoing requests which adds the
-	// traceID to it.
-	TraceIDHeader = "X-Trace-ID"
 )
+
+// TraceIDHeader is the header added to outgoing requests which adds the
+// traceID to it.
+const TraceIDHeader = "X-Trace-ID"
+
+//==============================================================================
 
 var (
 	// ErrNotAuthorized occurs when the call is not authorized.
@@ -47,31 +49,6 @@ var (
 	ErrValidation = errors.New("Validation errors occurred")
 )
 
-type (
-	// A Handler is a type that handles an http request within our own little mini
-	// framework. The fun part is that our context is fully controlled and
-	// configured by us so we can extend the functionality of the Context whenever
-	// we want.
-	Handler func(*Context) error
-
-	// A Middleware is a type that wraps a handler to remove boilerplate or other
-	// concerns not direct to any given Handler.
-	Middleware func(Handler) Handler
-)
-
-// wrapMiddleware wraps a handler with some middleware.
-func wrapMiddleware(handler Handler, mw []Middleware) Handler {
-
-	// Wrap with our group specific middleware.
-	for i := len(mw) - 1; i >= 0; i-- {
-		if mw[i] != nil {
-			handler = mw[i](handler)
-		}
-	}
-
-	return handler
-}
-
 // app maintains some framework state.
 var app = struct {
 	userHeaders map[string]string
@@ -81,27 +58,17 @@ var app = struct {
 
 //==============================================================================
 
-// Group allows a segment of middleware to be shared amongst handlers.
-type Group struct {
-	app *App
-	mw  []Middleware
-}
+// A Handler is a type that handles an http request within our own little mini
+// framework. The fun part is that our context is fully controlled and
+// configured by us so we can extend the functionality of the Context whenever
+// we want.
+type Handler func(*Context) error
 
-// Use adds the set of provided middleware onto the Application middleware chain.
-func (g *Group) Use(mw ...Middleware) {
-	g.mw = append(g.mw, mw...)
-}
+// A Middleware is a type that wraps a handler to remove boilerplate or other
+// concerns not direct to any given Handler.
+type Middleware func(Handler) Handler
 
-// Handle proxies the Handle function of the underlying App.
-func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
-
-	// Wrap up the route specific middleware last because rememeber, the
-	// middleware is wrapped backwards.
-	handler = wrapMiddleware(handler, mw)
-
-	// Wrap it with the App wrapper and additionally the group level middleware.
-	g.app.Handle(verb, path, handler, g.mw...)
-}
+//==============================================================================
 
 // App is the entrypoint into our application and what configures our context
 // object for each of our http handlers. Feel free to add any configuration
@@ -200,6 +167,30 @@ func (a *App) CORS() {
 
 //==============================================================================
 
+// Group allows a segment of middleware to be shared amongst handlers.
+type Group struct {
+	app *App
+	mw  []Middleware
+}
+
+// Use adds the set of provided middleware onto the Application middleware chain.
+func (g *Group) Use(mw ...Middleware) {
+	g.mw = append(g.mw, mw...)
+}
+
+// Handle proxies the Handle function of the underlying App.
+func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
+
+	// Wrap up the route specific middleware last because rememeber, the
+	// middleware is wrapped backwards.
+	handler = wrapMiddleware(handler, mw)
+
+	// Wrap it with the App wrapper and additionally the group level middleware.
+	g.app.Handle(verb, path, handler, g.mw...)
+}
+
+//==============================================================================
+
 // Init is called to initialize the application.
 func Init(p cfg.Provider) {
 
@@ -268,4 +259,19 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 	}()
 
 	return server.ListenAndServe()
+}
+
+//==============================================================================
+
+// wrapMiddleware wraps a handler with some middleware.
+func wrapMiddleware(handler Handler, mw []Middleware) Handler {
+
+	// Wrap with our group specific middleware.
+	for i := len(mw) - 1; i >= 0; i-- {
+		if mw[i] != nil {
+			handler = mw[i](handler)
+		}
+	}
+
+	return handler
 }

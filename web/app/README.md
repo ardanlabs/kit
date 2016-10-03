@@ -23,14 +23,10 @@ Current Status Codes:
 
 ## Constants
 ``` go
-const (
-
-    // TraceIDHeader is the header added to outgoing requests which adds the
-    // traceID to it.
-    TraceIDHeader = "X-Trace-ID"
-)
+const TraceIDHeader = "X-Trace-ID"
 ```
-Web config environmental variables.
+TraceIDHeader is the header added to outgoing requests which adds the
+traceID to it.
 
 
 ## Variables

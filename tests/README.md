@@ -36,6 +36,14 @@ DisplayLog writes the logdash data to standand out, if testing in verbose mode
 was turned on.
 
 
+## func IndentJSON
+``` go
+func IndentJSON(j string) string
+```
+IndentJSON takes a JSON payload as a string and re-indents it to make
+comparing expected strings to tests strings during testing.
+
+
 ## func Init
 ``` go
 func Init(cfgKey string)
