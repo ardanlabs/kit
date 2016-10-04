@@ -1,44 +1,67 @@
 
-# crypto
-    import "github.com/ardanlabs/kit/auth/crypto"
 
+# crypto
+`import "github.com/ardanlabs/kit/auth/crypto"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 Package crypto provides support for encrypting passwords and generating
 tokens for authentication support.
 
 
 
 
+## <a name="pkg-index">Index</a>
+* [func BcryptPassword(pwd string) (string, error)](#BcryptPassword)
+* [func CompareBcryptHashPassword(hash []byte, pwd []byte) error](#CompareBcryptHashPassword)
+* [func GenerateToken(entity SecureEntity) ([]byte, error)](#GenerateToken)
+* [func IsTokenValid(entity SecureEntity, hash string) error](#IsTokenValid)
+* [func SignedHash(pwd []byte, salt []byte) ([]byte, error)](#SignedHash)
+* [type SecureEntity](#SecureEntity)
 
 
-## func BcryptPassword
+#### <a name="pkg-files">Package files</a>
+[crypto.go](/src/github.com/ardanlabs/kit/auth/crypto/crypto.go) 
+
+
+
+
+
+## <a name="BcryptPassword">func</a> [BcryptPassword](/src/target/crypto.go?s=467:514#L12)
 ``` go
 func BcryptPassword(pwd string) (string, error)
 ```
 BcryptPassword uses bcrypt to hash password.
 
 
-## func CompareBcryptHashPassword
+
+## <a name="CompareBcryptHashPassword">func</a> [CompareBcryptHashPassword](/src/target/crypto.go?s=724:785#L22)
 ``` go
 func CompareBcryptHashPassword(hash []byte, pwd []byte) error
 ```
 CompareBcryptHashPassword compares pwd hash to original hash.
 
 
-## func GenerateToken
+
+## <a name="GenerateToken">func</a> [GenerateToken](/src/target/crypto.go?s=1220:1275#L40)
 ``` go
 func GenerateToken(entity SecureEntity) ([]byte, error)
 ```
 GenerateToken returns a hash for SecureEntity interface.
 
 
-## func IsTokenValid
+
+## <a name="IsTokenValid">func</a> [IsTokenValid](/src/target/crypto.go?s=1491:1548#L55)
 ``` go
 func IsTokenValid(entity SecureEntity, hash string) error
 ```
 IsTokenValid checks whether a hash is valid.
 
 
-## func SignedHash
+
+## <a name="SignedHash">func</a> [SignedHash](/src/target/crypto.go?s=886:942#L27)
 ``` go
 func SignedHash(pwd []byte, salt []byte) ([]byte, error)
 ```
@@ -46,7 +69,8 @@ SignedHash generates a Signed SHA256 Hash.
 
 
 
-## type SecureEntity
+
+## <a name="SecureEntity">type</a> [SecureEntity](/src/target/crypto.go?s=339:417#L6)
 ``` go
 type SecureEntity interface {
     Pwd() ([]byte, error)
@@ -54,9 +78,6 @@ type SecureEntity interface {
 }
 ```
 SecureEntity interface is required for processing and validating tokens.
-
-
-
 
 
 

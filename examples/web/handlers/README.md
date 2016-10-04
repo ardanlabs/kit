@@ -1,19 +1,31 @@
 
-# handlers
-    import "github.com/ardanlabs/kit/examples/web/handlers"
 
+# handlers
+`import "github.com/ardanlabs/kit/examples/web/handlers"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 Package handlers contains the handler logic for processing requests.
 
 
 
 
+## <a name="pkg-index">Index</a>
+* [Variables](#pkg-variables)
 
-## Variables
+
+#### <a name="pkg-files">Package files</a>
+[handlers.go](/src/github.com/ardanlabs/kit/examples/web/handlers/handlers.go) 
+
+
+
+## <a name="pkg-variables">Variables</a>
 ``` go
 var Test testHandle
 ```
 Test fronts the access to the test service functionality.
-
 
 
 

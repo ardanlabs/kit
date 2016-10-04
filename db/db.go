@@ -2,6 +2,7 @@
 package db
 
 import (
+	"github.com/cayleygraph/cayley"
 	"gopkg.in/mgo.v2"
 )
 
@@ -14,4 +15,7 @@ type DB struct {
 	// MongoDB Support
 	database *mgo.Database
 	session  *mgo.Session
+
+	// Cayley support
+	graphHandle *cayley.Handle
 }

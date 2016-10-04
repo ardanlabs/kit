@@ -1,7 +1,13 @@
 
-# auth
-    import "github.com/ardanlabs/kit/auth"
 
+# auth
+`import "github.com/ardanlabs/kit/auth"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+* [Subdirectories](#pkg-subdirectories)
+
+## <a name="pkg-overview">Overview</a>
 Package auth package provides API's for managing users who will be accessing
 our web API's and applications. This includes all the CRUD related support
 for users and authentication. For now the user system is simple since users
@@ -94,7 +100,38 @@ This has not been coded yet.
 
 
 
-## Constants
+## <a name="pkg-index">Index</a>
+* [Constants](#pkg-constants)
+* [func CreateUser(context interface{}, db *db.DB, u *User) error](#CreateUser)
+* [func CreateWebToken(context interface{}, db *db.DB, u *User, expires time.Duration) (string, error)](#CreateWebToken)
+* [func DecodeWebToken(context interface{}, webToken string) (sessionID string, token string, err error)](#DecodeWebToken)
+* [func GetUserWebToken(context interface{}, db *db.DB, publicID string) (string, error)](#GetUserWebToken)
+* [func GetUsers(context interface{}, db *db.DB, activeOnly bool) ([]User, error)](#GetUsers)
+* [func UpdateUser(context interface{}, db *db.DB, uu UpdUser) error](#UpdateUser)
+* [func UpdateUserPassword(context interface{}, db *db.DB, u *User, password string) error](#UpdateUserPassword)
+* [func UpdateUserStatus(context interface{}, db *db.DB, publicID string, status int) error](#UpdateUserStatus)
+* [type NUser](#NUser)
+  * [func (nu *NUser) Validate() error](#NUser.Validate)
+* [type UpdUser](#UpdUser)
+  * [func (uu *UpdUser) Validate() error](#UpdUser.Validate)
+* [type User](#User)
+  * [func GetUserByEmail(context interface{}, db *db.DB, email string, activeOnly bool) (*User, error)](#GetUserByEmail)
+  * [func GetUserByPublicID(context interface{}, db *db.DB, publicID string, activeOnly bool) (*User, error)](#GetUserByPublicID)
+  * [func LoginUser(context interface{}, db *db.DB, email string, password string) (*User, error)](#LoginUser)
+  * [func NewUser(nu NUser) (*User, error)](#NewUser)
+  * [func ValidateWebToken(context interface{}, db *db.DB, webToken string) (*User, error)](#ValidateWebToken)
+  * [func (u *User) IsPasswordValid(password string) bool](#User.IsPasswordValid)
+  * [func (u *User) Pwd() ([]byte, error)](#User.Pwd)
+  * [func (u *User) Salt() ([]byte, error)](#User.Salt)
+  * [func (u *User) Validate() error](#User.Validate)
+  * [func (u *User) WebToken(sessionID string) (string, error)](#User.WebToken)
+
+
+#### <a name="pkg-files">Package files</a>
+[auth.go](/src/github.com/ardanlabs/kit/auth/auth.go) [doc.go](/src/github.com/ardanlabs/kit/auth/doc.go) [model.go](/src/github.com/ardanlabs/kit/auth/model.go) 
+
+
+## <a name="pkg-constants">Constants</a>
 ``` go
 const (
     StatusUnknown = iota
@@ -111,35 +148,40 @@ Collection contains the name of the auth_users collection.
 
 
 
-## func CreateUser
+
+## <a name="CreateUser">func</a> [CreateUser](/src/target/auth.go?s=524:586#L15)
 ``` go
 func CreateUser(context interface{}, db *db.DB, u *User) error
 ```
 CreateUser adds a new user to the database.
 
 
-## func CreateWebToken
+
+## <a name="CreateWebToken">func</a> [CreateWebToken](/src/target/auth.go?s=1194:1293#L38)
 ``` go
 func CreateWebToken(context interface{}, db *db.DB, u *User, expires time.Duration) (string, error)
 ```
 CreateWebToken return a token and session that can be used to authenticate a user.
 
 
-## func DecodeWebToken
+
+## <a name="DecodeWebToken">func</a> [DecodeWebToken](/src/target/auth.go?s=2322:2423#L72)
 ``` go
 func DecodeWebToken(context interface{}, webToken string) (sessionID string, token string, err error)
 ```
 DecodeWebToken breaks a web token into its parts.
 
 
-## func GetUserWebToken
+
+## <a name="GetUserWebToken">func</a> [GetUserWebToken](/src/target/auth.go?s=6188:6273#L194)
 ``` go
 func GetUserWebToken(context interface{}, db *db.DB, publicID string) (string, error)
 ```
 GetUserWebToken return a token if one exists and is valid.
 
 
-## func GetUsers
+
+## <a name="GetUsers">func</a> [GetUsers](/src/target/auth.go?s=7271:7349#L231)
 ``` go
 func GetUsers(context interface{}, db *db.DB, activeOnly bool) ([]User, error)
 ```
@@ -147,21 +189,24 @@ GetUsers retrieves all user records with an optional filter for only active
 users.
 
 
-## func UpdateUser
+
+## <a name="UpdateUser">func</a> [UpdateUser](/src/target/auth.go?s=8010:8075#L256)
 ``` go
 func UpdateUser(context interface{}, db *db.DB, uu UpdUser) error
 ```
 UpdateUser updates an existing user to the database.
 
 
-## func UpdateUserPassword
+
+## <a name="UpdateUserPassword">func</a> [UpdateUserPassword](/src/target/auth.go?s=8881:8968#L281)
 ``` go
 func UpdateUserPassword(context interface{}, db *db.DB, u *User, password string) error
 ```
 UpdateUserPassword updates an existing user's password and token in the database.
 
 
-## func UpdateUserStatus
+
+## <a name="UpdateUserStatus">func</a> [UpdateUserStatus](/src/target/auth.go?s=10068:10156#L318)
 ``` go
 func UpdateUserStatus(context interface{}, db *db.DB, publicID string, status int) error
 ```
@@ -169,7 +214,8 @@ UpdateUserStatus changes the status of a user to make them active or disabled.
 
 
 
-## type NUser
+
+## <a name="NUser">type</a> [NUser](/src/target/model.go?s=689:1010#L25)
 ``` go
 type NUser struct {
     Status   int    `bson:"status" json:"status" validate:"required,ne=0"`
@@ -189,8 +235,7 @@ NUser is provided to create a new user value for use.
 
 
 
-
-### func (\*NUser) Validate
+### <a name="NUser.Validate">func</a> (\*NUser) [Validate](/src/target/model.go?s=1085:1118#L33)
 ``` go
 func (nu *NUser) Validate() error
 ```
@@ -198,7 +243,8 @@ Validate performs validation on a NUser value before it is processed.
 
 
 
-## type UpdUser
+
+## <a name="UpdUser">type</a> [UpdUser](/src/target/model.go?s=4178:4509#L139)
 ``` go
 type UpdUser struct {
     PublicID string `bson:"public_id" json:"public_id" validate:"required,uuid"`
@@ -218,8 +264,7 @@ UpdUser is provided to update an existing user in the system.
 
 
 
-
-### func (\*UpdUser) Validate
+### <a name="UpdUser.Validate">func</a> (\*UpdUser) [Validate](/src/target/model.go?s=4586:4621#L147)
 ``` go
 func (uu *UpdUser) Validate() error
 ```
@@ -227,7 +272,8 @@ Validate performs validation on a NewUser value before it is processed.
 
 
 
-## type User
+
+## <a name="User">type</a> [User](/src/target/model.go?s=1330:2102#L44)
 ``` go
 type User struct {
     ID           bson.ObjectId `bson:"_id,omitempty" json:"-"`
@@ -250,37 +296,35 @@ User model denotes a user entity for a tenant.
 
 
 
-
-
-### func GetUserByEmail
+### <a name="GetUserByEmail">func</a> [GetUserByEmail](/src/target/auth.go?s=5405:5502#L169)
 ``` go
 func GetUserByEmail(context interface{}, db *db.DB, email string, activeOnly bool) (*User, error)
 ```
 GetUserByEmail retrieves a user record by using the provided email.
 
 
-### func GetUserByPublicID
+### <a name="GetUserByPublicID">func</a> [GetUserByPublicID](/src/target/auth.go?s=4614:4717#L144)
 ``` go
 func GetUserByPublicID(context interface{}, db *db.DB, publicID string, activeOnly bool) (*User, error)
 ```
 GetUserByPublicID retrieves a user record by using the provided PublicID.
 
 
-### func LoginUser
+### <a name="LoginUser">func</a> [LoginUser](/src/target/auth.go?s=11086:11178#L346)
 ``` go
 func LoginUser(context interface{}, db *db.DB, email string, password string) (*User, error)
 ```
 LoginUser authenticates the user and if successful returns the User value.
 
 
-### func NewUser
+### <a name="NewUser">func</a> [NewUser](/src/target/model.go?s=2156:2193#L58)
 ``` go
 func NewUser(nu NUser) (*User, error)
 ```
 NewUser creates a new user from a NewUser value.
 
 
-### func ValidateWebToken
+### <a name="ValidateWebToken">func</a> [ValidateWebToken](/src/target/auth.go?s=3229:3314#L100)
 ``` go
 func ValidateWebToken(context interface{}, db *db.DB, webToken string) (*User, error)
 ```
@@ -290,7 +334,8 @@ a User value is the token is valid.
 
 
 
-### func (\*User) IsPasswordValid
+
+### <a name="User.IsPasswordValid">func</a> (\*User) [IsPasswordValid](/src/target/model.go?s=3729:3781#L123)
 ``` go
 func (u *User) IsPasswordValid(password string) bool
 ```
@@ -298,7 +343,8 @@ IsPasswordValid compares the user provided password with what is in the db.
 
 
 
-### func (\*User) Pwd
+
+### <a name="User.Pwd">func</a> (\*User) [Pwd](/src/target/model.go?s=2883:2919#L92)
 ``` go
 func (u *User) Pwd() ([]byte, error)
 ```
@@ -306,7 +352,8 @@ Pwd implements the secure entity interface.
 
 
 
-### func (\*User) Salt
+
+### <a name="User.Salt">func</a> (\*User) [Salt](/src/target/model.go?s=3083:3120#L101)
 ``` go
 func (u *User) Salt() ([]byte, error)
 ```
@@ -314,7 +361,8 @@ Salt implements the secure entity interface.
 
 
 
-### func (\*User) Validate
+
+### <a name="User.Validate">func</a> (\*User) [Validate](/src/target/model.go?s=2726:2757#L83)
 ``` go
 func (u *User) Validate() error
 ```
@@ -322,12 +370,12 @@ Validate performs validation on a CrtUser value before it is processed.
 
 
 
-### func (\*User) WebToken
+
+### <a name="User.WebToken">func</a> (\*User) [WebToken](/src/target/model.go?s=3387:3444#L112)
 ``` go
 func (u *User) WebToken(sessionID string) (string, error)
 ```
 WebToken returns a token ready for web use.
-
 
 
 

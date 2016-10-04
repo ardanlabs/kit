@@ -1,22 +1,39 @@
 
-# mongo
-    import "github.com/ardanlabs/kit/db/mongo"
 
+# mongo
+`import "github.com/ardanlabs/kit/db/mongo"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 Package mongo provides support for using MongoDB.
 
 
 
 
+## <a name="pkg-index">Index</a>
+* [func New(cfg Config) (*mgo.Session, error)](#New)
+* [func Query(value interface{}) string](#Query)
+* [type Config](#Config)
 
 
-## func New
+#### <a name="pkg-files">Package files</a>
+[mongo.go](/src/github.com/ardanlabs/kit/db/mongo/mongo.go) 
+
+
+
+
+
+## <a name="New">func</a> [New](/src/target/mongo.go?s=429:471#L15)
 ``` go
 func New(cfg Config) (*mgo.Session, error)
 ```
 New creates a new master session.
 
 
-## func Query
+
+## <a name="Query">func</a> [Query](/src/target/mongo.go?s=1529:1565#L53)
 ``` go
 func Query(value interface{}) string
 ```
@@ -24,7 +41,8 @@ Query provides a string version of the value
 
 
 
-## type Config
+
+## <a name="Config">type</a> [Config](/src/target/mongo.go?s=177:308#L3)
 ``` go
 type Config struct {
     Host     string
@@ -36,9 +54,6 @@ type Config struct {
 }
 ```
 Config provides configuration values.
-
-
-
 
 
 

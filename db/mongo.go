@@ -72,7 +72,7 @@ func NewMGO(context interface{}, name string) (*DB, error) {
 	ses := db.ses.Copy()
 	mdb := ses.DB(db.dbName)
 
-	return &DB{mdb, ses}, nil
+	return &DB{database: mdb, session: ses}, nil
 }
 
 //==============================================================================

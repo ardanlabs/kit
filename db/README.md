@@ -1,15 +1,42 @@
 
-# db
-    import "github.com/ardanlabs/kit/db"
 
+# db
+`import "github.com/ardanlabs/kit/db"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+* [Subdirectories](#pkg-subdirectories)
+
+## <a name="pkg-overview">Overview</a>
 Package db abstracts different database systems we can use.
 
 
 
 
+## <a name="pkg-index">Index</a>
+* [func RegMasterSession(context interface{}, name string, cfg mongo.Config) error](#RegMasterSession)
+* [type DB](#DB)
+  * [func NewMGO(context interface{}, name string) (*DB, error)](#NewMGO)
+  * [func (db *DB) BatchedQueryMGO(context interface{}, colName string, q bson.M) (*mgo.Iter, error)](#DB.BatchedQueryMGO)
+  * [func (db *DB) BulkOperationMGO(context interface{}, colName string) (*mgo.Bulk, error)](#DB.BulkOperationMGO)
+  * [func (db *DB) CloseCayley(context interface{})](#DB.CloseCayley)
+  * [func (db *DB) CloseMGO(context interface{})](#DB.CloseMGO)
+  * [func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error)](#DB.CollectionMGO)
+  * [func (db *DB) CollectionMGOTimeout(context interface{}, timeout time.Duration, colName string) (*mgo.Collection, error)](#DB.CollectionMGOTimeout)
+  * [func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error](#DB.ExecuteMGO)
+  * [func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colName string, f func(*mgo.Collection) error) error](#DB.ExecuteMGOTimeout)
+  * [func (db *DB) GraphHandle(context interface{}) (*cayley.Handle, error)](#DB.GraphHandle)
+  * [func (db *DB) OpenCayley(context interface{}, cfg kitcayley.Config) error](#DB.OpenCayley)
 
 
-## func RegMasterSession
+#### <a name="pkg-files">Package files</a>
+[cayley.go](/src/github.com/ardanlabs/kit/db/cayley.go) [db.go](/src/github.com/ardanlabs/kit/db/db.go) [mongo.go](/src/github.com/ardanlabs/kit/db/mongo.go) 
+
+
+
+
+
+## <a name="RegMasterSession">func</a> [RegMasterSession](/src/target/mongo.go?s=780:859#L26)
 ``` go
 func RegMasterSession(context interface{}, name string, cfg mongo.Config) error
 ```
@@ -17,7 +44,8 @@ RegMasterSession adds a new master session to the set.
 
 
 
-## type DB
+
+## <a name="DB">type</a> [DB](/src/target/db.go?s=391:525#L3)
 ``` go
 type DB struct {
     // contains filtered or unexported fields
@@ -34,9 +62,7 @@ database is too different.
 
 
 
-
-
-### func NewMGO
+### <a name="NewMGO">func</a> [NewMGO](/src/target/mongo.go?s=1363:1421#L49)
 ``` go
 func NewMGO(context interface{}, name string) (*DB, error)
 ```
@@ -46,7 +72,8 @@ master session.
 
 
 
-### func (\*DB) BatchedQueryMGO
+
+### <a name="DB.BatchedQueryMGO">func</a> (\*DB) [BatchedQueryMGO](/src/target/mongo.go?s=2723:2818#L98)
 ``` go
 func (db *DB) BatchedQueryMGO(context interface{}, colName string, q bson.M) (*mgo.Iter, error)
 ```
@@ -55,7 +82,8 @@ all the results of a query in batches.
 
 
 
-### func (\*DB) BulkOperationMGO
+
+### <a name="DB.BulkOperationMGO">func</a> (\*DB) [BulkOperationMGO](/src/target/mongo.go?s=3088:3174#L110)
 ``` go
 func (db *DB) BulkOperationMGO(context interface{}, colName string) (*mgo.Bulk, error)
 ```
@@ -64,7 +92,17 @@ changes to be delivered to the server.
 
 
 
-### func (\*DB) CloseMGO
+
+### <a name="DB.CloseCayley">func</a> (\*DB) [CloseCayley](/src/target/cayley.go?s=832:878#L23)
+``` go
+func (db *DB) CloseCayley(context interface{})
+```
+CloseCayley closes a graph handle value.
+
+
+
+
+### <a name="DB.CloseMGO">func</a> (\*DB) [CloseMGO](/src/target/mongo.go?s=1910:1953#L72)
 ``` go
 func (db *DB) CloseMGO(context interface{})
 ```
@@ -72,7 +110,8 @@ CloseMGO closes a DB value being used with MongoDB.
 
 
 
-### func (\*DB) CollectionMGO
+
+### <a name="DB.CollectionMGO">func</a> (\*DB) [CollectionMGO](/src/target/mongo.go?s=3399:3488#L123)
 ``` go
 func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error)
 ```
@@ -80,7 +119,8 @@ CollectionMGO is used to get a collection value.
 
 
 
-### func (\*DB) CollectionMGOTimeout
+
+### <a name="DB.CollectionMGOTimeout">func</a> (\*DB) [CollectionMGOTimeout](/src/target/mongo.go?s=3693:3812#L132)
 ``` go
 func (db *DB) CollectionMGOTimeout(context interface{}, timeout time.Duration, colName string) (*mgo.Collection, error)
 ```
@@ -88,7 +128,8 @@ CollectionMGOTimeout is used to get a collection value with a timeout.
 
 
 
-### func (\*DB) ExecuteMGO
+
+### <a name="DB.ExecuteMGO">func</a> (\*DB) [ExecuteMGO](/src/target/mongo.go?s=2030:2128#L77)
 ``` go
 func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error
 ```
@@ -96,12 +137,31 @@ ExecuteMGO is used to execute MongoDB commands.
 
 
 
-### func (\*DB) ExecuteMGOTimeout
+
+### <a name="DB.ExecuteMGOTimeout">func</a> (\*DB) [ExecuteMGOTimeout](/src/target/mongo.go?s=2325:2453#L86)
 ``` go
 func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colName string, f func(*mgo.Collection) error) error
 ```
 ExecuteMGOTimeout is used to execute MongoDB commands with a timeout.
 
+
+
+
+### <a name="DB.GraphHandle">func</a> (\*DB) [GraphHandle](/src/target/cayley.go?s=595:665#L15)
+``` go
+func (db *DB) GraphHandle(context interface{}) (*cayley.Handle, error)
+```
+GraphHandle returns the Cayley graph handle for graph interactions.
+
+
+
+
+### <a name="DB.OpenCayley">func</a> (\*DB) [OpenCayley](/src/target/cayley.go?s=342:415#L5)
+``` go
+func (db *DB) OpenCayley(context interface{}, cfg kitcayley.Config) error
+```
+OpenCayley opens a connection to Cayley and adds that support to the
+database value.
 
 
 
