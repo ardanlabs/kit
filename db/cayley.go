@@ -7,6 +7,9 @@ import (
 	"github.com/cayleygraph/cayley"
 )
 
+// ErrGraphHandle is returned when a graph handle is not initialized.
+const ErrGraphHandle = errors.New("Graph handle not initialized.")
+
 //==============================================================================
 // Methods for the DB struct type related to Cayley.
 
@@ -26,7 +29,7 @@ func (db *DB) GraphHandle(context interface{}) (*cayley.Handle, error) {
 	if db.graphHandle != nil {
 		return db.graphHandle, nil
 	}
-	return nil, errors.New("Graph handle not initialized.")
+	return nil, ErrGraphHandle
 }
 
 // CloseCayley closes a graph handle value.
