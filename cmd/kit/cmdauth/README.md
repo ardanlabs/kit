@@ -1,18 +1,31 @@
 
+
 # cmdauth
-    import "github.com/ardanlabs/kit/cmd/kit/cmdauth"
+`import "github.com/ardanlabs/kit/cmd/kit/cmdauth"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
+
+
+
+## <a name="pkg-index">Index</a>
+* [func GetCommands(db *db.DB) *cobra.Command](#GetCommands)
+
+
+#### <a name="pkg-files">Package files</a>
+[commands.go](/src/github.com/ardanlabs/kit/cmd/kit/cmdauth/commands.go) [create.go](/src/github.com/ardanlabs/kit/cmd/kit/cmdauth/create.go) [get.go](/src/github.com/ardanlabs/kit/cmd/kit/cmdauth/get.go) [list.go](/src/github.com/ardanlabs/kit/cmd/kit/cmdauth/list.go) [status.go](/src/github.com/ardanlabs/kit/cmd/kit/cmdauth/status.go) 
 
 
 
 
 
-
-## func GetCommands
+## <a name="GetCommands">func</a> [GetCommands](/src/target/commands.go?s=342:384#L8)
 ``` go
 func GetCommands(db *db.DB) *cobra.Command
 ```
 GetCommands returns the auth commands.
-
 
 
 

@@ -1,12 +1,30 @@
 
+
 # cmddb
-    import "github.com/ardanlabs/kit/cmd/kit/cmddb"
+`import "github.com/ardanlabs/kit/cmd/kit/cmddb"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 
 
 
+## <a name="pkg-index">Index</a>
+* [Variables](#pkg-variables)
+* [func GetCommands(db *db.DB) *cobra.Command](#GetCommands)
+* [type Collection](#Collection)
+* [type DBMeta](#DBMeta)
+* [type Field](#Field)
+* [type Index](#Index)
 
 
-## Variables
+#### <a name="pkg-files">Package files</a>
+[commands.go](/src/github.com/ardanlabs/kit/cmd/kit/cmddb/commands.go) [create.go](/src/github.com/ardanlabs/kit/cmd/kit/cmddb/create.go) 
+
+
+
+## <a name="pkg-variables">Variables</a>
 ``` go
 var (
     // ErrCollectionExists is return when a collection to be
@@ -15,7 +33,8 @@ var (
 )
 ```
 
-## func GetCommands
+
+## <a name="GetCommands">func</a> [GetCommands](/src/target/commands.go?s=366:408#L8)
 ``` go
 func GetCommands(db *db.DB) *cobra.Command
 ```
@@ -23,7 +42,8 @@ GetCommands returns the db commands.
 
 
 
-## type Collection
+
+## <a name="Collection">type</a> [Collection](/src/target/create.go?s=1178:1269#L47)
 ``` go
 type Collection struct {
     Name    string  `json:"name"`
@@ -41,8 +61,7 @@ Collection is the container for a db collection definition.
 
 
 
-
-## type DBMeta
+## <a name="DBMeta">type</a> [DBMeta](/src/target/create.go?s=1051:1113#L42)
 ``` go
 type DBMeta struct {
     Cols []Collection `json:"collections"`
@@ -59,8 +78,7 @@ DBMeta is the container for all db objects.
 
 
 
-
-## type Field
+## <a name="Field">type</a> [Field](/src/target/create.go?s=1495:1613#L60)
 ``` go
 type Field struct {
     Name      string `json:"name"`
@@ -79,8 +97,7 @@ Field is the container for a field definition.
 
 
 
-
-## type Index
+## <a name="Index">type</a> [Index](/src/target/create.go?s=1322:1443#L53)
 ``` go
 type Index struct {
     Name     string  `json:"name"`
@@ -89,9 +106,6 @@ type Index struct {
 }
 ```
 Index is the container for an index definition.
-
-
-
 
 
 

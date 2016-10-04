@@ -1,20 +1,37 @@
 
+
 # midware
-    import "github.com/ardanlabs/kit/web/midware"
+`import "github.com/ardanlabs/kit/web/midware"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
+
+
+
+## <a name="pkg-index">Index</a>
+* [func Auth(h app.Handler) app.Handler](#Auth)
+* [func FixedTime(now time.Time) func(h app.Handler) app.Handler](#FixedTime)
+* [func Mongo(h app.Handler) app.Handler](#Mongo)
+
+
+#### <a name="pkg-files">Package files</a>
+[auth.go](/src/github.com/ardanlabs/kit/web/midware/auth.go) [fixedtime.go](/src/github.com/ardanlabs/kit/web/midware/fixedtime.go) [mongo.go](/src/github.com/ardanlabs/kit/web/midware/mongo.go) 
 
 
 
 
 
-
-## func Auth
+## <a name="Auth">func</a> [Auth](/src/target/auth.go?s=295:331#L5)
 ``` go
 func Auth(h app.Handler) app.Handler
 ```
 Auth handles token authentication.
 
 
-## func FixedTime
+
+## <a name="FixedTime">func</a> [FixedTime](/src/target/fixedtime.go?s=226:287#L2)
 ``` go
 func FixedTime(now time.Time) func(h app.Handler) app.Handler
 ```
@@ -22,12 +39,12 @@ FixedTime is useful when testing time dependent APIs as it sets the Now
 property of all Contexts to a fixed time.
 
 
-## func Mongo
+
+## <a name="Mongo">func</a> [Mongo](/src/target/mongo.go?s=274:311#L4)
 ``` go
 func Mongo(h app.Handler) app.Handler
 ```
 Mongo handles session management.
-
 
 
 

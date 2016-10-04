@@ -1,7 +1,13 @@
 
-# mapstructure
-    import "github.com/ardanlabs/kit/mapstructure"
 
+# mapstructure
+`import "github.com/ardanlabs/kit/mapstructure"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+* [Examples](#pkg-examples)
+
+## <a name="pkg-overview">Overview</a>
 Package mapstructure is a Go library for decoding generic map values to structures
 and vice versa, while providing helpful error handling.
 
@@ -212,9 +218,39 @@ You can decode within those arrays
 
 
 
+## <a name="pkg-index">Index</a>
+* [func Decode(m interface{}, rawVal interface{}) error](#Decode)
+* [func DecodePath(m map[string]interface{}, rawVal interface{}) error](#DecodePath)
+* [func DecodeSlicePath(ms []map[string]interface{}, rawSlice interface{}) error](#DecodeSlicePath)
+* [type DecodeHookFunc](#DecodeHookFunc)
+* [type Decoder](#Decoder)
+  * [func NewDecoder(config *DecoderConfig) (*Decoder, error)](#NewDecoder)
+  * [func NewPathDecoder(config *DecoderConfig) (*Decoder, error)](#NewPathDecoder)
+  * [func (d *Decoder) Decode(raw interface{}) error](#Decoder.Decode)
+  * [func (d *Decoder) DecodePath(m map[string]interface{}, rawVal interface{}) (bool, error)](#Decoder.DecodePath)
+* [type DecoderConfig](#DecoderConfig)
+* [type Error](#Error)
+  * [func (e *Error) Error() string](#Error.Error)
+* [type Metadata](#Metadata)
+
+#### <a name="pkg-examples">Examples</a>
+* [Decode](#example_Decode)
+* [DecodePath](#example_DecodePath)
+* [DecodeSlicePath](#example_DecodeSlicePath)
+* [Decode (AbstractField)](#example_Decode_abstractField)
+* [Decode (EmbeddedSlice)](#example_Decode_embeddedSlice)
+* [Decode (Errors)](#example_Decode_errors)
+* [Decode (Metadata)](#example_Decode_metadata)
+* [Decode (WeaklyTypedInput)](#example_Decode_weaklyTypedInput)
+
+#### <a name="pkg-files">Package files</a>
+[doc.go](/src/github.com/ardanlabs/kit/mapstructure/doc.go) [error.go](/src/github.com/ardanlabs/kit/mapstructure/error.go) [mapstructure.go](/src/github.com/ardanlabs/kit/mapstructure/mapstructure.go) 
 
 
-## func Decode
+
+
+
+## <a name="Decode">func</a> [Decode](/src/target/mapstructure.go?s=2737:2789#L71)
 ``` go
 func Decode(m interface{}, rawVal interface{}) error
 ```
@@ -222,7 +258,8 @@ Decode takes a map and uses reflection to convert it into the
 given Go native structure. val must be a pointer to a struct.
 
 
-## func DecodePath
+
+## <a name="DecodePath">func</a> [DecodePath](/src/target/mapstructure.go?s=3138:3205#L88)
 ``` go
 func DecodePath(m map[string]interface{}, rawVal interface{}) error
 ```
@@ -231,7 +268,8 @@ given Go native structure. Tags are used to specify the mapping
 between fields in the map and structure
 
 
-## func DecodeSlicePath
+
+## <a name="DecodeSlicePath">func</a> [DecodeSlicePath](/src/target/mapstructure.go?s=3506:3583#L105)
 ``` go
 func DecodeSlicePath(ms []map[string]interface{}, rawSlice interface{}) error
 ```
@@ -240,7 +278,8 @@ contain specified tags
 
 
 
-## type DecodeHookFunc
+
+## <a name="DecodeHookFunc">type</a> [DecodeHookFunc](/src/target/mapstructure.go?s=153:239#L3)
 ``` go
 type DecodeHookFunc func(reflect.Kind, reflect.Kind, interface{}) (interface{}, error)
 ```
@@ -255,8 +294,7 @@ DecodeHookFunc declares a function to help with decoding.
 
 
 
-
-## type Decoder
+## <a name="Decoder">type</a> [Decoder](/src/target/mapstructure.go?s=2174:2220#L54)
 ``` go
 type Decoder struct {
     // contains filtered or unexported fields
@@ -275,9 +313,7 @@ up the most basic Decoder.
 
 
 
-
-
-### func NewDecoder
+### <a name="NewDecoder">func</a> [NewDecoder](/src/target/mapstructure.go?s=4979:5035#L154)
 ``` go
 func NewDecoder(config *DecoderConfig) (*Decoder, error)
 ```
@@ -286,7 +322,7 @@ a decoder has been returned, the same configuration must not be used
 again.
 
 
-### func NewPathDecoder
+### <a name="NewPathDecoder">func</a> [NewPathDecoder](/src/target/mapstructure.go?s=5731:5791#L188)
 ``` go
 func NewPathDecoder(config *DecoderConfig) (*Decoder, error)
 ```
@@ -296,7 +332,8 @@ This is used to decode path specific structures
 
 
 
-### func (\*Decoder) Decode
+
+### <a name="Decoder.Decode">func</a> (\*Decoder) [Decode](/src/target/mapstructure.go?s=6228:6275#L212)
 ``` go
 func (d *Decoder) Decode(raw interface{}) error
 ```
@@ -305,7 +342,8 @@ by the configuration.
 
 
 
-### func (\*Decoder) DecodePath
+
+### <a name="Decoder.DecodePath">func</a> (\*Decoder) [DecodePath](/src/target/mapstructure.go?s=6435:6523#L218)
 ``` go
 func (d *Decoder) DecodePath(m map[string]interface{}, rawVal interface{}) (bool, error)
 ```
@@ -314,7 +352,8 @@ specified tags
 
 
 
-## type DecoderConfig
+
+## <a name="DecoderConfig">type</a> [DecoderConfig](/src/target/mapstructure.go?s=376:1782#L7)
 ``` go
 type DecoderConfig struct {
     // DecodeHook, if set, will be called before any decoding and any
@@ -369,8 +408,7 @@ and allows customization of various aspects of decoding.
 
 
 
-
-## type Error
+## <a name="Error">type</a> [Error](/src/target/error.go?s=175:213#L1)
 ``` go
 type Error struct {
     Errors []string
@@ -388,8 +426,7 @@ errors that occur in the course of a single decode.
 
 
 
-
-### func (\*Error) Error
+### <a name="Error.Error">func</a> (\*Error) [Error](/src/target/error.go?s=261:291#L5)
 ``` go
 func (e *Error) Error() string
 ```
@@ -397,7 +434,8 @@ Error is implementing the error interface.
 
 
 
-## type Metadata
+
+## <a name="Metadata">type</a> [Metadata](/src/target/mapstructure.go?s=2332:2605#L60)
 ``` go
 type Metadata struct {
     // Keys are the keys of the structure which were successfully decoded
@@ -410,9 +448,6 @@ type Metadata struct {
 ```
 Metadata contains information about decoding a structure that
 is tedious or difficult to get otherwise.
-
-
-
 
 
 

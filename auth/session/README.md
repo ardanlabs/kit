@@ -1,7 +1,12 @@
 
-# session
-    import "github.com/ardanlabs/kit/auth/session"
 
+# session
+`import "github.com/ardanlabs/kit/auth/session"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 Package session provides a level of security for web tokens by giving them an
 expiration date and a lookup point for the user accessing the API. The session
 is what is used to look up the user performing the web call. Though the user's
@@ -10,7 +15,20 @@ PublicID is not private, it is not used directly.
 
 
 
-## Constants
+## <a name="pkg-index">Index</a>
+* [Constants](#pkg-constants)
+* [type Session](#Session)
+  * [func Create(context interface{}, db *db.DB, publicID string, expires time.Duration) (*Session, error)](#Create)
+  * [func GetByLatest(context interface{}, db *db.DB, publicID string) (*Session, error)](#GetByLatest)
+  * [func GetBySessionID(context interface{}, db *db.DB, sessionID string) (*Session, error)](#GetBySessionID)
+  * [func (s *Session) IsExpired(context interface{}) bool](#Session.IsExpired)
+
+
+#### <a name="pkg-files">Package files</a>
+[model.go](/src/github.com/ardanlabs/kit/auth/session/model.go) [session.go](/src/github.com/ardanlabs/kit/auth/session/session.go) 
+
+
+## <a name="pkg-constants">Constants</a>
 ``` go
 const Collection = "auth_sessions"
 ```
@@ -19,7 +37,8 @@ Collection contains the name of the user collection.
 
 
 
-## type Session
+
+## <a name="Session">type</a> [Session](/src/target/model.go?s=150:510#L2)
 ``` go
 type Session struct {
     ID          bson.ObjectId `bson:"_id,omitempty" json:"_id,omitempty"`
@@ -37,23 +56,21 @@ Session denotes a user's session within the system.
 
 
 
-
-
-### func Create
+### <a name="Create">func</a> [Create](/src/target/session.go?s=750:851#L15)
 ``` go
 func Create(context interface{}, db *db.DB, publicID string, expires time.Duration) (*Session, error)
 ```
 Create adds a new session for the specified user to the database.
 
 
-### func GetByLatest
+### <a name="GetByLatest">func</a> [GetByLatest](/src/target/session.go?s=2222:2305#L62)
 ``` go
 func GetByLatest(context interface{}, db *db.DB, publicID string) (*Session, error)
 ```
 GetByLatest retrieves the latest session for the specified user.
 
 
-### func GetBySessionID
+### <a name="GetBySessionID">func</a> [GetBySessionID](/src/target/session.go?s=1568:1655#L42)
 ``` go
 func GetBySessionID(context interface{}, db *db.DB, sessionID string) (*Session, error)
 ```
@@ -62,12 +79,12 @@ GetBySessionID retrieves a session from the session store.
 
 
 
-### func (\*Session) IsExpired
+
+### <a name="Session.IsExpired">func</a> (\*Session) [IsExpired](/src/target/model.go?s=565:618#L11)
 ``` go
 func (s *Session) IsExpired(context interface{}) bool
 ```
 IsExpired returns true if the session is expired.
-
 
 
 
