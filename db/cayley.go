@@ -8,7 +8,7 @@ import (
 )
 
 // ErrGraphHandle is returned when a graph handle is not initialized.
-const ErrGraphHandle = errors.New("Graph handle not initialized.")
+var ErrGraphHandle = errors.New("Graph handle not initialized.")
 
 //==============================================================================
 // Methods for the DB struct type related to Cayley.
