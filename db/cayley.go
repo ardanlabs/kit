@@ -20,6 +20,7 @@ func (db *DB) OpenCayley(context interface{}, cfg kitcayley.Config) error {
 	if err != nil {
 		return err
 	}
+
 	db.graphHandle = store
 	return nil
 }
@@ -29,6 +30,7 @@ func (db *DB) GraphHandle(context interface{}) (*cayley.Handle, error) {
 	if db.graphHandle != nil {
 		return db.graphHandle, nil
 	}
+
 	return nil, ErrGraphHandle
 }
 
