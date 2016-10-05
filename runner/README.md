@@ -1,12 +1,7 @@
 
-
 # runner
-`import "github.com/ardanlabs/kit/runner"`
+    import "github.com/ardanlabs/kit/runner"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-
-## <a name="pkg-overview">Overview</a>
 Package runner provide support for writing tasks that must complete
 within a certain duration or they must be killed. It also provides
 support for notifying the task the shutdown using a <control> C.
@@ -14,21 +9,8 @@ support for notifying the task the shutdown using a <control> C.
 
 
 
-## <a name="pkg-index">Index</a>
-* [Variables](#pkg-variables)
-* [type Jobber](#Jobber)
-* [type Runner](#Runner)
-  * [func New(timeout time.Duration) *Runner](#New)
-  * [func (r *Runner) CheckShutdown() bool](#Runner.CheckShutdown)
-  * [func (r *Runner) Run(context interface{}, job Jobber) error](#Runner.Run)
 
-
-#### <a name="pkg-files">Package files</a>
-[runner.go](/src/github.com/ardanlabs/kit/runner/runner.go) 
-
-
-
-## <a name="pkg-variables">Variables</a>
+## Variables
 ``` go
 var (
     ErrTimeout  = errors.New("Timeout")
@@ -39,8 +21,7 @@ Error variables for the different states.
 
 
 
-
-## <a name="Jobber">type</a> [Jobber](/src/target/runner.go?s=512:569#L12)
+## type Jobber
 ``` go
 type Jobber interface {
     Job(context interface{}) error
@@ -58,7 +39,8 @@ processing a user job.
 
 
 
-## <a name="Runner">type</a> [Runner](/src/target/runner.go?s=622:741#L17)
+
+## type Runner
 ``` go
 type Runner struct {
     // contains filtered or unexported fields
@@ -72,7 +54,9 @@ Runner maintains state for the running process.
 
 
 
-### <a name="New">func</a> [New](/src/target/runner.go?s=786:825#L25)
+
+
+### func New
 ``` go
 func New(timeout time.Duration) *Runner
 ```
@@ -81,8 +65,7 @@ New returns a new Runner value for use.
 
 
 
-
-### <a name="Runner.CheckShutdown">func</a> (\*Runner) [CheckShutdown](/src/target/runner.go?s=1715:1752#L68)
+### func (\*Runner) CheckShutdown
 ``` go
 func (r *Runner) CheckShutdown() bool
 ```
@@ -90,12 +73,12 @@ CheckShutdown can be used to check if a shutdown request has been issued.
 
 
 
-
-### <a name="Runner.Run">func</a> (\*Runner) [Run](/src/target/runner.go?s=1036:1095#L35)
+### func (\*Runner) Run
 ``` go
 func (r *Runner) Run(context interface{}, job Jobber) error
 ```
 Run performs the execution of the specified job.
+
 
 
 

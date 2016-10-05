@@ -6,24 +6,14 @@ package app
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"time"
 
-	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/log"
 	"github.com/braintree/manners"
 	"github.com/dimfeld/httptreemux"
 	"github.com/pborman/uuid"
-)
-
-// Web config environmental variables.
-const (
-	cfgLoggingLevel = "LOGGING_LEVEL"
-	cfgHost         = "HOST"
 )
 
 // TraceIDHeader is the header added to outgoing requests which adds the
@@ -128,8 +118,6 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 			App:            a,
 		}
 
-		log.User(c.SessionID, "Request", "Started : Method[%s] URL[%s] RADDR[%s]", c.Request.Method, c.Request.URL.Path, c.Request.RemoteAddr)
-
 		// Set the request id on the outgoing requests before any other header to
 		// ensure that the trace id is ALWAYS added to the request regardless of
 		// any error occuring or not.
@@ -139,8 +127,6 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 		if err := handler(&c); err != nil {
 			c.Error(err)
 		}
-
-		log.User(c.SessionID, "Request", "Completed : Status[%d] Duration[%s]", c.Status, time.Since(c.Now))
 	}
 
 	// Add this handler for the specified verb and route.
@@ -191,54 +177,12 @@ func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 //==============================================================================
 
-// Init is called to initialize the application.
-func Init(p cfg.Provider) {
-
-	// Init the configuration system.
-	if err := cfg.Init(p); err != nil {
-		fmt.Println("Error initalizing configuration system", err)
-		os.Exit(1)
-	}
-
-	// Init the log system.
-	logLevel := func() int {
-		ll, err := cfg.Int(cfgLoggingLevel)
-		if err != nil {
-			return log.USER
-		}
-		return ll
-	}
-	log.Init(os.Stderr, logLevel, log.Ldefault)
-
-	// Log all the configuration options
-	log.User("startup", "Init", "\n\nConfig Settings:\n%s\n", cfg.Log())
-
-	// Load user defined custom headers. HEADERS should be key:value,key:value
-	if hs, err := cfg.String("HEADERS"); err == nil {
-		hdrs := strings.Split(hs, ",")
-		for _, hdr := range hdrs {
-			if kv := strings.Split(hdr, ":"); len(kv) == 2 {
-				log.User("startup", "Init", "User Headers : %s:%s", kv[0], kv[1])
-				app.userHeaders[kv[0]] = kv[1]
-			}
-		}
-	}
-}
-
 // Run is called to start the web service.
 func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error {
 
-	// Check for a configured host value.
-	useHost, err := cfg.String(cfgHost)
-	if err != nil {
-		useHost = host
-	}
-
-	log.Dev("startup", "Run", "Start : Using Host[%s]", useHost)
-
 	// Create a new server and set timeout values.
 	server := manners.NewWithServer(&http.Server{
-		Addr:           useHost,
+		Addr:           host,
 		Handler:        routes,
 		ReadTimeout:    readTimeout,
 		WriteTimeout:   writeTimeout,
@@ -251,8 +195,7 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 		osSignals := make(chan os.Signal)
 		signal.Notify(osSignals, os.Interrupt)
 
-		sig := <-osSignals
-		log.User("shutdown", "Run", "Captured %v. Shutting Down...", sig)
+		<-osSignals
 
 		// Shut down the API server.
 		server.Close()

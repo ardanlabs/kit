@@ -1,13 +1,7 @@
 
-
 # pool
-`import "github.com/ardanlabs/kit/pool"`
+    import "github.com/ardanlabs/kit/pool"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-* [Examples](#pkg-examples)
-
-## <a name="pkg-overview">Overview</a>
 Package pool manages a pool of routines to perform work. It does so my providing
 a Do function that will block when the pool is busy. This also allows the pool
 to monitor and report pushback. The pool also supports the dynamic re-sizing
@@ -60,29 +54,8 @@ The following is a sample application using the work pool.
 
 
 
-## <a name="pkg-index">Index</a>
-* [Variables](#pkg-variables)
-* [type Config](#Config)
-  * [func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})](#Config.Event)
-* [type OptEvent](#OptEvent)
-* [type Pool](#Pool)
-  * [func New(context interface{}, name string, cfg Config) (*Pool, error)](#New)
-  * [func (p *Pool) Do(context interface{}, work Worker)](#Pool.Do)
-  * [func (p *Pool) DoWait(context interface{}, work Worker, duration &lt;-chan time.Time) error](#Pool.DoWait)
-  * [func (p *Pool) Shutdown(context interface{})](#Pool.Shutdown)
-  * [func (p *Pool) Stats() Stat](#Pool.Stats)
-* [type Stat](#Stat)
-* [type Worker](#Worker)
 
-#### <a name="pkg-examples">Examples</a>
-* [New](#example_New)
-
-#### <a name="pkg-files">Package files</a>
-[doc.go](/src/github.com/ardanlabs/kit/pool/doc.go) [pool.go](/src/github.com/ardanlabs/kit/pool/pool.go) 
-
-
-
-## <a name="pkg-variables">Variables</a>
+## Variables
 ``` go
 var (
     ErrNilMinRoutines        = errors.New("Invalid (nil) minimum number of routines")
@@ -98,8 +71,7 @@ Set of error variables for start up.
 
 
 
-
-## <a name="Config">type</a> [Config](/src/target/pool.go?s=1715:2154#L48)
+## type Config
 ``` go
 type Config struct {
     MinRoutines func() int // Initial and minimum number of routines always in the pool.
@@ -119,7 +91,8 @@ Config provides configuration for the pool.
 
 
 
-### <a name="Config.Event">func</a> (\*Config) [Event](/src/target/pool.go?s=2217:2309#L60)
+
+### func (\*Config) Event
 ``` go
 func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})
 ```
@@ -127,8 +100,7 @@ Event fires events back to the user for important events.
 
 
 
-
-## <a name="OptEvent">type</a> [OptEvent](/src/target/pool.go?s=1562:1666#L43)
+## type OptEvent
 ``` go
 type OptEvent struct {
     Event func(context interface{}, event string, format string, a ...interface{})
@@ -145,7 +117,8 @@ OptEvent defines an handler used to provide events.
 
 
 
-## <a name="Pool">type</a> [Pool](/src/target/pool.go?s=2576:3583#L70)
+
+## type Pool
 ``` go
 type Pool struct {
     Config
@@ -162,7 +135,9 @@ tasks that are submitted.
 
 
 
-### <a name="New">func</a> [New](/src/target/pool.go?s=3612:3681#L93)
+
+
+### func New
 ``` go
 func New(context interface{}, name string, cfg Config) (*Pool, error)
 ```
@@ -171,8 +146,7 @@ New creates a new Pool.
 
 
 
-
-### <a name="Pool.Do">func</a> (\*Pool) [Do](/src/target/pool.go?s=4541:4592#L136)
+### func (\*Pool) Do
 ``` go
 func (p *Pool) Do(context interface{}, work Worker)
 ```
@@ -180,8 +154,7 @@ Do waits for the goroutine pool to take the work to be executed.
 
 
 
-
-### <a name="Pool.DoWait">func</a> (\*Pool) [DoWait](/src/target/pool.go?s=4933:5021#L152)
+### func (\*Pool) DoWait
 ``` go
 func (p *Pool) DoWait(context interface{}, work Worker, duration <-chan time.Time) error
 ```
@@ -191,8 +164,7 @@ not push back.
 
 
 
-
-### <a name="Pool.Shutdown">func</a> (\*Pool) [Shutdown](/src/target/pool.go?s=4258:4302#L125)
+### func (\*Pool) Shutdown
 ``` go
 func (p *Pool) Shutdown(context interface{})
 ```
@@ -200,8 +172,7 @@ Shutdown waits for all the workers to finish.
 
 
 
-
-### <a name="Pool.Stats">func</a> (\*Pool) [Stats](/src/target/pool.go?s=5380:5407#L174)
+### func (\*Pool) Stats
 ``` go
 func (p *Pool) Stats() Stat
 ```
@@ -209,8 +180,7 @@ Stats returns the current snapshot of the pool stats.
 
 
 
-
-## <a name="Stat">type</a> [Stat](/src/target/pool.go?s=1085:1423#L32)
+## type Stat
 ``` go
 type Stat struct {
     Routines    int64 // Current number of routines.
@@ -231,7 +201,8 @@ Stat contains information about the pool.
 
 
 
-## <a name="Worker">type</a> [Worker](/src/target/pool.go?s=861:921#L21)
+
+## type Worker
 ``` go
 type Worker interface {
     Work(context interface{}, id int)
@@ -239,6 +210,9 @@ type Worker interface {
 ```
 Worker must be implemented by types that want to use
 this worker processes.
+
+
+
 
 
 
