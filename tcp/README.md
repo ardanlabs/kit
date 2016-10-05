@@ -1,12 +1,7 @@
 
-
 # tcp
-`import "github.com/ardanlabs/kit/tcp"`
+    import "github.com/ardanlabs/kit/tcp"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-
-## <a name="pkg-overview">Overview</a>
 Package tcp provides the boilerpale code for working with TCP based data. The package
 allows you to establish a TCP listener that can accept client connections on a specified IP address
 and port. It also provides a function to send data back to the client. The processing
@@ -103,39 +98,8 @@ start processing messages.
 
 
 
-## <a name="pkg-index">Index</a>
-* [Variables](#pkg-variables)
-* [type Config](#Config)
-  * [func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})](#Config.Event)
-  * [func (cfg *Config) Validate() error](#Config.Validate)
-* [type ConnHandler](#ConnHandler)
-* [type OptEvent](#OptEvent)
-* [type OptIntPool](#OptIntPool)
-* [type OptRateLimit](#OptRateLimit)
-* [type OptUserPool](#OptUserPool)
-* [type ReqHandler](#ReqHandler)
-* [type Request](#Request)
-  * [func (r *Request) Work(context interface{}, id int)](#Request.Work)
-* [type RespHandler](#RespHandler)
-* [type Response](#Response)
-  * [func (r *Response) Work(context interface{}, id int)](#Response.Work)
-* [type TCP](#TCP)
-  * [func New(context interface{}, name string, cfg Config) (*TCP, error)](#New)
-  * [func (t *TCP) Addr() net.Addr](#TCP.Addr)
-  * [func (t *TCP) Do(context interface{}, r *Response) error](#TCP.Do)
-  * [func (t *TCP) DropConnections(context interface{}, drop bool)](#TCP.DropConnections)
-  * [func (t *TCP) Start(context interface{}) error](#TCP.Start)
-  * [func (t *TCP) StatsRecv() pool.Stat](#TCP.StatsRecv)
-  * [func (t *TCP) StatsSend() pool.Stat](#TCP.StatsSend)
-  * [func (t *TCP) Stop(context interface{}) error](#TCP.Stop)
 
-
-#### <a name="pkg-files">Package files</a>
-[client.go](/src/github.com/ardanlabs/kit/tcp/client.go) [doc.go](/src/github.com/ardanlabs/kit/tcp/doc.go) [handlers.go](/src/github.com/ardanlabs/kit/tcp/handlers.go) [tcp.go](/src/github.com/ardanlabs/kit/tcp/tcp.go) [tcp_config.go](/src/github.com/ardanlabs/kit/tcp/tcp_config.go) 
-
-
-
-## <a name="pkg-variables">Variables</a>
+## Variables
 ``` go
 var (
     ErrInvalidConfiguration     = errors.New("Invalid Configuration")
@@ -150,8 +114,7 @@ Set of error variables for start up.
 
 
 
-
-## <a name="Config">type</a> [Config](/src/target/tcp_config.go?s=1221:2324#L27)
+## type Config
 ``` go
 type Config struct {
     NetType string // "tcp", tcp4" or "tcp6"
@@ -179,7 +142,8 @@ Config provides a data structure of required configuration parameters.
 
 
 
-### <a name="Config.Event">func</a> (\*Config) [Event](/src/target/tcp_config.go?s=2988:3080#L84)
+
+### func (\*Config) Event
 ``` go
 func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})
 ```
@@ -187,8 +151,7 @@ Event fires events back to the user for important events.
 
 
 
-
-### <a name="Config.Validate">func</a> (\*Config) [Validate](/src/target/tcp_config.go?s=2382:2417#L55)
+### func (\*Config) Validate
 ``` go
 func (cfg *Config) Validate() error
 ```
@@ -196,8 +159,7 @@ Validate checks the configuration to required items.
 
 
 
-
-## <a name="ConnHandler">type</a> [ConnHandler](/src/target/handlers.go?s=153:297#L1)
+## type ConnHandler
 ``` go
 type ConnHandler interface {
     // Bind is called to set the reader and writer.
@@ -216,7 +178,8 @@ to a reader and writer for processing.
 
 
 
-## <a name="OptEvent">type</a> [OptEvent](/src/target/tcp_config.go?s=1041:1145#L22)
+
+## type OptEvent
 ``` go
 type OptEvent struct {
     Event func(context interface{}, event string, format string, a ...interface{})
@@ -233,7 +196,8 @@ OptEvent defines an handler used to provide events.
 
 
 
-## <a name="OptIntPool">type</a> [OptIntPool](/src/target/tcp_config.go?s=434:774#L8)
+
+## type OptIntPool
 ``` go
 type OptIntPool struct {
     RecvMinPoolSize func() int // Min number of routines the recv pool must have.
@@ -254,7 +218,8 @@ for an internally configured pool.
 
 
 
-## <a name="OptRateLimit">type</a> [OptRateLimit](/src/target/tcp_config.go?s=876:984#L17)
+
+## type OptRateLimit
 ``` go
 type OptRateLimit struct {
     RateLimit func() time.Duration // Connection rate limit per single connection.
@@ -272,7 +237,8 @@ for connection rate limit.
 
 
 
-## <a name="OptUserPool">type</a> [OptUserPool](/src/target/tcp_config.go?s=162:326#L1)
+
+## type OptUserPool
 ``` go
 type OptUserPool struct {
     RecvPool *pool.Pool // User provided work pool for the receive work.
@@ -291,7 +257,8 @@ work pools for configuration.
 
 
 
-## <a name="ReqHandler">type</a> [ReqHandler](/src/target/handlers.go?s=490:1231#L10)
+
+## type ReqHandler
 ``` go
 type ReqHandler interface {
 
@@ -317,7 +284,8 @@ of request messages from the client.
 
 
 
-## <a name="Request">type</a> [Request](/src/target/handlers.go?s=1283:1404#L27)
+
+## type Request
 ``` go
 type Request struct {
     TCP     *TCP
@@ -339,7 +307,8 @@ Request is the message received by the client.
 
 
 
-### <a name="Request.Work">func</a> (\*Request) [Work](/src/target/handlers.go?s=1531:1582#L38)
+
+### func (\*Request) Work
 ``` go
 func (r *Request) Work(context interface{}, id int)
 ```
@@ -348,8 +317,7 @@ This is called from a routine in the work pool.
 
 
 
-
-## <a name="RespHandler">type</a> [RespHandler](/src/target/handlers.go?s=1821:1983#L46)
+## type RespHandler
 ``` go
 type RespHandler interface {
     // Write is provided the response to write and the user-defined writer.
@@ -368,7 +336,8 @@ of the response messages to the client.
 
 
 
-## <a name="Response">type</a> [Response](/src/target/handlers.go?s=2031:2190#L52)
+
+## type Response
 ``` go
 type Response struct {
     TCPAddr  *net.TCPAddr
@@ -389,7 +358,8 @@ Response is message to send to the client.
 
 
 
-### <a name="Response.Work">func</a> (\*Response) [Work](/src/target/handlers.go?s=2319:2371#L65)
+
+### func (\*Response) Work
 ``` go
 func (r *Response) Work(context interface{}, id int)
 ```
@@ -398,8 +368,7 @@ This is called from a routine in the work pool.
 
 
 
-
-## <a name="TCP">type</a> [TCP](/src/target/tcp.go?s=778:1139#L18)
+## type TCP
 ``` go
 type TCP struct {
     Config
@@ -415,7 +384,9 @@ TCP contains a set of networked client connections.
 
 
 
-### <a name="New">func</a> [New](/src/target/tcp.go?s=1190:1258#L45)
+
+
+### func New
 ``` go
 func New(context interface{}, name string, cfg Config) (*TCP, error)
 ```
@@ -424,8 +395,7 @@ New creates a new manager to service clients.
 
 
 
-
-### <a name="TCP.Addr">func</a> (\*TCP) [Addr](/src/target/tcp.go?s=8329:8358#L342)
+### func (\*TCP) Addr
 ``` go
 func (t *TCP) Addr() net.Addr
 ```
@@ -434,8 +404,7 @@ provided in the configuration, for example if configuration port value is 0.
 
 
 
-
-### <a name="TCP.Do">func</a> (\*TCP) [Do](/src/target/tcp.go?s=7053:7109#L294)
+### func (\*TCP) Do
 ``` go
 func (t *TCP) Do(context interface{}, r *Response) error
 ```
@@ -443,8 +412,7 @@ Do will post the request to be sent by the client worker pool.
 
 
 
-
-### <a name="TCP.DropConnections">func</a> (\*TCP) [DropConnections](/src/target/tcp.go?s=7739:7800#L321)
+### func (\*TCP) DropConnections
 ``` go
 func (t *TCP) DropConnections(context interface{}, drop bool)
 ```
@@ -453,8 +421,7 @@ drop connections that come in.
 
 
 
-
-### <a name="TCP.Start">func</a> (\*TCP) [Start](/src/target/tcp.go?s=2928:2974#L121)
+### func (\*TCP) Start
 ``` go
 func (t *TCP) Start(context interface{}) error
 ```
@@ -462,8 +429,7 @@ Start creates the accept routine and begins to accept connections.
 
 
 
-
-### <a name="TCP.StatsRecv">func</a> (\*TCP) [StatsRecv](/src/target/tcp.go?s=7969:8004#L331)
+### func (\*TCP) StatsRecv
 ``` go
 func (t *TCP) StatsRecv() pool.Stat
 ```
@@ -471,8 +437,7 @@ StatsRecv returns the current snapshot of the recv pool stats.
 
 
 
-
-### <a name="TCP.StatsSend">func</a> (\*TCP) [StatsSend](/src/target/tcp.go?s=8099:8134#L336)
+### func (\*TCP) StatsSend
 ``` go
 func (t *TCP) StatsSend() pool.Stat
 ```
@@ -480,12 +445,12 @@ StatsSend returns the current snapshot of the send pool stats.
 
 
 
-
-### <a name="TCP.Stop">func</a> (\*TCP) [Stop](/src/target/tcp.go?s=5876:5921#L241)
+### func (\*TCP) Stop
 ``` go
 func (t *TCP) Stop(context interface{}) error
 ```
 Stop shuts down the manager and closes all connections.
+
 
 
 

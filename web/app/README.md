@@ -1,12 +1,7 @@
 
-
 # app
-`import "github.com/ardanlabs/kit/web/app"`
+    import "github.com/ardanlabs/kit/web/app"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-
-## <a name="pkg-overview">Overview</a>
 Package app provides a thin layer of support for writing web services. It
 integrates with the ardanlabs kit repo to provide support for logging,
 configuration, database, routing and application context. The base things
@@ -26,40 +21,7 @@ Current Status Codes:
 
 
 
-## <a name="pkg-index">Index</a>
-* [Constants](#pkg-constants)
-* [Variables](#pkg-variables)
-* [func Init(p cfg.Provider)](#Init)
-* [func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error](#Run)
-* [type App](#App)
-  * [func New(mw ...Middleware) *App](#New)
-  * [func (a *App) CORS()](#App.CORS)
-  * [func (a *App) Group(mw ...Middleware) *Group](#App.Group)
-  * [func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware)](#App.Handle)
-  * [func (a *App) Use(mw ...Middleware)](#App.Use)
-* [type Context](#Context)
-  * [func (c *Context) Error(err error)](#Context.Error)
-  * [func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error](#Context.Proxy)
-  * [func (c *Context) Respond(data interface{}, code int)](#Context.Respond)
-  * [func (c *Context) RespondError(error string, code int)](#Context.RespondError)
-  * [func (c *Context) RespondInvalid(fields []Invalid)](#Context.RespondInvalid)
-* [type Group](#Group)
-  * [func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware)](#Group.Handle)
-  * [func (g *Group) Use(mw ...Middleware)](#Group.Use)
-* [type Handler](#Handler)
-* [type Invalid](#Invalid)
-* [type Middleware](#Middleware)
-* [type ProxyResponseWriter](#ProxyResponseWriter)
-  * [func (prw *ProxyResponseWriter) Header() http.Header](#ProxyResponseWriter.Header)
-  * [func (prw *ProxyResponseWriter) Write(data []byte) (int, error)](#ProxyResponseWriter.Write)
-  * [func (prw *ProxyResponseWriter) WriteHeader(status int)](#ProxyResponseWriter.WriteHeader)
-
-
-#### <a name="pkg-files">Package files</a>
-[app.go](/src/github.com/ardanlabs/kit/web/app/app.go) [context.go](/src/github.com/ardanlabs/kit/web/app/context.go) [proxy.go](/src/github.com/ardanlabs/kit/web/app/proxy.go) 
-
-
-## <a name="pkg-constants">Constants</a>
+## Constants
 ``` go
 const TraceIDHeader = "X-Trace-ID"
 ```
@@ -67,7 +29,7 @@ TraceIDHeader is the header added to outgoing requests which adds the
 traceID to it.
 
 
-## <a name="pkg-variables">Variables</a>
+## Variables
 ``` go
 var (
     // ErrNotAuthorized occurs when the call is not authorized.
@@ -87,16 +49,7 @@ var (
 )
 ```
 
-
-## <a name="Init">func</a> [Init](/src/target/app.go?s=6348:6373#L185)
-``` go
-func Init(p cfg.Provider)
-```
-Init is called to initialize the application.
-
-
-
-## <a name="Run">func</a> [Run](/src/target/app.go?s=7231:7320#L219)
+## func Run
 ``` go
 func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error
 ```
@@ -104,8 +57,7 @@ Run is called to start the web service.
 
 
 
-
-## <a name="App">type</a> [App](/src/target/app.go?s=2347:2434#L66)
+## type App
 ``` go
 type App struct {
     *httptreemux.TreeMux
@@ -123,7 +75,9 @@ data/logic on this App struct
 
 
 
-### <a name="New">func</a> [New](/src/target/app.go?s=2610:2641#L76)
+
+
+### func New
 ``` go
 func New(mw ...Middleware) *App
 ```
@@ -134,8 +88,7 @@ request handler.
 
 
 
-
-### <a name="App.CORS">func</a> (\*App) [CORS](/src/target/app.go?s=4897:4917#L142)
+### func (\*App) CORS
 ``` go
 func (a *App) CORS()
 ```
@@ -144,8 +97,7 @@ CORS providing support for Cross-Origin Resource Sharing.
 
 
 
-
-### <a name="App.Group">func</a> (\*App) [Group](/src/target/app.go?s=2836:2880#L86)
+### func (\*App) Group
 ``` go
 func (a *App) Group(mw ...Middleware) *Group
 ```
@@ -154,8 +106,7 @@ middleware.
 
 
 
-
-### <a name="App.Handle">func</a> (\*App) [Handle](/src/target/app.go?s=3363:3437#L102)
+### func (\*App) Handle
 ``` go
 func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware)
 ```
@@ -164,8 +115,7 @@ pair, this makes for really easy, convenient routing.
 
 
 
-
-### <a name="App.Use">func</a> (\*App) [Use](/src/target/app.go?s=3157:3192#L96)
+### func (\*App) Use
 ``` go
 func (a *App) Use(mw ...Middleware)
 ```
@@ -175,8 +125,7 @@ this way always regardless of the ordering of the Handle/Use functions.
 
 
 
-
-## <a name="Context">type</a> [Context](/src/target/context.go?s=1226:1428#L28)
+## type Context
 ``` go
 type Context struct {
     http.ResponseWriter
@@ -200,7 +149,8 @@ Context contains data associated with a single request.
 
 
 
-### <a name="Context.Error">func</a> (\*Context) [Error](/src/target/context.go?s=1480:1514#L40)
+
+### func (\*Context) Error
 ``` go
 func (c *Context) Error(err error)
 ```
@@ -208,8 +158,7 @@ Error handles all error responses for the API.
 
 
 
-
-### <a name="Context.Proxy">func</a> (\*Context) [Proxy](/src/target/context.go?s=3799:3879#L122)
+### func (\*Context) Proxy
 ``` go
 func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error
 ```
@@ -218,18 +167,16 @@ service.
 
 
 
-
-### <a name="Context.Respond">func</a> (\*Context) [Respond](/src/target/context.go?s=1998:2051#L57)
+### func (\*Context) Respond
 ``` go
-func (c *Context) Respond(data interface{}, code int)
+func (c *Context) Respond(data interface{}, code int) error
 ```
 Respond sends JSON to the client.
 If code is StatusNoContent, v is expected to be nil.
 
 
 
-
-### <a name="Context.RespondError">func</a> (\*Context) [RespondError](/src/target/context.go?s=3607:3661#L116)
+### func (\*Context) RespondError
 ``` go
 func (c *Context) RespondError(error string, code int)
 ```
@@ -237,8 +184,7 @@ RespondError sends JSON describing the error
 
 
 
-
-### <a name="Context.RespondInvalid">func</a> (\*Context) [RespondInvalid](/src/target/context.go?s=3390:3440#L107)
+### func (\*Context) RespondInvalid
 ``` go
 func (c *Context) RespondInvalid(fields []Invalid)
 ```
@@ -246,8 +192,7 @@ RespondInvalid sends JSON describing field validation errors.
 
 
 
-
-## <a name="Group">type</a> [Group](/src/target/app.go?s=5600:5649#L161)
+## type Group
 ``` go
 type Group struct {
     // contains filtered or unexported fields
@@ -264,7 +209,8 @@ Group allows a segment of middleware to be shared amongst handlers.
 
 
 
-### <a name="Group.Handle">func</a> (\*Group) [Handle](/src/target/app.go?s=5865:5941#L172)
+
+### func (\*Group) Handle
 ``` go
 func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware)
 ```
@@ -272,8 +218,7 @@ Handle proxies the Handle function of the underlying App.
 
 
 
-
-### <a name="Group.Use">func</a> (\*Group) [Use](/src/target/app.go?s=5733:5770#L167)
+### func (\*Group) Use
 ``` go
 func (g *Group) Use(mw ...Middleware)
 ```
@@ -281,8 +226,7 @@ Use adds the set of provided middleware onto the Application middleware chain.
 
 
 
-
-## <a name="Handler">type</a> [Handler](/src/target/app.go?s=1881:1914#L55)
+## type Handler
 ``` go
 type Handler func(*Context) error
 ```
@@ -300,7 +244,8 @@ we want.
 
 
 
-## <a name="Invalid">type</a> [Invalid](/src/target/context.go?s=830:912#L14)
+
+## type Invalid
 ``` go
 type Invalid struct {
     Fld string `json:"field_name"`
@@ -318,7 +263,8 @@ Invalid describes a validation error belonging to a specific field.
 
 
 
-## <a name="Middleware">type</a> [Middleware](/src/target/app.go?s=2039:2076#L59)
+
+## type Middleware
 ``` go
 type Middleware func(Handler) Handler
 ```
@@ -334,7 +280,8 @@ concerns not direct to any given Handler.
 
 
 
-## <a name="ProxyResponseWriter">type</a> [ProxyResponseWriter](/src/target/proxy.go?s=228:296#L1)
+
+## type ProxyResponseWriter
 ``` go
 type ProxyResponseWriter struct {
     Status int
@@ -354,7 +301,8 @@ implements the http.ResponseWriter interface.
 
 
 
-### <a name="ProxyResponseWriter.Header">func</a> (\*ProxyResponseWriter) [Header](/src/target/proxy.go?s=387:439#L5)
+
+### func (\*ProxyResponseWriter) Header
 ``` go
 func (prw *ProxyResponseWriter) Header() http.Header
 ```
@@ -363,8 +311,7 @@ request.
 
 
 
-
-### <a name="ProxyResponseWriter.Write">func</a> (\*ProxyResponseWriter) [Write](/src/target/proxy.go?s=569:632#L11)
+### func (\*ProxyResponseWriter) Write
 ``` go
 func (prw *ProxyResponseWriter) Write(data []byte) (int, error)
 ```
@@ -373,13 +320,13 @@ request.
 
 
 
-
-### <a name="ProxyResponseWriter.WriteHeader">func</a> (\*ProxyResponseWriter) [WriteHeader](/src/target/proxy.go?s=807:862#L17)
+### func (\*ProxyResponseWriter) WriteHeader
 ``` go
 func (prw *ProxyResponseWriter) WriteHeader(status int)
 ```
 WriteHeader implements the http.ResponseWriter interface and simply relays
 the request and records the status code written.
+
 
 
 

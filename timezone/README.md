@@ -1,13 +1,7 @@
 
-
 # timezone
-`import "github.com/ardanlabs/kit/timezone"`
+    import "github.com/ardanlabs/kit/timezone"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-* [Examples](#pkg-examples)
-
-## <a name="pkg-overview">Overview</a>
 Package timezone provides two ways to retrieve the timezone for any latitude,longitude position.
 
 ### Google Time Zone API
@@ -75,25 +69,10 @@ the /lib/time/zoneinfo.zip file. Because of this we can use the TimezoneID withi
 
 
 
-## <a name="pkg-index">Index</a>
-* [type GeoNamesTimezone](#GeoNamesTimezone)
-  * [func RetrieveGeoNamesTimezone(latitude float64, longitude float64, userName string) (geoNamesTimezone *GeoNamesTimezone, err error)](#RetrieveGeoNamesTimezone)
-* [type GoogleTimezone](#GoogleTimezone)
-  * [func RetrieveGoogleTimezone(latitude float64, longitude float64) (googleTimezone *GoogleTimezone, err error)](#RetrieveGoogleTimezone)
-
-#### <a name="pkg-examples">Examples</a>
-* [RetrieveGeoNamesTimezone](#example_RetrieveGeoNamesTimezone)
-* [RetrieveGoogleTimezone](#example_RetrieveGoogleTimezone)
-
-#### <a name="pkg-files">Package files</a>
-[doc.go](/src/github.com/ardanlabs/kit/timezone/doc.go) [timezone.go](/src/github.com/ardanlabs/kit/timezone/timezone.go) 
 
 
 
-
-
-
-## <a name="GeoNamesTimezone">type</a> [GeoNamesTimezone](/src/target/timezone.go?s=1258:2195#L17)
+## type GeoNamesTimezone
 ``` go
 type GeoNamesTimezone struct {
     Time        string  `bson:"time"`        // The local current time.
@@ -117,7 +96,9 @@ GeoNamesTimezone is the repsonse from the GeoNames timezone API.
 
 
 
-### <a name="RetrieveGeoNamesTimezone">func</a> [RetrieveGeoNamesTimezone](/src/target/timezone.go?s=3120:3251#L66)
+
+
+### func RetrieveGeoNamesTimezone
 ``` go
 func RetrieveGeoNamesTimezone(latitude float64, longitude float64, userName string) (geoNamesTimezone *GeoNamesTimezone, err error)
 ```
@@ -126,8 +107,7 @@ RetrieveGeoNamesTimezone calls the GeoNames API to retrieve the timezone for the
 
 
 
-
-## <a name="GoogleTimezone">type</a> [GoogleTimezone](/src/target/timezone.go?s=374:1186#L8)
+## type GoogleTimezone
 ``` go
 type GoogleTimezone struct {
     DstOffset    float64 `bson:"dstOffset"`    // Offset for daylight-savings time in seconds. This will be zero if the time zone is not in Daylight Savings Time during the specified timestamp.
@@ -145,11 +125,14 @@ GoogleTimezone is the repsonse from the Google timezone API.
 
 
 
-### <a name="RetrieveGoogleTimezone">func</a> [RetrieveGoogleTimezone](/src/target/timezone.go?s=2288:2396#L33)
+
+
+### func RetrieveGoogleTimezone
 ``` go
 func RetrieveGoogleTimezone(latitude float64, longitude float64) (googleTimezone *GoogleTimezone, err error)
 ```
 RetrieveGoogleTimezone calls the Google API to retrieve the timezone for the lat/lng.
+
 
 
 

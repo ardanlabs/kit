@@ -1,31 +1,25 @@
 
-
 # routes
-`import "github.com/ardanlabs/kit/examples/web/routes"`
-
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-
-## <a name="pkg-overview">Overview</a>
-
-
-
-## <a name="pkg-index">Index</a>
-* [func API() http.Handler](#API)
-
-
-#### <a name="pkg-files">Package files</a>
-[routes.go](/src/github.com/ardanlabs/kit/examples/web/routes/routes.go) 
+    import "github.com/ardanlabs/kit/examples/web/routes"
 
 
 
 
 
-## <a name="API">func</a> [API](/src/target/routes.go?s=549:572#L17)
+
+## func API
 ``` go
 func API() http.Handler
 ```
 API returns a handler for a set of routes.
+
+
+## func Init
+``` go
+func Init(p cfg.Provider)
+```
+Init is called to initialize the application.
+
 
 
 

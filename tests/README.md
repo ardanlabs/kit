@@ -1,33 +1,14 @@
 
-
 # tests
-`import "github.com/ardanlabs/kit/tests"`
+    import "github.com/ardanlabs/kit/tests"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-
-## <a name="pkg-overview">Overview</a>
 Package tests provides the generic support all tests require.
 
 
 
 
-## <a name="pkg-index">Index</a>
-* [Variables](#pkg-variables)
-* [func DisplayLog()](#DisplayLog)
-* [func IndentJSON(j string) string](#IndentJSON)
-* [func Init(cfgKey string)](#Init)
-* [func InitMongo(cfg mongo.Config)](#InitMongo)
-* [func NewRequest(method, path string, body io.Reader) *http.Request](#NewRequest)
-* [func ResetLog()](#ResetLog)
 
-
-#### <a name="pkg-files">Package files</a>
-[tests.go](/src/github.com/ardanlabs/kit/tests/tests.go) 
-
-
-
-## <a name="pkg-variables">Variables</a>
+## Variables
 ``` go
 var (
     Success = "\u2713"
@@ -47,8 +28,7 @@ var TestSession = "test"
 TestSession is the name used to register the MongoDB session.
 
 
-
-## <a name="DisplayLog">func</a> [DisplayLog](/src/target/tests.go?s=887:904#L33)
+## func DisplayLog
 ``` go
 func DisplayLog()
 ```
@@ -56,8 +36,7 @@ DisplayLog writes the logdash data to standand out, if testing in verbose mode
 was turned on.
 
 
-
-## <a name="IndentJSON">func</a> [IndentJSON](/src/target/tests.go?s=1915:1947#L76)
+## func IndentJSON
 ``` go
 func IndentJSON(j string) string
 ```
@@ -65,36 +44,19 @@ IndentJSON takes a JSON payload as a string and re-indents it to make
 comparing expected strings to tests strings during testing.
 
 
-
-## <a name="Init">func</a> [Init](/src/target/tests.go?s=1013:1037#L42)
+## func Init
 ``` go
 func Init(cfgKey string)
 ```
 Init initializes the log package.
 
 
-
-## <a name="InitMongo">func</a> [InitMongo](/src/target/tests.go?s=1316:1348#L56)
-``` go
-func InitMongo(cfg mongo.Config)
-```
-InitMongo initializes the mongodb connections for testing.
-
-
-
-## <a name="NewRequest">func</a> [NewRequest](/src/target/tests.go?s=1594:1660#L65)
-``` go
-func NewRequest(method, path string, body io.Reader) *http.Request
-```
-NewRequest used to setup a request for mocking API calls with httptreemux.
-
-
-
-## <a name="ResetLog">func</a> [ResetLog](/src/target/tests.go?s=749:764#L27)
+## func ResetLog
 ``` go
 func ResetLog()
 ```
 ResetLog resets the contents of logdash.
+
 
 
 
