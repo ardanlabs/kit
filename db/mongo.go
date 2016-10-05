@@ -16,12 +16,15 @@ import (
 // session must be registered first. A new copy of the master session can be
 // acquired. The session is provided through the DB type value.
 
+// ErrInvalidDBProvided is returned in the event that an uninitialized db is
+// used to perform actions against.
+var ErrInvalidDBProvided = errors.New("Invalid DB provided")
+
 //==============================================================================
 
 // mgoDB maintains a master session for a given database.
 type mgoDB struct {
-	dbName string
-	ses    *mgo.Session
+	ses *mgo.Session
 }
 
 // masterMGO manages a set of different MongoDB master sessions.
@@ -32,8 +35,9 @@ var masterMGO = struct {
 	ses: make(map[string]mgoDB),
 }
 
-// RegMasterSession adds a new master session to the set.
-func RegMasterSession(context interface{}, name string, cfg mongo.Config) error {
+// RegMasterSession adds a new master session to the set. If no url is provided,
+// it will default to localhost:27017.
+func RegMasterSession(context interface{}, name string, url string, timeout time.Duration) error {
 	masterMGO.Lock()
 	defer masterMGO.Unlock()
 
@@ -41,12 +45,14 @@ func RegMasterSession(context interface{}, name string, cfg mongo.Config) error 
 		return errors.New("Master session already exists")
 	}
 
-	ses, err := mongo.New(cfg)
+	ses, err := mongo.New(url, timeout)
 	if err != nil {
 		return err
 	}
 
-	masterMGO.ses[name] = mgoDB{cfg.DB, ses}
+	masterMGO.ses[name] = mgoDB{
+		ses: ses,
+	}
 
 	return nil
 }
@@ -70,7 +76,10 @@ func NewMGO(context interface{}, name string) (*DB, error) {
 	}
 
 	ses := db.ses.Copy()
-	mdb := ses.DB(db.dbName)
+
+	// As per the mgo documentation, if no database name is specified, then use
+	// the default one, or the one that the connection was dialed with.
+	mdb := ses.DB("")
 
 	dbOut := DB{
 		database: mdb,
@@ -91,7 +100,7 @@ func (db *DB) CloseMGO(context interface{}) {
 // ExecuteMGO is used to execute MongoDB commands.
 func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collection) error) error {
 	if db == nil || db.session == nil {
-		return errors.New("Invalid DB provided")
+		return ErrInvalidDBProvided
 	}
 
 	return f(db.database.C(colName))
@@ -100,7 +109,7 @@ func (db *DB) ExecuteMGO(context interface{}, colName string, f func(*mgo.Collec
 // ExecuteMGOTimeout is used to execute MongoDB commands with a timeout.
 func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colName string, f func(*mgo.Collection) error) error {
 	if db == nil || db.session == nil {
-		return errors.New("Invalid DB provided")
+		return ErrInvalidDBProvided
 	}
 
 	db.session.SetSocketTimeout(timeout)
@@ -112,7 +121,7 @@ func (db *DB) ExecuteMGOTimeout(context interface{}, timeout time.Duration, colN
 // all the results of a query in batches.
 func (db *DB) BatchedQueryMGO(context interface{}, colName string, q bson.M) (*mgo.Iter, error) {
 	if db == nil || db.session == nil {
-		return nil, errors.New("Invalid DB provided")
+		return nil, ErrInvalidDBProvided
 	}
 
 	c := db.database.C(colName)
@@ -124,7 +133,7 @@ func (db *DB) BatchedQueryMGO(context interface{}, colName string, q bson.M) (*m
 // changes to be delivered to the server.
 func (db *DB) BulkOperationMGO(context interface{}, colName string) (*mgo.Bulk, error) {
 	if db == nil || db.session == nil {
-		return nil, errors.New("Invalid DB provided")
+		return nil, ErrInvalidDBProvided
 	}
 
 	c := db.database.C(colName)
@@ -137,7 +146,7 @@ func (db *DB) BulkOperationMGO(context interface{}, colName string) (*mgo.Bulk, 
 // CollectionMGO is used to get a collection value.
 func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collection, error) {
 	if db == nil || db.session == nil {
-		return nil, errors.New("Invalid DB provided")
+		return nil, ErrInvalidDBProvided
 	}
 
 	return db.database.C(colName), nil
@@ -146,7 +155,7 @@ func (db *DB) CollectionMGO(context interface{}, colName string) (*mgo.Collectio
 // CollectionMGOTimeout is used to get a collection value with a timeout.
 func (db *DB) CollectionMGOTimeout(context interface{}, timeout time.Duration, colName string) (*mgo.Collection, error) {
 	if db == nil || db.session == nil {
-		return nil, errors.New("Invalid DB provided")
+		return nil, ErrInvalidDBProvided
 	}
 
 	db.session.SetSocketTimeout(timeout)

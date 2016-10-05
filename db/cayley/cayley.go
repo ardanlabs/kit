@@ -2,30 +2,38 @@
 package cayley
 
 import (
+	"net/url"
+	"strings"
+
 	"github.com/cayleygraph/cayley"
 
 	// Blank import the mongo library for cayley.
 	_ "github.com/cayleygraph/cayley/graph/mongo"
 )
 
-// Config provides configuration values.
-type Config struct {
-	Host     string
-	DB       string
-	User     string
-	Password string
-}
-
 //==============================================================================
 
 // New creates a new cayley handle.
-func New(cfg Config) (*cayley.Handle, error) {
+func New(mongoURL string) (*cayley.Handle, error) {
+
+	cfg, err := url.Parse(mongoURL)
+	if err != nil {
+		return nil, err
+	}
 
 	// Form the Cayley connection options.
-	opts := map[string]interface{}{
-		"database_name": cfg.DB,
-		"username":      cfg.User,
-		"password":      cfg.Password,
+	opts := make(map[string]interface{})
+
+	// Load the database name from the path, but the path will contain the
+	// leading slash as well.
+	opts["database_name"] = strings.TrimPrefix(cfg.Path, "/")
+
+	if cfg.User != nil {
+		if password, ok := cfg.User.Password(); ok {
+			opts["password"] = password
+		}
+
+		opts["username"] = cfg.User.Username()
 	}
 
 	// Create the cayley handle that maintains a connection to the

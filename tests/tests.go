@@ -12,7 +12,6 @@ import (
 
 	"github.com/ardanlabs/kit/cfg"
 	"github.com/ardanlabs/kit/db"
-	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/log"
 )
 
@@ -62,9 +61,10 @@ func Init(cfgKey string) {
 	log.Init(&logdash, logLevel, log.Ldefault)
 }
 
-// InitMongo initializes the mongodb connections for testing.
-func InitMongo(cfg mongo.Config) {
-	if err := db.RegMasterSession("Test", TestSession, cfg); err != nil {
+// InitMongo initializes the mongodb connections for testing. If no url is
+// provided it will default to localhost:27017.
+func InitMongo(url string) {
+	if err := db.RegMasterSession("Test", TestSession, url, 0); err != nil {
 		log.Error("Test", "Init", err, "Completed")
 		logdash.WriteTo(os.Stdout)
 		os.Exit(1)
