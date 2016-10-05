@@ -77,8 +77,9 @@ func NewMGO(context interface{}, name string) (*DB, error) {
 
 	ses := db.ses.Copy()
 
-	// As per the mgo documentation, if no database name is specified, then use
-	// the default one, or the one that the connection was dialed with.
+	// As per the mgo documentation, https://godoc.org/gopkg.in/mgo.v2#Session.DB
+	// if no database name is specified, then use the default one, or the one that
+	// the connection was dialed with.
 	mdb := ses.DB("")
 
 	dbOut := DB{

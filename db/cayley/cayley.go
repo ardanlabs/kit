@@ -15,7 +15,6 @@ import (
 
 // New creates a new cayley handle.
 func New(mongoURL string) (*cayley.Handle, error) {
-
 	cfg, err := url.Parse(mongoURL)
 	if err != nil {
 		return nil, err
