@@ -2,14 +2,14 @@ package midware
 
 import (
 	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/web/app"
+	"github.com/ardanlabs/kit/web"
 )
 
 // DB simulates a midware for connections.
-func DB(h app.Handler) app.Handler {
+func DB(h web.Handler) web.Handler {
 
 	// Pretend this get a DB connection
-	f := func(c *app.Context) error {
+	f := func(c *web.Context) error {
 		log.Dev(c.SessionID, "DB", "******> Capture DB Connection")
 		c.Ctx["DB"] = "CONN"
 		defer func() {

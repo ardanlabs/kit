@@ -5,8 +5,8 @@
 //		400 Bad Request  : StatusBadRequest          : Invalid post data (syntax or semantics).
 //		401 Unauthorized : StatusUnauthorized        : Authentication failure.
 //		404 Not Found    : StatusNotFound            : Invalid URL or identifier.
-//		500 Internal     : StatusInternalServerError : Application specific beyond scope of user.
-package app
+//		500 Internal     : StatusInternalServerError : Weblication specific beyond scope of user.
+package web
 
 import (
 	"encoding/json"
@@ -41,7 +41,7 @@ type Context struct {
 	SessionID string
 	Status    int
 	Ctx       map[string]interface{}
-	App       *App
+	Web       *Web
 }
 
 // Error handles all error responses for the API.

@@ -4,7 +4,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/ardanlabs/kit/web/app"
+	"github.com/ardanlabs/kit/web"
 )
 
 // testHandle maintains the set of handlers for the test api.
@@ -17,7 +17,7 @@ var Test testHandle
 
 // List returns all the existing test names in the system.
 // 200 Success, 404 Not Found, 500 Internal
-func (testHandle) List(c *app.Context) error {
+func (testHandle) List(c *web.Context) error {
 	names := []string{"Apple", "Orange", "Banana"}
 
 	c.Respond(names, http.StatusOK)
