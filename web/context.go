@@ -1,4 +1,4 @@
-// Package app provides application support for context and MongoDB access.
+// Package web provides web application support for context and MongoDB access.
 // Current Status Codes:
 //		200 OK           : StatusOK                  : Call is success and returning data.
 //		204 No Content   : StatusNoContent           : Call is success and returns no data.
