@@ -1,24 +1,52 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/ardanlabs/kit/cfg"
 	"github.com/ardanlabs/kit/examples/web/handlers"
 	"github.com/ardanlabs/kit/examples/web/midware"
+	"github.com/ardanlabs/kit/log"
 	"github.com/ardanlabs/kit/web/app"
 )
 
 // Configuation settings.
-const configKey = "KIT"
+const (
+	configKey       = "KIT"
+	cfgLoggingLevel = "LOGGING_LEVEL"
+)
 
 func init() {
 
 	// This is being added to showcase configuration.
 	os.Setenv("KIT_LOGGING_LEVEL", "1")
 
-	app.Init(cfg.EnvProvider{Namespace: configKey})
+	Init(cfg.EnvProvider{Namespace: configKey})
+}
+
+// Init is called to initialize the application.
+func Init(p cfg.Provider) {
+
+	// Init the configuration system.
+	if err := cfg.Init(p); err != nil {
+		fmt.Println("Error initalizing configuration system", err)
+		os.Exit(1)
+	}
+
+	// Init the log system.
+	logLevel := func() int {
+		ll, err := cfg.Int(cfgLoggingLevel)
+		if err != nil {
+			return log.USER
+		}
+		return ll
+	}
+	log.Init(os.Stderr, logLevel, log.Ldefault)
+
+	// Log all the configuration options
+	log.User("startup", "Init", "\n\nConfig Settings:\n%s\n", cfg.Log())
 }
 
 //==============================================================================

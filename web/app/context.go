@@ -16,8 +16,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/ardanlabs/kit/log"
 )
 
 // Invalid describes a validation error belonging to a specific field.
@@ -64,23 +62,13 @@ func (c *Context) Error(err error) {
 
 // Respond sends JSON to the client.
 // If code is StatusNoContent, v is expected to be nil.
-func (c *Context) Respond(data interface{}, code int) {
-	log.User(c.SessionID, "api : Respond", "Started : Code[%d]", code)
-
+func (c *Context) Respond(data interface{}, code int) error {
 	c.Status = code
-
-	// Load any user defined header values.
-	if app.userHeaders != nil {
-		for key, value := range app.userHeaders {
-			log.User(c.SessionID, "api : Respond", "Setting user headers : %s:%s", key, value)
-			c.Header().Set(key, value)
-		}
-	}
 
 	// Just set the status code and we are done.
 	if code == http.StatusNoContent {
 		c.WriteHeader(code)
-		return
+		return nil
 	}
 
 	// Set the content type.
@@ -92,8 +80,7 @@ func (c *Context) Respond(data interface{}, code int) {
 	// Marshal the data into a JSON string.
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
-		log.Error(c.SessionID, "api : Respond", err, "Marshalling JSON response")
-		jsonData = []byte("{}")
+		return err
 	}
 
 	// Look for a JSONP marker
@@ -102,15 +89,13 @@ func (c *Context) Respond(data interface{}, code int) {
 		// We need to wrap the result in a function call.
 		// callback_value({"data_1": "hello world", "data_2": ["the","sun","is","shining"]});
 		io.WriteString(c, cb+"("+string(jsonData)+")")
-
-		log.User(c.SessionID, "api : Respond", "Completed")
-		return
+		return nil
 	}
 
 	// We can send the result straight through.
 	io.WriteString(c, string(jsonData))
 
-	log.User(c.SessionID, "api : Respond", "Completed")
+	return nil
 }
 
 // RespondInvalid sends JSON describing field validation errors.
