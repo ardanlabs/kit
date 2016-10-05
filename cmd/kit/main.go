@@ -8,7 +8,6 @@ import (
 	"github.com/ardanlabs/kit/cmd/kit/cmdauth"
 	"github.com/ardanlabs/kit/cmd/kit/cmddb"
 	"github.com/ardanlabs/kit/db"
-	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/log"
 
 	"github.com/spf13/cobra"
@@ -16,13 +15,9 @@ import (
 
 // Config environmental variables.
 const (
-	cfgNamespace     = "KIT"
-	cfgLoggingLevel  = "LOGGING_LEVEL"
-	cfgMongoHost     = "MONGO_HOST"
-	cfgMongoAuthDB   = "MONGO_AUTHDB"
-	cfgMongoDB       = "MONGO_DB"
-	cfgMongoUser     = "MONGO_USER"
-	cfgMongoPassword = "MONGO_PASS"
+	cfgNamespace    = "KIT"
+	cfgLoggingLevel = "LOGGING_LEVEL"
+	cfgMongoURI     = "MONGO_URI"
 )
 
 var kit = &cobra.Command{
@@ -45,22 +40,21 @@ func main() {
 		}
 		return ll
 	}
-	log.Init(os.Stderr, logLevel,log.Ldefault)
+	log.Init(os.Stderr, logLevel, log.Ldefault)
 
-	cfg := mongo.Config{
-		Host:     cfg.MustString(cfgMongoHost),
-		AuthDB:   cfg.MustString(cfgMongoAuthDB),
-		DB:       cfg.MustString(cfgMongoDB),
-		User:     cfg.MustString(cfgMongoUser),
-		Password: cfg.MustString(cfgMongoPassword),
-	}
+	cfg := cfg.MustURL(cfgMongoURI)
 
-	if err := db.RegMasterSession("startup", cfg.DB, cfg); err != nil {
+	// Here we use the path of the mongo uri as the master session name, as we
+	// just need to specify a unique identifier for this session as it has no real
+	// relation to the actual database name.
+	if err := db.RegMasterSession("startup", cfg.Path, cfg.String(), 0); err != nil {
 		kit.Println("Unable to initialize MongoDB")
 		os.Exit(1)
 	}
 
-	db, err := db.NewMGO("", cfg.DB)
+	// Here we will load the session out of the master session using the
+	// unique identifier as above (the path).
+	db, err := db.NewMGO("", cfg.Path)
 	if err != nil {
 		kit.Println("Unable to get MongoDB session")
 		os.Exit(1)

@@ -3,48 +3,26 @@ package mongo
 
 import (
 	"encoding/json"
-	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2"
 )
 
-// Config provides configuration values.
-type Config struct {
-	Host     string
-	AuthDB   string
-	DB       string
-	User     string
-	Password string
-	Timeout  time.Duration
-}
-
 //==============================================================================
 
-// New creates a new master session.
-func New(cfg Config) (*mgo.Session, error) {
-
-	// Can be provided a comma delimited set of hosts.
-	hosts := strings.Split(cfg.Host, ",")
+// New creates a new master session. If no url is provided, it will defaul to
+// localhost:27017. If a zero value timeout is specified, a timeout of 60sec
+// will be used instead.
+func New(url string, timeout time.Duration) (*mgo.Session, error) {
 
 	// Set the default timeout for the session.
-	timeout := cfg.Timeout
 	if timeout == 0 {
 		timeout = 60 * time.Second
 	}
 
-	// We need this object to establish a session to our MongoDB.
-	mongoDBDialInfo := mgo.DialInfo{
-		Addrs:    hosts,
-		Timeout:  timeout,
-		Database: cfg.AuthDB,
-		Username: cfg.User,
-		Password: cfg.Password,
-	}
-
 	// Create a session which maintains a pool of socket connections
 	// to our MongoDB.
-	ses, err := mgo.DialWithInfo(&mongoDBDialInfo)
+	ses, err := mgo.DialWithTimeout(url, timeout)
 	if err != nil {
 		return nil, err
 	}

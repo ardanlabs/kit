@@ -10,7 +10,6 @@ import (
 	"github.com/ardanlabs/kit/auth"
 	"github.com/ardanlabs/kit/auth/session"
 	"github.com/ardanlabs/kit/db"
-	"github.com/ardanlabs/kit/db/mongo"
 	"github.com/ardanlabs/kit/tests"
 
 	"gopkg.in/mgo.v2"
@@ -21,7 +20,7 @@ func init() {
 	os.Setenv("KIT_LOGGING_LEVEL", "1")
 
 	tests.Init("KIT")
-	tests.InitMongo(mongo.Config{})
+	tests.InitMongo("")
 
 	ensureIndexes()
 }
