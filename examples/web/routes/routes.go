@@ -9,7 +9,7 @@ import (
 	"github.com/ardanlabs/kit/examples/web/handlers"
 	"github.com/ardanlabs/kit/examples/web/midware"
 	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/web/app"
+	"github.com/ardanlabs/kit/web"
 )
 
 // Configuation settings.
@@ -56,7 +56,7 @@ func API() http.Handler {
 
 	// Look at /kit/web/midware for middleware options and
 	// patterns for writing middleware.
-	a := app.New(midware.DB)
+	a := web.New(midware.DB)
 
 	// Set a handler that only needs DB Connection.
 	a.Handle("GET", "/v1/test/noauth", handlers.Test.List)

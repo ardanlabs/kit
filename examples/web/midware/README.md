@@ -9,14 +9,14 @@
 
 ## func Auth
 ``` go
-func Auth(h app.Handler) app.Handler
+func Auth(h web.Handler) web.Handler
 ```
 Auth simulates a midware for authentication.
 
 
 ## func DB
 ``` go
-func DB(h app.Handler) app.Handler
+func DB(h web.Handler) web.Handler
 ```
 DB simulates a midware for connections.
 

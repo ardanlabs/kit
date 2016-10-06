@@ -1,8 +1,8 @@
-// Package app provides a thin layer of support for writing web services. It
-// integrates with the ardanlabs kit repo to provide support for logging,
-// configuration, database, routing and application context. The base things
-// you need to write a web service is provided.
-package app
+// Package web provides a thin layer of support for writing web services. It
+// integrates with the ardanlabs kit repo to provide support for routing and
+// application context. The base things you need to write a web service is
+// provided.
+package web
 
 import (
 	"errors"
@@ -60,46 +60,46 @@ type Middleware func(Handler) Handler
 
 //==============================================================================
 
-// App is the entrypoint into our application and what configures our context
+// Web is the entrypoint into our application and what configures our context
 // object for each of our http handlers. Feel free to add any configuration
-// data/logic on this App struct
-type App struct {
+// data/logic on this Web struct
+type Web struct {
 	*httptreemux.TreeMux
 	Ctx map[string]interface{}
 
 	mw []Middleware
 }
 
-// New create an App value that handle a set of routes for the application.
+// New create an Web value that handle a set of routes for the application.
 // You can provide any number of middleware and they'll be used to wrap every
 // request handler.
-func New(mw ...Middleware) *App {
-	return &App{
+func New(mw ...Middleware) *Web {
+	return &Web{
 		TreeMux: httptreemux.New(),
 		Ctx:     make(map[string]interface{}),
 		mw:      mw,
 	}
 }
 
-// Group creates a new App Group based on the current App and provided
+// Group creates a new Web Group based on the current Web and provided
 // middleware.
-func (a *App) Group(mw ...Middleware) *Group {
+func (a *Web) Group(mw ...Middleware) *Group {
 	return &Group{
 		app: a,
 		mw:  mw,
 	}
 }
 
-// Use adds the set of provided middleware onto the Application middleware
-// chain. Any route running off of this App will use all the middleware provided
+// Use adds the set of provided middleware onto the Weblication middleware
+// chain. Any route running off of this Web will use all the middleware provided
 // this way always regardless of the ordering of the Handle/Use functions.
-func (a *App) Use(mw ...Middleware) {
+func (a *Web) Use(mw ...Middleware) {
 	a.mw = append(a.mw, mw...)
 }
 
 // Handle is our mechanism for mounting Handlers for a given HTTP verb and path
 // pair, this makes for really easy, convenient routing.
-func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
+func (a *Web) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 	// Wrap up the application-wide first, this will call the first function
 	// of each middleware which will return a function of type Handler. Each
@@ -115,7 +115,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 			Params:         p,
 			SessionID:      uuid.New(),
 			Ctx:            make(map[string]interface{}),
-			App:            a,
+			Web:            a,
 		}
 
 		// Set the request id on the outgoing requests before any other header to
@@ -135,7 +135,7 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 // CORS providing support for Cross-Origin Resource Sharing.
 // https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/
-func (a *App) CORS() {
+func (a *Web) CORS() {
 	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
@@ -155,23 +155,23 @@ func (a *App) CORS() {
 
 // Group allows a segment of middleware to be shared amongst handlers.
 type Group struct {
-	app *App
+	app *Web
 	mw  []Middleware
 }
 
-// Use adds the set of provided middleware onto the Application middleware chain.
+// Use adds the set of provided middleware onto the Weblication middleware chain.
 func (g *Group) Use(mw ...Middleware) {
 	g.mw = append(g.mw, mw...)
 }
 
-// Handle proxies the Handle function of the underlying App.
+// Handle proxies the Handle function of the underlying Web.
 func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 	// Wrap up the route specific middleware last because rememeber, the
 	// middleware is wrapped backwards.
 	handler = wrapMiddleware(handler, mw)
 
-	// Wrap it with the App wrapper and additionally the group level middleware.
+	// Wrap it with the Web wrapper and additionally the group level middleware.
 	g.app.Handle(verb, path, handler, g.mw...)
 }
 

@@ -8,13 +8,13 @@ import (
 
 	"github.com/ardanlabs/kit/examples/web/routes"
 	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/web/app"
+	"github.com/ardanlabs/kit/web"
 )
 
 func main() {
 	// Look at /kit/config for a set of possible config settings.
 
-	err := app.Run(":4000", routes.API(), 10*time.Second, 10*time.Second)
+	err := web.Run(":4000", routes.API(), 10*time.Second, 10*time.Second)
 
 	log.User("main", "main", "DOWN: %v", err)
 }
