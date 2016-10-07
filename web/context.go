@@ -143,6 +143,10 @@ func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error
 		}
 	}
 
+	// Make a copy of the current upstream headers on the request.
+	upstreamHeaders := make(http.Header)
+	copyHeader(upstreamHeaders, c.Header())
+
 	// Create a new reverse proxy. We need to to this here because for the path
 	// rewriting we may need access to variables stored in this specific
 	// request's path parameters which can allow to be overridden via the
@@ -152,15 +156,28 @@ func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error
 	// Create a new proxy response writer that will record the http status code
 	// issued by the reverse proxy.
 	prw := ProxyResponseWriter{
-		ResponseWriter: c.ResponseWriter,
+		UpstreamHeaders: upstreamHeaders,
+		ResponseWriter:  c.ResponseWriter,
 	}
 
 	// Serve the request via the built in handler here.
 	proxy.ServeHTTP(&prw, c.Request)
 
+	// Set the status code so that we can log the response code later.
 	c.Status = prw.Status
 
 	return nil
+}
+
+// copyHeader makes a deep copy of the src http.Header and copies it onto the
+// dst http.Header. This is copied verbatim from the stdlib function inside
+// net/http/httputil/reverseproxy.go
+func copyHeader(dst, src http.Header) {
+	for k, vv := range src {
+		for _, v := range vv {
+			dst.Add(k, v)
+		}
+	}
 }
 
 // singleJoiningSlash ensures that there is a single joining slash inbetween the
