@@ -39,13 +39,6 @@ var (
 	ErrValidation = errors.New("Validation errors occurred")
 )
 
-// app maintains some framework state.
-var app = struct {
-	userHeaders map[string]string
-}{
-	userHeaders: make(map[string]string),
-}
-
 //==============================================================================
 
 // A Handler is a type that handles an http request within our own little mini
@@ -83,9 +76,9 @@ func New(mw ...Middleware) *Web {
 
 // Group creates a new Web Group based on the current Web and provided
 // middleware.
-func (a *Web) Group(mw ...Middleware) *Group {
+func (w *Web) Group(mw ...Middleware) *Group {
 	return &Group{
-		app: a,
+		web: w,
 		mw:  mw,
 	}
 }
@@ -93,29 +86,29 @@ func (a *Web) Group(mw ...Middleware) *Group {
 // Use adds the set of provided middleware onto the Weblication middleware
 // chain. Any route running off of this Web will use all the middleware provided
 // this way always regardless of the ordering of the Handle/Use functions.
-func (a *Web) Use(mw ...Middleware) {
-	a.mw = append(a.mw, mw...)
+func (w *Web) Use(mw ...Middleware) {
+	w.mw = append(w.mw, mw...)
 }
 
 // Handle is our mechanism for mounting Handlers for a given HTTP verb and path
 // pair, this makes for really easy, convenient routing.
-func (a *Web) Handle(verb, path string, handler Handler, mw ...Middleware) {
+func (w *Web) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 	// Wrap up the application-wide first, this will call the first function
 	// of each middleware which will return a function of type Handler. Each
 	// Handler will then be wrapped up with the other handlers from the chain.
-	handler = wrapMiddleware(wrapMiddleware(handler, mw), a.mw)
+	handler = wrapMiddleware(wrapMiddleware(handler, mw), w.mw)
 
 	// The function to execute for each request.
-	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
+	h := func(rw http.ResponseWriter, r *http.Request, p map[string]string) {
 		c := Context{
-			ResponseWriter: w,
+			ResponseWriter: rw,
 			Request:        r,
 			Now:            time.Now(),
 			Params:         p,
 			SessionID:      uuid.New(),
 			Ctx:            make(map[string]interface{}),
-			Web:            a,
+			Web:            w,
 		}
 
 		// Set the request id on the outgoing requests before any other header to
@@ -130,12 +123,14 @@ func (a *Web) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	}
 
 	// Add this handler for the specified verb and route.
-	a.TreeMux.Handle(verb, path, h)
+	w.TreeMux.Handle(verb, path, h)
 }
 
 // CORS providing support for Cross-Origin Resource Sharing.
 // https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/
-func (a *Web) CORS() {
+func (w *Web) CORS() Middleware {
+
+	// Create the options request handler which will attach CORS options to it.
 	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
@@ -146,16 +141,32 @@ func (a *Web) CORS() {
 		w.WriteHeader(http.StatusOK)
 	}
 
-	a.TreeMux.OptionsHandler = h
+	// Attach the new options handler to the mux.
+	w.TreeMux.OptionsHandler = h
 
-	app.userHeaders["Access-Control-Allow-Origin"] = "*"
+	// Create the CORS middleware which will need to be attached in the request
+	// chain in order to serve out the right headers.
+	m := func(next Handler) Handler {
+
+		// Create the handler inside the middleware.
+		h := func(c *Context) error {
+			c.Header().Set("Access-Control-Allow-Origin", "*")
+
+			// Continue the request chain.
+			return next(c)
+		}
+
+		return h
+	}
+
+	return m
 }
 
 //==============================================================================
 
 // Group allows a segment of middleware to be shared amongst handlers.
 type Group struct {
-	app *Web
+	web *Web
 	mw  []Middleware
 }
 
@@ -172,7 +183,7 @@ func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	handler = wrapMiddleware(handler, mw)
 
 	// Wrap it with the Web wrapper and additionally the group level middleware.
-	g.app.Handle(verb, path, handler, g.mw...)
+	g.web.Handle(verb, path, handler, g.mw...)
 }
 
 //==============================================================================

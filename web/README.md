@@ -2,7 +2,7 @@
 # web
     import "github.com/ardanlabs/kit/web"
 
-Package app provides application support for context and MongoDB access.
+Package web provides web application support for context and MongoDB access.
 Current Status Codes:
 
 
@@ -13,10 +13,10 @@ Current Status Codes:
 	404 Not Found    : StatusNotFound            : Invalid URL or identifier.
 	500 Internal     : StatusInternalServerError : Weblication specific beyond scope of user.
 
-Package app provides a thin layer of support for writing web services. It
-integrates with the ardanlabs kit repo to provide support for logging,
-configuration, database, routing and application context. The base things
-you need to write a web service is provided.
+Package web provides a thin layer of support for writing web services. It
+integrates with the ardanlabs kit repo to provide support for routing and
+application context. The base things you need to write a web service is
+provided.
 
 
 
@@ -294,7 +294,7 @@ request handler.
 
 ### func (\*Web) CORS
 ``` go
-func (a *Web) CORS()
+func (w *Web) CORS() Middleware
 ```
 CORS providing support for Cross-Origin Resource Sharing.
 <a href="https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/">https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/</a>
@@ -303,7 +303,7 @@ CORS providing support for Cross-Origin Resource Sharing.
 
 ### func (\*Web) Group
 ``` go
-func (a *Web) Group(mw ...Middleware) *Group
+func (w *Web) Group(mw ...Middleware) *Group
 ```
 Group creates a new Web Group based on the current Web and provided
 middleware.
@@ -312,7 +312,7 @@ middleware.
 
 ### func (\*Web) Handle
 ``` go
-func (a *Web) Handle(verb, path string, handler Handler, mw ...Middleware)
+func (w *Web) Handle(verb, path string, handler Handler, mw ...Middleware)
 ```
 Handle is our mechanism for mounting Handlers for a given HTTP verb and path
 pair, this makes for really easy, convenient routing.
@@ -321,7 +321,7 @@ pair, this makes for really easy, convenient routing.
 
 ### func (\*Web) Use
 ``` go
-func (a *Web) Use(mw ...Middleware)
+func (w *Web) Use(mw ...Middleware)
 ```
 Use adds the set of provided middleware onto the Weblication middleware
 chain. Any route running off of this Web will use all the middleware provided
