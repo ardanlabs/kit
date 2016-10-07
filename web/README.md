@@ -216,7 +216,8 @@ concerns not direct to any given Handler.
 ## type ProxyResponseWriter
 ``` go
 type ProxyResponseWriter struct {
-    Status int
+    Status          int
+    UpstreamHeaders http.Header
     http.ResponseWriter
 }
 ```
@@ -257,7 +258,8 @@ request.
 func (prw *ProxyResponseWriter) WriteHeader(status int)
 ```
 WriteHeader implements the http.ResponseWriter interface and simply relays
-the request and records the status code written.
+the request after cleaning up the request headers. It theb records the status
+code written.
 
 
 
