@@ -6,9 +6,6 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
-
-	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/log"
 )
 
 // Context provides a base context for tests.
@@ -41,20 +38,6 @@ func DisplayLog() {
 	}
 
 	logdash.WriteTo(os.Stdout)
-}
-
-// Init initializes the log package.
-func Init(cfgKey string) {
-	cfg.Init(cfg.EnvProvider{Namespace: cfgKey})
-
-	logLevel := func() int {
-		ll, err := cfg.Int("LOGGING_LEVEL")
-		if err != nil {
-			return log.USER
-		}
-		return ll
-	}
-	log.Init(&logdash, logLevel, log.Ldefault)
 }
 
 // IndentJSON takes a JSON payload as a string and re-indents it to make
