@@ -11,9 +11,6 @@ import (
 // Context provides a base context for tests.
 var Context = "Test"
 
-// TestSession is the name used to register the MongoDB session.
-var TestSession = "test"
-
 // Success and failure markers.
 var (
 	Success = "\u2713"
