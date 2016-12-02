@@ -51,7 +51,7 @@ type UDP struct {
 }
 
 // New creates a new manager to service clients.
-func New(context interface{}, name string, cfg Config) (*UDP, error) {
+func New(ctx interface{}, name string, cfg Config) (*UDP, error) {
 	// Validate the configuration.
 	if err := cfg.Validate(); err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func New(context interface{}, name string, cfg Config) (*UDP, error) {
 		}
 
 		var err error
-		if recv, err = pool.New(context, name+"-Recv", recvCfg); err != nil {
+		if recv, err = pool.New(ctx, name+"-Recv", recvCfg); err != nil {
 			return nil, err
 		}
 	}
@@ -90,7 +90,7 @@ func New(context interface{}, name string, cfg Config) (*UDP, error) {
 		}
 
 		var err error
-		if send, err = pool.New(context, name+"-Send", sendCfg); err != nil {
+		if send, err = pool.New(ctx, name+"-Send", sendCfg); err != nil {
 			return nil, err
 		}
 	}
@@ -125,7 +125,7 @@ func join(ip string, port int) string {
 }
 
 // Start begins to accept data.
-func (d *UDP) Start(context interface{}) error {
+func (d *UDP) Start(ctx interface{}) error {
 	d.listenerMu.Lock()
 	{
 		// If the listener has been started already, return an error.
@@ -158,17 +158,17 @@ func (d *UDP) Start(context interface{}) error {
 
 					// Ask the user to bind the reader and writer they want to
 					// use for this listener.
-					d.reader, d.writer = d.ConnHandler.Bind(context, d.listener)
+					d.reader, d.writer = d.ConnHandler.Bind(ctx, d.listener)
 
 					waitStart.Done()
 
-					d.Event(context, "accept", "Waiting For Data : IPAddress[ %s ]", join(d.ipAddress, d.port))
+					d.Event(ctx, "accept", "Waiting For Data : IPAddress[ %s ]", join(d.ipAddress, d.port))
 				}
 			}
 			d.listenerMu.Unlock()
 
 			// Wait for a message to arrive.
-			udpAddr, data, length, err := d.ReqHandler.Read(context, d.reader)
+			udpAddr, data, length, err := d.ReqHandler.Read(ctx, d.reader)
 			timeRead := time.Now()
 
 			if err != nil {
@@ -181,7 +181,7 @@ func (d *UDP) Start(context interface{}) error {
 					break
 				}
 
-				d.Event(context, "accept", "ERROR : %v", err)
+				d.Event(ctx, "accept", "ERROR : %v", err)
 
 				if e, ok := err.(temporary); ok && !e.Temporary() {
 					d.listenerMu.Lock()
@@ -221,11 +221,11 @@ func (d *UDP) Start(context interface{}) error {
 			}
 
 			// Send this to the user work pool for processing.
-			d.recv.Do(req.context(context), &req)
+			d.recv.Do(req.ctx(ctx), &req)
 		}
 
 		d.wg.Done()
-		d.Event(context, "accept", "Shutdown : IPAddress[ %s ]", join(d.ipAddress, d.port))
+		d.Event(ctx, "accept", "Shutdown : IPAddress[ %s ]", join(d.ipAddress, d.port))
 
 		return
 	}()
@@ -237,7 +237,7 @@ func (d *UDP) Start(context interface{}) error {
 }
 
 // Stop shuts down the manager and closes all connections.
-func (d *UDP) Stop(context interface{}) error {
+func (d *UDP) Stop(ctx interface{}) error {
 	d.listenerMu.Lock()
 	{
 		// If the listener has been stopped already, return an error.
@@ -260,8 +260,8 @@ func (d *UDP) Stop(context interface{}) error {
 
 	// Stop processing all the work.
 	if !d.userPools {
-		d.recv.Shutdown(context)
-		d.send.Shutdown(context)
+		d.recv.Shutdown(ctx)
+		d.send.Shutdown(ctx)
 	}
 
 	// Wait for the accept routine to terminate.
@@ -271,13 +271,13 @@ func (d *UDP) Stop(context interface{}) error {
 }
 
 // Do will post the request to be sent by the client worker pool.
-func (d *UDP) Do(context interface{}, r *Response) error {
+func (d *UDP) Do(ctx interface{}, r *Response) error {
 	// Set the unexported fields.
 	r.udp = d
-	r.context = context
+	r.ctx = ctx
 
 	// Send this to the client work pool for processing.
-	d.send.Do(context, r)
+	d.send.Do(ctx, r)
 
 	return nil
 }

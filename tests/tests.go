@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// Context provides a base context for tests.
-var Context = "Test"
+// ctx provides a base ctx for tests.
+var ctx = "Test"
 
 // Success and failure markers.
 var (

@@ -15,7 +15,7 @@ ConnHandler
 
 
 	type ConnHandler interface {
-	    Bind(context string, listener *net.UDPConn) (io.Reader, io.Writer)
+	    Bind(ctx string, listener *net.UDPConn) (io.Reader, io.Writer)
 	}
 
 The ConnHandler interface is implemented by the user to bind the listener
@@ -25,8 +25,8 @@ ReqHandler
 
 
 	type ReqHandler interface {
-	    Read(context string, reader io.Reader) (*net.UDPAddr, []byte, int, error)
-	    Process(context string, r *Request)
+	    Read(ctx string, reader io.Reader) (*net.UDPAddr, []byte, int, error)
+	    Process(ctx string, r *Request)
 	}
 	
 	type Request struct {
@@ -45,7 +45,7 @@ RespHandler
 
 
 	type RespHandler interface {
-	    Write(context string, r *Response, writer io.Writer)
+	    Write(ctx string, r *Response, writer io.Writer)
 	}
 	
 	type Response struct {
@@ -143,7 +143,7 @@ Config provides a data structure of required configuration parameters.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})
+func (cfg *Config) Event(ctx interface{}, event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -161,7 +161,7 @@ Validate checks the configuration to required items.
 ``` go
 type ConnHandler interface {
     // Bind is called to set the reader and writer.
-    Bind(context interface{}, listener *net.UDPConn) (io.Reader, io.Writer)
+    Bind(ctx interface{}, listener *net.UDPConn) (io.Reader, io.Writer)
 }
 ```
 ConnHandler is implemented by the user to bind the listener
@@ -180,7 +180,7 @@ to a reader and writer for processing.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(context interface{}, event string, format string, a ...interface{})
+    Event func(ctx interface{}, event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
@@ -243,11 +243,11 @@ type ReqHandler interface {
     // Read is provided the user-defined reader and must return the data read
     // off the wire and the length. Returning io.EOF or a non temporary error
     // will show down the listener.
-    Read(context interface{}, reader io.Reader) (*net.UDPAddr, []byte, int, error)
+    Read(ctx interface{}, reader io.Reader) (*net.UDPAddr, []byte, int, error)
 
     // Process is used to handle the processing of the request. This method
     // is called on a routine from a pool of routines.
-    Process(context interface{}, r *Request)
+    Process(ctx interface{}, r *Request)
 }
 ```
 ReqHandler is implemented by the user to implement the processing
@@ -288,7 +288,7 @@ Request is the message received by the client.
 
 ### func (\*Request) Work
 ``` go
-func (r *Request) Work(context interface{}, id int)
+func (r *Request) Work(ctx interface{}, id int)
 ```
 Work implements the worker inteface for processing messages. This is called
 from a routine in the work pool.
@@ -299,7 +299,7 @@ from a routine in the work pool.
 ``` go
 type RespHandler interface {
     // Write is provided the user-defined writer and the data to write.
-    Write(context interface{}, r *Response, writer io.Writer)
+    Write(ctx interface{}, r *Response, writer io.Writer)
 }
 ```
 RespHandler is implemented by the user to implement the processing
@@ -339,10 +339,10 @@ Response is message to send to the client.
 
 ### func (\*Response) Work
 ``` go
-func (r *Response) Work(context interface{}, id int)
+func (r *Response) Work(ctx interface{}, id int)
 ```
 Work implements the worker interface for sending messages. Called by
-AsyncSend via the d.client.Do(context, &resp) method call.
+AsyncSend via the d.client.Do(ctx, &resp) method call.
 
 
 
@@ -366,7 +366,7 @@ UDP manages message to a specific ip address and port.
 
 ### func New
 ``` go
-func New(context interface{}, name string, cfg Config) (*UDP, error)
+func New(ctx interface{}, name string, cfg Config) (*UDP, error)
 ```
 New creates a new manager to service clients.
 
@@ -383,7 +383,7 @@ Addr returns the local listening network address.
 
 ### func (\*UDP) Do
 ``` go
-func (d *UDP) Do(context interface{}, r *Response) error
+func (d *UDP) Do(ctx interface{}, r *Response) error
 ```
 Do will post the request to be sent by the client worker pool.
 
@@ -391,7 +391,7 @@ Do will post the request to be sent by the client worker pool.
 
 ### func (\*UDP) Start
 ``` go
-func (d *UDP) Start(context interface{}) error
+func (d *UDP) Start(ctx interface{}) error
 ```
 Start begins to accept data.
 
@@ -415,7 +415,7 @@ StatsSend returns the current snapshot of the send pool stats.
 
 ### func (\*UDP) Stop
 ``` go
-func (d *UDP) Stop(context interface{}) error
+func (d *UDP) Stop(ctx interface{}) error
 ```
 Stop shuts down the manager and closes all connections.
 

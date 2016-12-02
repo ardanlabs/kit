@@ -13,7 +13,7 @@ import (
 type udpConnHandler struct{}
 
 // Bind is called to init to reader and writer.
-func (udpConnHandler) Bind(context interface{}, listener *net.UDPConn) (io.Reader, io.Writer) {
+func (udpConnHandler) Bind(ctx interface{}, listener *net.UDPConn) (io.Reader, io.Writer) {
 	return listener, listener
 }
 
@@ -24,7 +24,7 @@ type udpReqHandler struct{}
 
 // Read implements the udp.ReqHandler interface. It is provided a request
 // value to popular and a io.Reader that was created in the Bind above.
-func (udpReqHandler) Read(context interface{}, reader io.Reader) (*net.UDPAddr, []byte, int, error) {
+func (udpReqHandler) Read(ctx interface{}, reader io.Reader) (*net.UDPAddr, []byte, int, error) {
 	listener := reader.(*net.UDPConn)
 
 	// Each package is 20 bytes in lengrh.
@@ -41,7 +41,7 @@ var dur int64
 
 // Process is used to handle the processing of the message. This method
 // is called on a routine from a pool of routines.
-func (udpReqHandler) Process(context interface{}, r *udp.Request) {
+func (udpReqHandler) Process(ctx interface{}, r *udp.Request) {
 	if r.Length != 20 {
 		return
 	}
@@ -75,7 +75,7 @@ func (udpReqHandler) Process(context interface{}, r *udp.Request) {
 		},
 	}
 
-	r.UDP.Do(context, &resp)
+	r.UDP.Do(ctx, &resp)
 }
 
 //==============================================================================
@@ -83,7 +83,7 @@ func (udpReqHandler) Process(context interface{}, r *udp.Request) {
 type udpRespHandler struct{}
 
 // Write is provided the user-defined writer and the data to write.
-func (udpRespHandler) Write(context interface{}, r *udp.Response, writer io.Writer) {
+func (udpRespHandler) Write(ctx interface{}, r *udp.Response, writer io.Writer) {
 	listener := writer.(*net.UDPConn)
 	listener.WriteToUDP(r.Data, r.UDPAddr)
 }

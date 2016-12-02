@@ -10,7 +10,7 @@
 // ConnHandler
 //
 //     type ConnHandler interface {
-//         Bind(context string, listener *net.UDPConn) (io.Reader, io.Writer)
+//         Bind(ctx string, listener *net.UDPConn) (io.Reader, io.Writer)
 //     }
 //
 // The ConnHandler interface is implemented by the user to bind the listener
@@ -19,8 +19,8 @@
 // ReqHandler
 //
 //     type ReqHandler interface {
-//         Read(context string, reader io.Reader) (*net.UDPAddr, []byte, int, error)
-//         Process(context string, r *Request)
+//         Read(ctx string, reader io.Reader) (*net.UDPAddr, []byte, int, error)
+//         Process(ctx string, r *Request)
 //     }
 //
 //     type Request struct {
@@ -38,7 +38,7 @@
 // RespHandler
 //
 //     type RespHandler interface {
-//         Write(context string, r *Response, writer io.Writer)
+//         Write(ctx string, r *Response, writer io.Writer)
 //     }
 //
 //     type Response struct {

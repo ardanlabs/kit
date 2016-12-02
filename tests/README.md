@@ -18,9 +18,9 @@ var (
 Success and failure markers.
 
 ``` go
-var Context = "Test"
+var ctx = "Test"
 ```
-Context provides a base context for tests.
+ctx provides a base ctx for tests.
 
 ``` go
 var TestSession = "test"

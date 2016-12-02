@@ -1,6 +1,6 @@
 // Package web provides a thin layer of support for writing web services. It
 // integrates with the ardanlabs kit repo to provide support for routing and
-// application context. The base things you need to write a web service is
+// application ctx. The base things you need to write a web service is
 // provided.
 package web
 
@@ -42,10 +42,10 @@ var (
 //==============================================================================
 
 // A Handler is a type that handles an http request within our own little mini
-// framework. The fun part is that our context is fully controlled and
-// configured by us so we can extend the functionality of the Context whenever
+// framework. The fun part is that our Ctx is fully controlled and
+// configured by us so we can extend the functionality of the ctx whenever
 // we want.
-type Handler func(*Context) error
+type Handler func(*Ctx) error
 
 // A Middleware is a type that wraps a handler to remove boilerplate or other
 // concerns not direct to any given Handler.
@@ -53,7 +53,7 @@ type Middleware func(Handler) Handler
 
 //==============================================================================
 
-// Web is the entrypoint into our application and what configures our context
+// Web is the entrypoint into our application and what configures our ctx
 // object for each of our http handlers. Feel free to add any configuration
 // data/logic on this Web struct
 type Web struct {
@@ -101,13 +101,13 @@ func (w *Web) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 	// The function to execute for each request.
 	h := func(rw http.ResponseWriter, r *http.Request, p map[string]string) {
-		c := Context{
+		c := Ctx{
 			ResponseWriter: rw,
 			Request:        r,
 			Now:            time.Now(),
 			Params:         p,
 			SessionID:      uuid.New(),
-			Ctx:            make(map[string]interface{}),
+			Values:         make(map[string]interface{}),
 			Web:            w,
 		}
 
@@ -149,7 +149,7 @@ func (w *Web) CORS() Middleware {
 	m := func(next Handler) Handler {
 
 		// Create the handler inside the middleware.
-		h := func(c *Context) error {
+		h := func(c *Ctx) error {
 			c.Header().Set("Access-Control-Allow-Origin", "*")
 
 			// Continue the request chain.

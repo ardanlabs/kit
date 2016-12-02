@@ -2,7 +2,7 @@
 # web
     import "github.com/ardanlabs/kit/web"
 
-Package web provides web application support for context and MongoDB access.
+Package web provides web application support for ctx and MongoDB access.
 Current Status Codes:
 
 
@@ -15,7 +15,7 @@ Current Status Codes:
 
 Package web provides a thin layer of support for writing web services. It
 integrates with the ardanlabs kit repo to provide support for routing and
-application context. The base things you need to write a web service is
+application ctx. The base things you need to write a web service is
 provided.
 
 
@@ -57,9 +57,9 @@ Run is called to start the web service.
 
 
 
-## type Context
+## type ctx
 ``` go
-type Context struct {
+type ctx struct {
     http.ResponseWriter
     Request   *http.Request
     Now       time.Time
@@ -70,7 +70,7 @@ type Context struct {
     Web       *Web
 }
 ```
-Context contains data associated with a single request.
+ctx contains data associated with a single request.
 
 
 
@@ -82,43 +82,43 @@ Context contains data associated with a single request.
 
 
 
-### func (\*Context) Error
+### func (\*ctx) Error
 ``` go
-func (c *Context) Error(err error)
+func (c *ctx) Error(err error)
 ```
 Error handles all error responses for the API.
 
 
 
-### func (\*Context) Proxy
+### func (\*ctx) Proxy
 ``` go
-func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error
+func (c *ctx) Proxy(targetURL string, rewrite func(req *http.Request)) error
 ```
 Proxy will setup a direct proxy inbetween this service and the destination
 service.
 
 
 
-### func (\*Context) Respond
+### func (\*ctx) Respond
 ``` go
-func (c *Context) Respond(data interface{}, code int) error
+func (c *ctx) Respond(data interface{}, code int) error
 ```
 Respond sends JSON to the client.
 If code is StatusNoContent, v is expected to be nil.
 
 
 
-### func (\*Context) RespondError
+### func (\*ctx) RespondError
 ``` go
-func (c *Context) RespondError(error string, code int)
+func (c *ctx) RespondError(error string, code int)
 ```
 RespondError sends JSON describing the error
 
 
 
-### func (\*Context) RespondInvalid
+### func (\*ctx) RespondInvalid
 ``` go
-func (c *Context) RespondInvalid(fields []Invalid)
+func (c *ctx) RespondInvalid(fields []Invalid)
 ```
 RespondInvalid sends JSON describing field validation errors.
 
@@ -160,11 +160,11 @@ Use adds the set of provided middleware onto the Weblication middleware chain.
 
 ## type Handler
 ``` go
-type Handler func(*Context) error
+type Handler func(*ctx) error
 ```
 A Handler is a type that handles an http request within our own little mini
-framework. The fun part is that our context is fully controlled and
-configured by us so we can extend the functionality of the Context whenever
+framework. The fun part is that our ctx is fully controlled and
+configured by us so we can extend the functionality of the ctx whenever
 we want.
 
 
@@ -271,7 +271,7 @@ type Web struct {
     // contains filtered or unexported fields
 }
 ```
-Web is the entrypoint into our application and what configures our context
+Web is the entrypoint into our application and what configures our ctx
 object for each of our http handlers. Feel free to add any configuration
 data/logic on this Web struct
 

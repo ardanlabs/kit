@@ -1,4 +1,4 @@
-// Package web provides web application support for context and MongoDB access.
+// Package web provides web application support for ctx and MongoDB access.
 // Current Status Codes:
 //		200 OK           : StatusOK                  : Call is success and returning data.
 //		204 No Content   : StatusNoContent           : Call is success and returns no data.
@@ -32,20 +32,20 @@ type jsonError struct {
 
 //==============================================================================
 
-// Context contains data associated with a single request.
-type Context struct {
+// Ctx contains data associated with a single request.
+type Ctx struct {
 	http.ResponseWriter
 	Request   *http.Request
 	Now       time.Time
 	Params    map[string]string
 	SessionID string
 	Status    int
-	Ctx       map[string]interface{}
+	Values    map[string]interface{}
 	Web       *Web
 }
 
 // Error handles all error responses for the API.
-func (c *Context) Error(err error) {
+func (c *Ctx) Error(err error) {
 	switch err {
 	case ErrNotFound:
 		c.RespondError(err.Error(), http.StatusNotFound)
@@ -62,7 +62,7 @@ func (c *Context) Error(err error) {
 
 // Respond sends JSON to the client.
 // If code is StatusNoContent, v is expected to be nil.
-func (c *Context) Respond(data interface{}, code int) error {
+func (c *Ctx) Respond(data interface{}, code int) error {
 	c.Status = code
 
 	// Just set the status code and we are done.
@@ -99,7 +99,7 @@ func (c *Context) Respond(data interface{}, code int) error {
 }
 
 // RespondInvalid sends JSON describing field validation errors.
-func (c *Context) RespondInvalid(fields []Invalid) {
+func (c *Ctx) RespondInvalid(fields []Invalid) {
 	v := jsonError{
 		Error:  "field validation failure",
 		Fields: fields,
@@ -108,13 +108,13 @@ func (c *Context) RespondInvalid(fields []Invalid) {
 }
 
 // RespondError sends JSON describing the error
-func (c *Context) RespondError(error string, code int) {
+func (c *Ctx) RespondError(error string, code int) {
 	c.Respond(jsonError{Error: error}, code)
 }
 
 // Proxy will setup a direct proxy inbetween this service and the destination
 // service.
-func (c *Context) Proxy(targetURL string, rewrite func(req *http.Request)) error {
+func (c *Ctx) Proxy(targetURL string, rewrite func(req *http.Request)) error {
 	target, err := url.Parse(targetURL)
 	if err != nil {
 		return err
