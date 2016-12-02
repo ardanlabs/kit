@@ -1,6 +1,7 @@
 package pool
 
 import (
+	"context"
 	"errors"
 	"runtime"
 	"sync"
@@ -35,7 +36,7 @@ type Worker interface {
 // doWork is used internally to route work to the pool.
 type doWork struct {
 	ctx interface{}
-	do      Worker
+	do  Worker
 }
 
 // Stat contains information about the pool.
@@ -146,7 +147,7 @@ func (p *Pool) Shutdown(ctx interface{}) {
 func (p *Pool) Do(ctx interface{}, work Worker) {
 	dw := doWork{
 		ctx: ctx,
-		do:      work,
+		do:  work,
 	}
 
 	p.measureHealth()
@@ -162,7 +163,7 @@ func (p *Pool) Do(ctx interface{}, work Worker) {
 func (p *Pool) DoWait(ctx interface{}, work Worker, duration <-chan time.Time) error {
 	dw := doWork{
 		ctx: ctx,
-		do:      work,
+		do:  work,
 	}
 
 	p.measureHealth()
@@ -175,6 +176,30 @@ func (p *Pool) DoWait(ctx interface{}, work Worker, duration <-chan time.Time) e
 		return nil
 
 	case <-duration:
+		atomic.AddInt64(&p.pending, -1)
+		return errors.New("Timedout waiting to post work")
+	}
+}
+
+// DoCancel waits for the goroutine pool to take the work to be executed
+// or gives up if the Context is cancelled. Only use when you want to throw
+// away work and not push back.
+func (p *Pool) DoCancel(ctx context.Context, work Worker) error {
+	dw := doWork{
+		ctx: ctx,
+		do:  work,
+	}
+
+	p.measureHealth()
+
+	atomic.AddInt64(&p.pending, 1)
+
+	select {
+	case p.tasks <- dw:
+		atomic.AddInt64(&p.pending, -1)
+		return nil
+
+	case <-ctx.Done():
 		atomic.AddInt64(&p.pending, -1)
 		return errors.New("Timedout waiting to post work")
 	}
