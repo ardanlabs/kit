@@ -10,7 +10,7 @@ import (
 // to a reader and writer for processing.
 type ConnHandler interface {
 	// Bind is called to set the reader and writer.
-	Bind(context interface{}, conn net.Conn) (io.Reader, io.Writer)
+	Bind(ctx interface{}, conn net.Conn) (io.Reader, io.Writer)
 }
 
 //==============================================================================
@@ -26,11 +26,11 @@ type ReqHandler interface {
 	// Read is provided an ipaddress and the user-defined reader and must return
 	// the data read off the wire and the length. Returning io.EOF or a non
 	// temporary error will show down the listener.
-	Read(context interface{}, ipAddress string, reader io.Reader) ([]byte, int, error)
+	Read(ctx interface{}, ipAddress string, reader io.Reader) ([]byte, int, error)
 
 	// Process is used to handle the processing of the request. This method
 	// is called on a routine from a pool of routines.
-	Process(context interface{}, r *Request)
+	Process(ctx interface{}, r *Request)
 }
 
 // Request is the message received by the client.
@@ -45,8 +45,8 @@ type Request struct {
 
 // Work implements the worker interface for processing received messages.
 // This is called from a routine in the work pool.
-func (r *Request) Work(context interface{}, id int) {
-	r.TCP.ReqHandler.Process(context, r)
+func (r *Request) Work(ctx interface{}, id int) {
+	r.TCP.ReqHandler.Process(ctx, r)
 }
 
 //==============================================================================
@@ -55,7 +55,7 @@ func (r *Request) Work(context interface{}, id int) {
 // of the response messages to the client.
 type RespHandler interface {
 	// Write is provided the response to write and the user-defined writer.
-	Write(context interface{}, r *Response, writer io.Writer)
+	Write(ctx interface{}, r *Response, writer io.Writer)
 }
 
 // Response is message to send to the client.
@@ -67,13 +67,13 @@ type Response struct {
 
 	tcp     *TCP
 	client  *client
-	context interface{}
+	ctx interface{}
 }
 
 // Work implements the worker interface for sending messages to the client.
 // This is called from a routine in the work pool.
-func (r *Response) Work(context interface{}, id int) {
-	r.tcp.RespHandler.Write(context, r, r.client.writer)
+func (r *Response) Work(ctx interface{}, id int) {
+	r.tcp.RespHandler.Write(ctx, r, r.client.writer)
 	if r.Complete != nil {
 		r.Complete(r)
 	}

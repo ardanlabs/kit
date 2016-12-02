@@ -223,28 +223,28 @@ func TestNotExists(t *testing.T) {
 	}
 }
 
-// shouldPanic receives a context string and a function to run, if the function
+// shouldPanic receives a ctx string and a function to run, if the function
 // panics, it is considered a success else a failure.
-func shouldPanic(t *testing.T, context string, fx func()) {
+func shouldPanic(t *testing.T, ctx string, fx func()) {
 	defer func() {
 		if err := recover(); err == nil {
-			t.Errorf("\t\t%s Should paniced when giving unknown key %q.", failed, context)
+			t.Errorf("\t\t%s Should paniced when giving unknown key %q.", failed, ctx)
 		} else {
-			t.Logf("\t\t%s Should paniced when giving unknown key %q.", success, context)
+			t.Logf("\t\t%s Should paniced when giving unknown key %q.", success, ctx)
 		}
 	}()
 
 	fx()
 }
 
-// shouldNotPanic receives a context string and a function to run, if the function
+// shouldNotPanic receives a ctx string and a function to run, if the function
 // panics, it is considered a failure else a success.
-func shouldNotPanic(t *testing.T, context string, fx func()) {
+func shouldNotPanic(t *testing.T, ctx string, fx func()) {
 	defer func() {
 		if err := recover(); err == nil {
-			t.Logf("\t\t%s Should not have paniced when giving known key %q.", success, context)
+			t.Logf("\t\t%s Should not have paniced when giving known key %q.", success, ctx)
 		} else {
-			t.Errorf("\t\t%s Should not have paniced when giving known key %q.", failed, context)
+			t.Errorf("\t\t%s Should not have paniced when giving known key %q.", failed, ctx)
 		}
 	}()
 

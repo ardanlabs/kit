@@ -51,19 +51,19 @@ type Task struct {
 }
 
 // Job implements the Jobber interface so task can be managed.
-func (t *Task) Job(context interface{}) error {
-	log.User(context, "Job", "Started : **********")
+func (t *Task) Job(ctx interface{}) error {
+	log.User(ctx, "Job", "Started : **********")
 
 	time.Sleep(time.Second)
 
-	log.User(context, "Job", "Completed : **********")
+	log.User(ctx, "Job", "Completed : **********")
 	return nil
 }
 
 //==============================================================================
 
 func main() {
-	const context = "main"
+	const ctx = "main"
 
 	// Create a task value for execution.
 	t := Task{
@@ -73,26 +73,26 @@ func main() {
 	rn := runner.New(time.Second)
 
 	// Start the job running with a specified duration.
-	if err := rn.Run(context, &t); err != nil {
+	if err := rn.Run(ctx, &t); err != nil {
 		switch err {
 		case runner.ErrTimeout:
 
 			// The task did not finish within the specified duration.
-			log.Error(context, "main", err, "Task timeout")
+			log.Error(ctx, "main", err, "Task timeout")
 
 		case runner.ErrSignaled:
 
 			// The user hit <control> c and we shutdown early.
-			log.Error(context, "main", err, "Shutdown early")
+			log.Error(ctx, "main", err, "Shutdown early")
 
 		default:
 
 			// An error occurred in the processing of the task.
-			log.Error(context, "main", err, "Processing error")
+			log.Error(ctx, "main", err, "Processing error")
 		}
 
 		os.Exit(1)
 	}
 
-	log.User(context, "main", "Completed")
+	log.User(ctx, "main", "Completed")
 }

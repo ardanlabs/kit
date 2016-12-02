@@ -11,7 +11,7 @@ Worker
 
 
 	type Worker interface {
-	    Work(context interface{}, id int)
+	    Work(ctx interface{}, id int)
 	}
 
 The Worker interface is how you can provide work to the pool. A user-defined type
@@ -26,14 +26,14 @@ The following is a sample application using the work pool.
 	type theWork struct{}
 	
 	// Work implements the DoWorker interface.
-	func (*theWork) Work(context string, id int) {
-	    fmt.Printf("%s : Performing Work\n", context)
+	func (*theWork) Work(ctx string, id int) {
+	    fmt.Printf("%s : Performing Work\n", ctx)
 	}
 	
 	// ExampleNewDoPool provides a basic example for using a DoPool.
 	func ExampleNewDoPool() {
 	    // Create a new do pool.
-	    p, err := pool.New(context, "TheWork", 3, func() time.Duration { return time.Minute })
+	    p, err := pool.New(ctx, "TheWork", 3, func() time.Duration { return time.Minute })
 	    if err != nil {
 	        fmt.Println(err)
 	        return
@@ -48,7 +48,7 @@ The following is a sample application using the work pool.
 	    time.Sleep(1 * time.Second)
 	
 	    // Shutdown the pool.
-	    p.Shutdown(context)
+	    p.Shutdown(ctx)
 	}
 
 
@@ -94,7 +94,7 @@ Config provides configuration for the pool.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})
+func (cfg *Config) Event(ctx interface{}, event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -103,7 +103,7 @@ Event fires events back to the user for important events.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(context interface{}, event string, format string, a ...interface{})
+    Event func(ctx interface{}, event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
@@ -139,7 +139,7 @@ tasks that are submitted.
 
 ### func New
 ``` go
-func New(context interface{}, name string, cfg Config) (*Pool, error)
+func New(ctx interface{}, name string, cfg Config) (*Pool, error)
 ```
 New creates a new Pool.
 
@@ -148,7 +148,7 @@ New creates a new Pool.
 
 ### func (\*Pool) Do
 ``` go
-func (p *Pool) Do(context interface{}, work Worker)
+func (p *Pool) Do(ctx interface{}, work Worker)
 ```
 Do waits for the goroutine pool to take the work to be executed.
 
@@ -156,7 +156,7 @@ Do waits for the goroutine pool to take the work to be executed.
 
 ### func (\*Pool) DoWait
 ``` go
-func (p *Pool) DoWait(context interface{}, work Worker, duration <-chan time.Time) error
+func (p *Pool) DoWait(ctx interface{}, work Worker, duration <-chan time.Time) error
 ```
 DoWait waits for the goroutine pool to take the work to be executed or gives
 up after the allotted duration. Only use when you want to throw away work and
@@ -166,7 +166,7 @@ not push back.
 
 ### func (\*Pool) Shutdown
 ``` go
-func (p *Pool) Shutdown(context interface{})
+func (p *Pool) Shutdown(ctx interface{})
 ```
 Shutdown waits for all the workers to finish.
 
@@ -205,7 +205,7 @@ Stat contains information about the pool.
 ## type Worker
 ``` go
 type Worker interface {
-    Work(context interface{}, id int)
+    Work(ctx interface{}, id int)
 }
 ```
 Worker must be implemented by types that want to use

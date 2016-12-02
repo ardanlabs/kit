@@ -17,16 +17,16 @@
 //
 // To write to the log you can make calls like this:
 //
-//		log.Dev(context, "CreateUser", "Started : Email[%s]", nu.Email)
-//		log.Error(context, "CreateUser", err, "Completed")
+//		log.Dev(ctx, "CreateUser", "Started : Email[%s]", nu.Email)
+//		log.Error(ctx, "CreateUser", err, "Completed")
 //
 // The API for Dev and User follow this convention:
 //
-//		log.User(context, "funcName", "formatted message %s", values)
+//		log.User(ctx, "funcName", "formatted message %s", values)
 //
-// context
+// ctx
 //
-// A context is a unique id that can be used to trace an entire session or
+// A ctx is a unique id that can be used to trace an entire session or
 // request. This value should be generated as early as possible and passed
 // through out the different calls.
 //

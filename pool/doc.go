@@ -6,7 +6,7 @@
 // Worker
 //
 //     type Worker interface {
-//         Work(context interface{}, id int)
+//         Work(ctx interface{}, id int)
 //     }
 //
 // The Worker interface is how you can provide work to the pool. A user-defined type
@@ -21,14 +21,14 @@
 //     type theWork struct{}
 //
 //     // Work implements the DoWorker interface.
-//     func (*theWork) Work(context string, id int) {
-//         fmt.Printf("%s : Performing Work\n", context)
+//     func (*theWork) Work(ctx string, id int) {
+//         fmt.Printf("%s : Performing Work\n", ctx)
 //     }
 //
 //     // ExampleNewDoPool provides a basic example for using a DoPool.
 //     func ExampleNewDoPool() {
 //         // Create a new do pool.
-//         p, err := pool.New(context, "TheWork", 3, func() time.Duration { return time.Minute })
+//         p, err := pool.New(ctx, "TheWork", 3, func() time.Duration { return time.Minute })
 //         if err != nil {
 //             fmt.Println(err)
 //             return
@@ -43,6 +43,6 @@
 //         time.Sleep(1 * time.Second)
 //
 //         // Shutdown the pool.
-//         p.Shutdown(context)
+//         p.Shutdown(ctx)
 //     }
 package pool

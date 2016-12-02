@@ -23,17 +23,17 @@ To initialize the logging system from your application, call Init:
 To write to the log you can make calls like this:
 
 
-	log.Dev(context, "CreateUser", "Started : Email[%s]", nu.Email)
-	log.Error(context, "CreateUser", err, "Completed")
+	log.Dev(ctx, "CreateUser", "Started : Email[%s]", nu.Email)
+	log.Error(ctx, "CreateUser", err, "Completed")
 
 The API for Dev and User follow this convention:
 
 
-	log.User(context, "funcName", "formatted message %s", values)
+	log.User(ctx, "funcName", "formatted message %s", values)
 
-context
+ctx
 
-A context is a unique id that can be used to trace an entire session or
+A ctx is a unique id that can be used to trace an entire session or
 request. This value should be generated as early as possible and passed
 through out the different calls.
 
@@ -84,14 +84,14 @@ const (
 
 ## func Dev
 ``` go
-func Dev(context interface{}, funcName string, format string, a ...interface{})
+func Dev(ctx interface{}, funcName string, format string, a ...interface{})
 ```
 Dev logs trace information for developers.
 
 
 ## func DevOffset
 ``` go
-func DevOffset(context interface{}, offset int, funcName string, format string, a ...interface{})
+func DevOffset(ctx interface{}, offset int, funcName string, format string, a ...interface{})
 ```
 DevOffset logs trace information for developers with a offset option to
 expand the caller level.
@@ -99,14 +99,14 @@ expand the caller level.
 
 ## func Error
 ``` go
-func Error(context interface{}, funcName string, err error, format string, a ...interface{})
+func Error(ctx interface{}, funcName string, err error, format string, a ...interface{})
 ```
 Error logs trace information that are errors.
 
 
 ## func ErrorOffset
 ``` go
-func ErrorOffset(context interface{}, offset int, funcName string, err error, format string, a ...interface{})
+func ErrorOffset(ctx interface{}, offset int, funcName string, err error, format string, a ...interface{})
 ```
 ErrorOffset logs trace information that are errors with a offset option to
 expand the caller level.
@@ -114,14 +114,14 @@ expand the caller level.
 
 ## func Fatal
 ``` go
-func Fatal(context interface{}, funcName string, format string, a ...interface{})
+func Fatal(ctx interface{}, funcName string, format string, a ...interface{})
 ```
 Fatal logs trace information for users and terminates the app.
 
 
 ## func FatalOffset
 ``` go
-func FatalOffset(context interface{}, offset int, funcName string, format string, a ...interface{})
+func FatalOffset(ctx interface{}, offset int, funcName string, format string, a ...interface{})
 ```
 FatalOffset logs trace information for users and terminates the app with a
 offset expand the caller level.
@@ -137,14 +137,14 @@ functions.
 
 ## func User
 ``` go
-func User(context interface{}, funcName string, format string, a ...interface{})
+func User(ctx interface{}, funcName string, format string, a ...interface{})
 ```
 User logs trace information for users.
 
 
 ## func UserOffset
 ``` go
-func UserOffset(context interface{}, offset int, funcName string, format string, a ...interface{})
+func UserOffset(ctx interface{}, offset int, funcName string, format string, a ...interface{})
 ```
 UserOffset logs trace information for users with a offset option to expand the
 caller level.
@@ -179,7 +179,7 @@ New returns a instance of a logger.
 
 ### func (\*Logger) Dev
 ``` go
-func (l *Logger) Dev(context interface{}, funcName string, format string, a ...interface{})
+func (l *Logger) Dev(ctx interface{}, funcName string, format string, a ...interface{})
 ```
 Dev logs trace information for developers.
 
@@ -187,7 +187,7 @@ Dev logs trace information for developers.
 
 ### func (\*Logger) DevOffset
 ``` go
-func (l *Logger) DevOffset(context interface{}, offset int, funcName string, format string, a ...interface{})
+func (l *Logger) DevOffset(ctx interface{}, offset int, funcName string, format string, a ...interface{})
 ```
 DevOffset logs trace information for developers with a offset option to
 expand the caller level.
@@ -196,7 +196,7 @@ expand the caller level.
 
 ### func (\*Logger) Error
 ``` go
-func (l *Logger) Error(context interface{}, funcName string, err error, format string, a ...interface{})
+func (l *Logger) Error(ctx interface{}, funcName string, err error, format string, a ...interface{})
 ```
 Error logs trace information that are errors.
 
@@ -204,7 +204,7 @@ Error logs trace information that are errors.
 
 ### func (\*Logger) ErrorOffset
 ``` go
-func (l *Logger) ErrorOffset(context interface{}, offset int, funcName string, err error, format string, a ...interface{})
+func (l *Logger) ErrorOffset(ctx interface{}, offset int, funcName string, err error, format string, a ...interface{})
 ```
 ErrorOffset logs trace information that are errors with a offset option to
 expand the caller level.
@@ -213,7 +213,7 @@ expand the caller level.
 
 ### func (\*Logger) Fatal
 ``` go
-func (l *Logger) Fatal(context interface{}, funcName string, format string, a ...interface{})
+func (l *Logger) Fatal(ctx interface{}, funcName string, format string, a ...interface{})
 ```
 Fatal logs trace information for users and terminates the app.
 
@@ -221,7 +221,7 @@ Fatal logs trace information for users and terminates the app.
 
 ### func (\*Logger) FatalOffset
 ``` go
-func (l *Logger) FatalOffset(context interface{}, offset int, funcName string, format string, a ...interface{})
+func (l *Logger) FatalOffset(ctx interface{}, offset int, funcName string, format string, a ...interface{})
 ```
 FatalOffset logs trace information for users and terminates the app with a
 offset expand the caller level.
@@ -230,7 +230,7 @@ offset expand the caller level.
 
 ### func (\*Logger) User
 ``` go
-func (l *Logger) User(context interface{}, funcName string, format string, a ...interface{})
+func (l *Logger) User(ctx interface{}, funcName string, format string, a ...interface{})
 ```
 User logs trace information for users.
 
@@ -238,7 +238,7 @@ User logs trace information for users.
 
 ### func (\*Logger) UserOffset
 ``` go
-func (l *Logger) UserOffset(context interface{}, offset int, funcName string, format string, a ...interface{})
+func (l *Logger) UserOffset(ctx interface{}, offset int, funcName string, format string, a ...interface{})
 ```
 UserOffset logs trace information for users with a offset option to expand the
 caller level.

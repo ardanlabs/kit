@@ -61,7 +61,7 @@ type Task struct {
 }
 
 // Work implements the Worker interface so task can be executed by the pool.
-func (t *Task) Work(context interface{}, id int) {
+func (t *Task) Work(ctx interface{}, id int) {
 	time.Sleep(time.Second)
 	wg.Done()
 }
@@ -69,7 +69,7 @@ func (t *Task) Work(context interface{}, id int) {
 //==============================================================================
 
 func main() {
-	const context = "main"
+	const ctx = "main"
 	const totalWork = 100
 
 	wg.Add(totalWork)
@@ -81,9 +81,9 @@ func main() {
 	}
 
 	// Create a pool.
-	p, err := pool.New(context, "test", cfg)
+	p, err := pool.New(ctx, "test", cfg)
 	if err != nil {
-		log.Error(context, "main", err, "Creating pool")
+		log.Error(ctx, "main", err, "Creating pool")
 		return
 	}
 
@@ -91,18 +91,18 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(250 * time.Millisecond)
-			log.User(context, "Stats", "%#v", p.Stats())
+			log.User(ctx, "Stats", "%#v", p.Stats())
 		}
 	}()
 
 	// Perform some work.
 	for i := 0; i < totalWork; i++ {
-		p.Do(context, &Task{Name: strconv.Itoa(i)})
+		p.Do(ctx, &Task{Name: strconv.Itoa(i)})
 	}
 
 	// Wait until all the work is complete.
 	wg.Wait()
 
 	// Shutdown the pool.
-	p.Shutdown(context)
+	p.Shutdown(ctx)
 }

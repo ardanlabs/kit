@@ -46,12 +46,12 @@ func init() {
 //==============================================================================
 
 // Event writes tcp events.
-func Event(context interface{}, event string, format string, a ...interface{}) {
+func Event(ctx interface{}, event string, format string, a ...interface{}) {
 	log.User("*EVENT*", event, format, a...)
 }
 
 func main() {
-	const context = "startup"
+	const ctx = "startup"
 
 	// Create the configuration.
 	cfg := tcp.Config{
@@ -75,22 +75,22 @@ func main() {
 	}
 
 	// Create a new TCP value.
-	t, err := tcp.New(context, "Sample", cfg)
+	t, err := tcp.New(ctx, "Sample", cfg)
 	if err != nil {
-		log.Error(context, "main", err, "Creating tcp")
+		log.Error(ctx, "main", err, "Creating tcp")
 		return
 	}
 
 	// Start accepting client data.
-	if err := t.Start(context); err != nil {
-		log.Error(context, "main", err, "Starting tcp")
+	if err := t.Start(ctx); err != nil {
+		log.Error(ctx, "main", err, "Starting tcp")
 		return
 	}
 
 	// Defer the stop on shutdown.
-	defer t.Stop(context)
+	defer t.Stop(ctx)
 
-	log.User(context, "main", "Waiting for data on: %s", t.Addr())
+	log.User(ctx, "main", "Waiting for data on: %s", t.Addr())
 
 	// Listen for an interrupt signal from the OS.
 	sigChan := make(chan os.Signal, 1)
@@ -100,5 +100,5 @@ func main() {
 	// Use telnet to test the server.
 	// telnet localhost 6000
 
-	log.User(context, "main", "Shutting down")
+	log.User(ctx, "main", "Shutting down")
 }

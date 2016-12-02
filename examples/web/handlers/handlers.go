@@ -17,7 +17,7 @@ var Test testHandle
 
 // List returns all the existing test names in the system.
 // 200 Success, 404 Not Found, 500 Internal
-func (testHandle) List(c *web.Context) error {
+func (testHandle) List(c *web.Ctx) error {
 	names := []string{"Apple", "Orange", "Banana"}
 
 	c.Respond(names, http.StatusOK)

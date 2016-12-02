@@ -9,9 +9,9 @@ import (
 func DB(h web.Handler) web.Handler {
 
 	// Pretend this get a DB connection
-	f := func(c *web.Context) error {
+	f := func(c *web.Ctx) error {
 		log.Dev(c.SessionID, "DB", "******> Capture DB Connection")
-		c.Ctx["DB"] = "CONN"
+		c.Values["DB"] = "CONN"
 		defer func() {
 			log.Dev(c.SessionID, "DB", "******> Release DB Connection")
 		}()

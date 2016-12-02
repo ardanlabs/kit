@@ -9,9 +9,9 @@ import (
 func Auth(h web.Handler) web.Handler {
 
 	// Pretend this get a DB connection
-	f := func(c *web.Context) error {
+	f := func(c *web.Ctx) error {
 		log.Dev(c.SessionID, "Auth", "******> Authorized")
-		c.Ctx["UserID"] = "123"
+		c.Values["UserID"] = "123"
 
 		return h(c)
 	}

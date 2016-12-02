@@ -15,7 +15,7 @@ ConnHandler
 
 
 	type ConnHandler interface {
-	    Bind(context string, conn net.Conn) (io.Reader, io.Writer)
+	    Bind(ctx string, conn net.Conn) (io.Reader, io.Writer)
 	}
 
 The ConnHandler interface is implemented by the user to bind the client connection
@@ -25,8 +25,8 @@ ReqHandler
 
 
 	type ReqHandler interface {
-	    Read(context string, ipAddress string, reader io.Reader) ([]byte, int, error)
-	    Process(context string, r *Request)
+	    Read(ctx string, ipAddress string, reader io.Reader) ([]byte, int, error)
+	    Process(ctx string, r *Request)
 	}
 	
 	type Request struct {
@@ -45,7 +45,7 @@ RespHandler
 
 
 	type RespHandler interface {
-	    Write(context string, r *Response, writer io.Writer)
+	    Write(ctx string, r *Response, writer io.Writer)
 	}
 	
 	type Response struct {
@@ -145,7 +145,7 @@ Config provides a data structure of required configuration parameters.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{})
+func (cfg *Config) Event(ctx interface{}, event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -163,7 +163,7 @@ Validate checks the configuration to required items.
 ``` go
 type ConnHandler interface {
     // Bind is called to set the reader and writer.
-    Bind(context interface{}, conn net.Conn) (io.Reader, io.Writer)
+    Bind(ctx interface{}, conn net.Conn) (io.Reader, io.Writer)
 }
 ```
 ConnHandler is implemented by the user to bind the connection
@@ -182,7 +182,7 @@ to a reader and writer for processing.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(context interface{}, event string, format string, a ...interface{})
+    Event func(ctx interface{}, event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
@@ -265,11 +265,11 @@ type ReqHandler interface {
     // Read is provided an ipaddress and the user-defined reader and must return
     // the data read off the wire and the length. Returning io.EOF or a non
     // temporary error will show down the listener.
-    Read(context interface{}, ipAddress string, reader io.Reader) ([]byte, int, error)
+    Read(ctx interface{}, ipAddress string, reader io.Reader) ([]byte, int, error)
 
     // Process is used to handle the processing of the request. This method
     // is called on a routine from a pool of routines.
-    Process(context interface{}, r *Request)
+    Process(ctx interface{}, r *Request)
 }
 ```
 ReqHandler is implemented by the user to implement the processing
@@ -310,7 +310,7 @@ Request is the message received by the client.
 
 ### func (\*Request) Work
 ``` go
-func (r *Request) Work(context interface{}, id int)
+func (r *Request) Work(ctx interface{}, id int)
 ```
 Work implements the worker interface for processing received messages.
 This is called from a routine in the work pool.
@@ -321,7 +321,7 @@ This is called from a routine in the work pool.
 ``` go
 type RespHandler interface {
     // Write is provided the response to write and the user-defined writer.
-    Write(context interface{}, r *Response, writer io.Writer)
+    Write(ctx interface{}, r *Response, writer io.Writer)
 }
 ```
 RespHandler is implemented by the user to implement the processing
@@ -361,7 +361,7 @@ Response is message to send to the client.
 
 ### func (\*Response) Work
 ``` go
-func (r *Response) Work(context interface{}, id int)
+func (r *Response) Work(ctx interface{}, id int)
 ```
 Work implements the worker interface for sending messages to the client.
 This is called from a routine in the work pool.
@@ -388,7 +388,7 @@ TCP contains a set of networked client connections.
 
 ### func New
 ``` go
-func New(context interface{}, name string, cfg Config) (*TCP, error)
+func New(ctx interface{}, name string, cfg Config) (*TCP, error)
 ```
 New creates a new manager to service clients.
 
@@ -406,7 +406,7 @@ provided in the configuration, for example if configuration port value is 0.
 
 ### func (\*TCP) Do
 ``` go
-func (t *TCP) Do(context interface{}, r *Response) error
+func (t *TCP) Do(ctx interface{}, r *Response) error
 ```
 Do will post the request to be sent by the client worker pool.
 
@@ -414,7 +414,7 @@ Do will post the request to be sent by the client worker pool.
 
 ### func (\*TCP) DropConnections
 ``` go
-func (t *TCP) DropConnections(context interface{}, drop bool)
+func (t *TCP) DropConnections(ctx interface{}, drop bool)
 ```
 DropConnections sets a flag to tell the accept routine to immediately
 drop connections that come in.
@@ -423,7 +423,7 @@ drop connections that come in.
 
 ### func (\*TCP) Start
 ``` go
-func (t *TCP) Start(context interface{}) error
+func (t *TCP) Start(ctx interface{}) error
 ```
 Start creates the accept routine and begins to accept connections.
 
@@ -447,7 +447,7 @@ StatsSend returns the current snapshot of the send pool stats.
 
 ### func (\*TCP) Stop
 ``` go
-func (t *TCP) Stop(context interface{}) error
+func (t *TCP) Stop(ctx interface{}) error
 ```
 Stop shuts down the manager and closes all connections.
 

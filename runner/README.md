@@ -24,7 +24,7 @@ Error variables for the different states.
 ## type Jobber
 ``` go
 type Jobber interface {
-    Job(context interface{}) error
+    Job(ctx interface{}) error
 }
 ```
 Jobber defines an interface for providing the implementation details for
@@ -75,7 +75,7 @@ CheckShutdown can be used to check if a shutdown request has been issued.
 
 ### func (\*Runner) Run
 ``` go
-func (r *Runner) Run(context interface{}, job Jobber) error
+func (r *Runner) Run(ctx interface{}, job Jobber) error
 ```
 Run performs the execution of the specified job.
 

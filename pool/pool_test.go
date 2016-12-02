@@ -20,7 +20,7 @@ type theWork struct {
 }
 
 // Work implements the DoWorker interface.
-func (p *theWork) Work(context interface{}, id int) {
+func (p *theWork) Work(ctx interface{}, id int) {
 	fmt.Printf("Performing Work with privateID %d\n", p.privateID)
 }
 

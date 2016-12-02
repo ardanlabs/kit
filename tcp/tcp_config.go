@@ -30,7 +30,7 @@ type OptRateLimit struct {
 
 // OptEvent defines an handler used to provide events.
 type OptEvent struct {
-	Event func(context interface{}, event string, format string, a ...interface{})
+	Event func(ctx interface{}, event string, format string, a ...interface{})
 }
 
 // Config provides a data structure of required configuration parameters.
@@ -91,8 +91,8 @@ func (cfg *Config) Validate() error {
 }
 
 // Event fires events back to the user for important events.
-func (cfg *Config) Event(context interface{}, event string, format string, a ...interface{}) {
+func (cfg *Config) Event(ctx interface{}, event string, format string, a ...interface{}) {
 	if cfg.OptEvent.Event != nil {
-		cfg.OptEvent.Event(context, event, format, a...)
+		cfg.OptEvent.Event(ctx, event, format, a...)
 	}
 }
