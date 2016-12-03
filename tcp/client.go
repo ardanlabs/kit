@@ -12,7 +12,7 @@ import (
 
 // client represents a single networked connection.
 type client struct {
-	ctx       string
+	logCtx    string
 	t         *TCP
 	conn      net.Conn
 	ipAddress string
@@ -23,16 +23,16 @@ type client struct {
 }
 
 // newClient creates a new client for an incoming connection.
-func newClient(ctx string, t *TCP, conn net.Conn) *client {
+func newClient(logCtx string, t *TCP, conn net.Conn) *client {
 	ipAddress := conn.RemoteAddr().String()
-	t.Event(ctx, "newClient", "IPAddress[%s]", ipAddress)
+	t.Event(logCtx, "newClient", "IPAddress[%s]", ipAddress)
 
 	// Ask the user to bind the reader and writer they want to
 	// use for this connection.
-	r, w := t.ConnHandler.Bind(ctx, conn)
+	r, w := t.ConnHandler.Bind(logCtx, conn)
 
 	c := client{
-		ctx:       ctx,
+		logCtx:    logCtx,
 		t:         t,
 		conn:      conn,
 		ipAddress: ipAddress,
@@ -58,22 +58,22 @@ func (c *client) drop() {
 	c.conn.Close()
 	c.wg.Wait()
 
-	c.t.Event(c.ctx, "drop", "Client Dropped")
+	c.t.Event(c.logCtx, "drop", "Client Dropped")
 }
 
 // read waits for a message and sends it to the user for procesing.
 func (c *client) read() {
-	c.t.Event(c.ctx, "read", "Read Processing")
+	c.t.Event(c.logCtx, "read", "Read Processing")
 
 close:
 	for {
 		// Wait for a message to arrive.
-		data, length, err := c.t.ReqHandler.Read(c.ctx, c.ipAddress, c.reader)
+		data, length, err := c.t.ReqHandler.Read(c.logCtx, c.ipAddress, c.reader)
 		timeRead := time.Now()
 
 		if err != nil {
 			if atomic.LoadInt32(&c.t.shuttingDown) == 0 {
-				c.t.Event(c.ctx, "read", "ERROR : %v", err)
+				c.t.Event(c.logCtx, "read", "ERROR : %v", err)
 			}
 
 			// temporary is declared to test for the existence of
@@ -115,16 +115,16 @@ close:
 		}
 
 		// Send this to the user work pool for processing.
-		c.t.recv.Do(c.ctx, &r)
+		c.t.recv.Do(c.logCtx, &r)
 	}
 
-	c.t.Event(c.ctx, "read", "Shutting Down Client Routine")
+	c.t.Event(c.logCtx, "read", "Shutting Down Client Routine")
 
 	// Remove from the list of connections.
-	c.t.remove(c.ctx, c.conn)
+	c.t.remove(c.logCtx, c.conn)
 
 	c.wg.Done()
 
-	c.t.Event(c.ctx, "read", "Client Routine Down")
+	c.t.Event(c.logCtx, "read", "Client Routine Down")
 	return
 }

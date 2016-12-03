@@ -20,7 +20,7 @@ var (
 // Jobber defines an interface for providing the implementation details for
 // processing a user job.
 type Jobber interface {
-	Job(ctx interface{}) error
+	Job(logCtx interface{}) error
 }
 
 // Runner maintains state for the running process.
@@ -42,13 +42,13 @@ func New(timeout time.Duration) *Runner {
 }
 
 // Run performs the execution of the specified job.
-func (r *Runner) Run(ctx interface{}, job Jobber) error {
+func (r *Runner) Run(logCtx interface{}, job Jobber) error {
 
 	// We want to receive all interrupt based signals.
 	signal.Notify(r.sigChan, os.Interrupt)
 
 	// Launch the processor.
-	go r.processor(ctx, job)
+	go r.processor(logCtx, job)
 
 	for {
 		select {
@@ -90,7 +90,7 @@ func (r *Runner) CheckShutdown() bool {
 }
 
 // processor provides the main program logic for the program.
-func (r *Runner) processor(ctx interface{}, job Jobber) {
+func (r *Runner) processor(logCtx interface{}, job Jobber) {
 
 	// Variable to store any error that occurs.
 	var err error
@@ -109,5 +109,5 @@ func (r *Runner) processor(ctx interface{}, job Jobber) {
 	}()
 
 	// Run the job.
-	err = job.Job(ctx)
+	err = job.Job(logCtx)
 }

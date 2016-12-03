@@ -25,7 +25,7 @@ type task struct {
 }
 
 // Job is the implementation of the Jobber interface.
-func (t *task) Job(ctx interface{}) error {
+func (t *task) Job(logCtx interface{}) error {
 	// Pretend you are doing work for the specified
 	// amount of time.
 	<-t.kill
@@ -73,7 +73,7 @@ func TestCompleted(t *testing.T) {
 
 			r := runner.New(time.Second)
 
-			if err := r.Run("ctx", &job); err != nil {
+			if err := r.Run("logCtx", &job); err != nil {
 				t.Fatalf("\t%s\tShould not receive an error : %v", failed, err)
 			}
 			t.Logf("\t%s\tShould not receive an error.", success)
@@ -94,7 +94,7 @@ func TestError(t *testing.T) {
 
 			r := runner.New(time.Second)
 
-			if err := r.Run("ctx", &job); err == nil {
+			if err := r.Run("logCtx", &job); err == nil {
 				t.Fatalf("\t%s\tShould receive our error : %v", failed, err)
 			}
 			t.Logf("\t%s\tShould receive our error.", success)
@@ -116,7 +116,7 @@ func TestTimeout(t *testing.T) {
 
 			r := runner.New(time.Millisecond)
 
-			if err := r.Run("ctx", &job); err != runner.ErrTimeout {
+			if err := r.Run("logCtx", &job); err != runner.ErrTimeout {
 				t.Fatalf("\t%s\tShould receive a timeout error : %v", failed, err)
 			}
 			t.Logf("\t%s\tShould receive a timeout error.", success)
@@ -143,7 +143,7 @@ func TestSignaled(t *testing.T) {
 
 			r := runner.New(3 * time.Second)
 
-			if err := r.Run("ctx", &job); err != nil {
+			if err := r.Run("logCtx", &job); err != nil {
 				t.Errorf("\t%s\tShould receive no error : %v", failed, err)
 			} else {
 				t.Logf("\t%s\tShould receive no error.", success)

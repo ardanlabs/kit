@@ -46,7 +46,7 @@ func init() {
 //==============================================================================
 
 func main() {
-	const ctx = "startup"
+	const logCtx = "startup"
 
 	// Create the configuration.
 	cfg := udp.Config{
@@ -66,22 +66,22 @@ func main() {
 	}
 
 	// Create a new UDP value.
-	u, err := udp.New(ctx, "Sample", cfg)
+	u, err := udp.New(logCtx, "Sample", cfg)
 	if err != nil {
-		log.Error(ctx, "main", err, "Creating udp")
+		log.Error(logCtx, "main", err, "Creating udp")
 		return
 	}
 
 	// Start accepting client data.
-	if err := u.Start(ctx); err != nil {
-		log.Error(ctx, "main", err, "Starting udp")
+	if err := u.Start(logCtx); err != nil {
+		log.Error(logCtx, "main", err, "Starting udp")
 		return
 	}
 
 	// Defer the stop on shutdown.
-	defer u.Stop(ctx)
+	defer u.Stop(logCtx)
 
-	log.User(ctx, "main", "Waiting for data on: %s", u.Addr())
+	log.User(logCtx, "main", "Waiting for data on: %s", u.Addr())
 
 	// Listen for an interrupt signal from the OS.
 	sigChan := make(chan os.Signal, 1)
@@ -91,5 +91,5 @@ func main() {
 	// Use netcat to test the server.
 	// nc -4u localhost 6000 < test.hex
 
-	log.User(ctx, "main", "Shutting down")
+	log.User(logCtx, "main", "Shutting down")
 }

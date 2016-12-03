@@ -12,9 +12,9 @@ import (
 )
 
 func main() {
+
 	// Look at /kit/config for a set of possible config settings.
 
 	err := web.Run(":4000", routes.API(), 10*time.Second, 10*time.Second)
-
 	log.User("main", "main", "DOWN: %v", err)
 }

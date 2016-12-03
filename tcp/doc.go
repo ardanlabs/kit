@@ -10,7 +10,7 @@
 // ConnHandler
 //
 //     type ConnHandler interface {
-//         Bind(ctx string, conn net.Conn) (io.Reader, io.Writer)
+//         Bind(logCtx string, conn net.Conn) (io.Reader, io.Writer)
 //     }
 //
 // The ConnHandler interface is implemented by the user to bind the client connection
@@ -19,8 +19,8 @@
 // ReqHandler
 //
 //     type ReqHandler interface {
-//         Read(ctx string, ipAddress string, reader io.Reader) ([]byte, int, error)
-//         Process(ctx string, r *Request)
+//         Read(logCtx string, ipAddress string, reader io.Reader) ([]byte, int, error)
+//         Process(logCtx string, r *Request)
 //     }
 //
 //     type Request struct {
@@ -38,7 +38,7 @@
 // RespHandler
 //
 //     type RespHandler interface {
-//         Write(ctx string, r *Response, writer io.Writer)
+//         Write(logCtx string, r *Response, writer io.Writer)
 //     }
 //
 //     type Response struct {

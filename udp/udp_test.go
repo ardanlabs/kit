@@ -12,12 +12,6 @@ import (
 	"github.com/ardanlabs/kit/udp"
 )
 
-func init() {
-	tests.Init("KIT")
-}
-
-//==============================================================================
-
 // TestUDP provide a test of listening for a connection and
 // echoing the data back.
 func TestUDP(t *testing.T) {
