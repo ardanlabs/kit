@@ -57,20 +57,20 @@ Run is called to start the web service.
 
 
 
-## type ctx
+## type Ctx
 ``` go
-type ctx struct {
+type Ctx struct {
     http.ResponseWriter
     Request   *http.Request
     Now       time.Time
     Params    map[string]string
     SessionID string
     Status    int
-    Ctx       map[string]interface{}
+    Values    map[string]interface{}
     Web       *Web
 }
 ```
-ctx contains data associated with a single request.
+Ctx contains data associated with a single request.
 
 
 
@@ -82,43 +82,43 @@ ctx contains data associated with a single request.
 
 
 
-### func (\*ctx) Error
+### func (\*Ctx) Error
 ``` go
-func (c *ctx) Error(err error)
+func (c *Ctx) Error(err error)
 ```
 Error handles all error responses for the API.
 
 
 
-### func (\*ctx) Proxy
+### func (\*Ctx) Proxy
 ``` go
-func (c *ctx) Proxy(targetURL string, rewrite func(req *http.Request)) error
+func (c *Ctx) Proxy(targetURL string, rewrite func(req *http.Request)) error
 ```
 Proxy will setup a direct proxy inbetween this service and the destination
 service.
 
 
 
-### func (\*ctx) Respond
+### func (\*Ctx) Respond
 ``` go
-func (c *ctx) Respond(data interface{}, code int) error
+func (c *Ctx) Respond(data interface{}, code int) error
 ```
 Respond sends JSON to the client.
 If code is StatusNoContent, v is expected to be nil.
 
 
 
-### func (\*ctx) RespondError
+### func (\*Ctx) RespondError
 ``` go
-func (c *ctx) RespondError(error string, code int)
+func (c *Ctx) RespondError(error string, code int)
 ```
 RespondError sends JSON describing the error
 
 
 
-### func (\*ctx) RespondInvalid
+### func (\*Ctx) RespondInvalid
 ``` go
-func (c *ctx) RespondInvalid(fields []Invalid)
+func (c *Ctx) RespondInvalid(fields []Invalid)
 ```
 RespondInvalid sends JSON describing field validation errors.
 
@@ -160,10 +160,10 @@ Use adds the set of provided middleware onto the Weblication middleware chain.
 
 ## type Handler
 ``` go
-type Handler func(*ctx) error
+type Handler func(*Ctx) error
 ```
 A Handler is a type that handles an http request within our own little mini
-framework. The fun part is that our ctx is fully controlled and
+framework. The fun part is that our Ctx is fully controlled and
 configured by us so we can extend the functionality of the ctx whenever
 we want.
 

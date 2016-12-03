@@ -17,16 +17,6 @@ var (
 ```
 Success and failure markers.
 
-``` go
-var ctx = "Test"
-```
-ctx provides a base ctx for tests.
-
-``` go
-var TestSession = "test"
-```
-TestSession is the name used to register the MongoDB session.
-
 
 ## func DisplayLog
 ``` go
@@ -42,13 +32,6 @@ func IndentJSON(j string) string
 ```
 IndentJSON takes a JSON payload as a string and re-indents it to make
 comparing expected strings to tests strings during testing.
-
-
-## func Init
-``` go
-func Init(cfgKey string)
-```
-Init initializes the log package.
 
 
 ## func ResetLog
