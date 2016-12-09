@@ -84,14 +84,14 @@ const (
 
 ## func Dev
 ``` go
-func Dev(logCtx interface{}, funcName string, format string, a ...interface{})
+func Dev(traceID string, funcName string, format string, a ...interface{})
 ```
 Dev logs trace information for developers.
 
 
 ## func DevOffset
 ``` go
-func DevOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{})
+func DevOffset(traceID string, offset int, funcName string, format string, a ...interface{})
 ```
 DevOffset logs trace information for developers with a offset option to
 expand the caller level.
@@ -99,14 +99,14 @@ expand the caller level.
 
 ## func Error
 ``` go
-func Error(logCtx interface{}, funcName string, err error, format string, a ...interface{})
+func Error(traceID string, funcName string, err error, format string, a ...interface{})
 ```
 Error logs trace information that are errors.
 
 
 ## func ErrorOffset
 ``` go
-func ErrorOffset(logCtx interface{}, offset int, funcName string, err error, format string, a ...interface{})
+func ErrorOffset(traceID string, offset int, funcName string, err error, format string, a ...interface{})
 ```
 ErrorOffset logs trace information that are errors with a offset option to
 expand the caller level.
@@ -114,14 +114,14 @@ expand the caller level.
 
 ## func Fatal
 ``` go
-func Fatal(logCtx interface{}, funcName string, format string, a ...interface{})
+func Fatal(traceID string, funcName string, format string, a ...interface{})
 ```
 Fatal logs trace information for users and terminates the app.
 
 
 ## func FatalOffset
 ``` go
-func FatalOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{})
+func FatalOffset(traceID string, offset int, funcName string, format string, a ...interface{})
 ```
 FatalOffset logs trace information for users and terminates the app with a
 offset expand the caller level.
@@ -137,14 +137,14 @@ functions.
 
 ## func User
 ``` go
-func User(logCtx interface{}, funcName string, format string, a ...interface{})
+func User(traceID string, funcName string, format string, a ...interface{})
 ```
 User logs trace information for users.
 
 
 ## func UserOffset
 ``` go
-func UserOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{})
+func UserOffset(traceID string, offset int, funcName string, format string, a ...interface{})
 ```
 UserOffset logs trace information for users with a offset option to expand the
 caller level.
@@ -179,7 +179,7 @@ New returns a instance of a logger.
 
 ### func (\*Logger) Dev
 ``` go
-func (l *Logger) Dev(logCtx interface{}, funcName string, format string, a ...interface{})
+func (l *Logger) Dev(traceID string, funcName string, format string, a ...interface{})
 ```
 Dev logs trace information for developers.
 
@@ -187,7 +187,7 @@ Dev logs trace information for developers.
 
 ### func (\*Logger) DevOffset
 ``` go
-func (l *Logger) DevOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{})
+func (l *Logger) DevOffset(traceID string, offset int, funcName string, format string, a ...interface{})
 ```
 DevOffset logs trace information for developers with a offset option to
 expand the caller level.
@@ -196,7 +196,7 @@ expand the caller level.
 
 ### func (\*Logger) Error
 ``` go
-func (l *Logger) Error(logCtx interface{}, funcName string, err error, format string, a ...interface{})
+func (l *Logger) Error(traceID string, funcName string, err error, format string, a ...interface{})
 ```
 Error logs trace information that are errors.
 
@@ -204,7 +204,7 @@ Error logs trace information that are errors.
 
 ### func (\*Logger) ErrorOffset
 ``` go
-func (l *Logger) ErrorOffset(logCtx interface{}, offset int, funcName string, err error, format string, a ...interface{})
+func (l *Logger) ErrorOffset(traceID string, offset int, funcName string, err error, format string, a ...interface{})
 ```
 ErrorOffset logs trace information that are errors with a offset option to
 expand the caller level.
@@ -213,7 +213,7 @@ expand the caller level.
 
 ### func (\*Logger) Fatal
 ``` go
-func (l *Logger) Fatal(logCtx interface{}, funcName string, format string, a ...interface{})
+func (l *Logger) Fatal(traceID string, funcName string, format string, a ...interface{})
 ```
 Fatal logs trace information for users and terminates the app.
 
@@ -221,7 +221,7 @@ Fatal logs trace information for users and terminates the app.
 
 ### func (\*Logger) FatalOffset
 ``` go
-func (l *Logger) FatalOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{})
+func (l *Logger) FatalOffset(traceID string, offset int, funcName string, format string, a ...interface{})
 ```
 FatalOffset logs trace information for users and terminates the app with a
 offset expand the caller level.
@@ -230,7 +230,7 @@ offset expand the caller level.
 
 ### func (\*Logger) User
 ``` go
-func (l *Logger) User(logCtx interface{}, funcName string, format string, a ...interface{})
+func (l *Logger) User(traceID string, funcName string, format string, a ...interface{})
 ```
 User logs trace information for users.
 
@@ -238,7 +238,7 @@ User logs trace information for users.
 
 ### func (\*Logger) UserOffset
 ``` go
-func (l *Logger) UserOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{})
+func (l *Logger) UserOffset(traceID string, offset int, funcName string, format string, a ...interface{})
 ```
 UserOffset logs trace information for users with a offset option to expand the
 caller level.

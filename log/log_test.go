@@ -46,12 +46,12 @@ func TestLogLevelUSER(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:53: USER : logCtx : FuncName : Message 2 with format: A, B\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:54: ERROR : logCtx : FuncName : An error : Message 3 no format\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:53: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:54: ERROR : traceID : FuncName : An error : Message 3 no format\n", dt)
 
-			log.Dev("logCtx", "FuncName", "Message 1 no format")
-			log.User("logCtx", "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			log.Error("logCtx", "FuncName", errors.New("An error"), "Message 3 no format")
+			log.Dev("traceID", "FuncName", "Message 1 no format")
+			log.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			log.Error("traceID", "FuncName", errors.New("An error"), "Message 3 no format")
 
 			if logdest.String() == log1+log2 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)
@@ -76,13 +76,13 @@ func TestLogLevelDEV(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:83: DEV : logCtx : FuncName : Message 1 no format\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:84: USER : logCtx : FuncName : Message 2 with format: A, B\n", dt)
-			log3 := fmt.Sprintf("%s log_test.go:85: ERROR : logCtx : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:83: DEV : traceID : FuncName : Message 1 no format\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:84: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log3 := fmt.Sprintf("%s log_test.go:85: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
-			log.Dev("logCtx", "FuncName", "Message 1 no format")
-			log.User("logCtx", "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			log.Error("logCtx", "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
+			log.Dev("traceID", "FuncName", "Message 1 no format")
+			log.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			log.Error("traceID", "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
 			if logdest.String() == log1+log2+log3 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)
@@ -107,13 +107,13 @@ func TestLogInstanceInDev(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:114: DEV : logCtx : FuncName : Message 1 no format\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:115: USER : logCtx : FuncName : Message 2 with format: A, B\n", dt)
-			log3 := fmt.Sprintf("%s log_test.go:116: ERROR : logCtx : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:114: DEV : traceID : FuncName : Message 1 no format\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:115: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log3 := fmt.Sprintf("%s log_test.go:116: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
-			lg.Dev("logCtx", "FuncName", "Message 1 no format")
-			lg.User("logCtx", "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			lg.Error("logCtx", "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
+			lg.Dev("traceID", "FuncName", "Message 1 no format")
+			lg.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			lg.Error("traceID", "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
 			if logdest.String() == log1+log2+log3 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)
@@ -138,12 +138,12 @@ func TestLogInstanceInUser(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:145: USER : logCtx : FuncName : Message 2 with format: A, B\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:146: ERROR : logCtx : FuncName : An error : Message 3 no format\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:145: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:146: ERROR : traceID : FuncName : An error : Message 3 no format\n", dt)
 
-			lg.Dev("logCtx", "FuncName", "Message 1 no format")
-			lg.User("logCtx", "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			lg.Error("logCtx", "FuncName", errors.New("An error"), "Message 3 no format")
+			lg.Dev("traceID", "FuncName", "Message 1 no format")
+			lg.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			lg.Error("traceID", "FuncName", errors.New("An error"), "Message 3 no format")
 
 			if logdest.String() == log1+log2 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)
@@ -168,13 +168,13 @@ func TestLogLevelDEVOffset(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:175: DEV : logCtx : FuncName : Message 1 no format\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:176: USER : logCtx : FuncName : Message 2 with format: A, B\n", dt)
-			log3 := fmt.Sprintf("%s log_test.go:177: ERROR : logCtx : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:175: DEV : traceID : FuncName : Message 1 no format\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:176: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log3 := fmt.Sprintf("%s log_test.go:177: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
-			log.DevOffset("logCtx", 0, "FuncName", "Message 1 no format")
-			log.UserOffset("logCtx", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			log.ErrorOffset("logCtx", 0, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
+			log.DevOffset("traceID", 0, "FuncName", "Message 1 no format")
+			log.UserOffset("traceID", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			log.ErrorOffset("traceID", 0, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
 			if logdest.String() == log1+log2+log3 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)
@@ -199,12 +199,12 @@ func TestLogLevelUserOffset(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:206: USER : logCtx : FuncName : Message 2 with format: A, B\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:207: ERROR : logCtx : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:206: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:207: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
-			log.DevOffset("logCtx", 0, "FuncName", "Message 1 no format")
-			log.UserOffset("logCtx", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
-			log.ErrorOffset("logCtx", 0, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
+			log.DevOffset("traceID", 0, "FuncName", "Message 1 no format")
+			log.UserOffset("traceID", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
+			log.ErrorOffset("traceID", 0, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
 			if logdest.String() == log1+log2 {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)

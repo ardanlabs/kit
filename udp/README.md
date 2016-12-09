@@ -143,7 +143,7 @@ Config provides a data structure of required configuration parameters.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(logCtx interface{}, event string, format string, a ...interface{})
+func (cfg *Config) Event(traceID string, event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -161,7 +161,7 @@ Validate checks the configuration to required items.
 ``` go
 type ConnHandler interface {
     // Bind is called to set the reader and writer.
-    Bind(logCtx interface{}, listener *net.UDPConn) (io.Reader, io.Writer)
+    Bind(traceID string, listener *net.UDPConn) (io.Reader, io.Writer)
 }
 ```
 ConnHandler is implemented by the user to bind the listener
@@ -180,7 +180,7 @@ to a reader and writer for processing.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(logCtx interface{}, event string, format string, a ...interface{})
+    Event func(traceID string, event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
@@ -243,11 +243,11 @@ type ReqHandler interface {
     // Read is provided the user-defined reader and must return the data read
     // off the wire and the length. Returning io.EOF or a non temporary error
     // will show down the listener.
-    Read(logCtx interface{}, reader io.Reader) (*net.UDPAddr, []byte, int, error)
+    Read(traceID string, reader io.Reader) (*net.UDPAddr, []byte, int, error)
 
     // Process is used to handle the processing of the request. This method
     // is called on a routine from a pool of routines.
-    Process(logCtx interface{}, r *Request)
+    Process(traceID string, r *Request)
 }
 ```
 ReqHandler is implemented by the user to implement the processing
@@ -288,7 +288,7 @@ Request is the message received by the client.
 
 ### func (\*Request) Work
 ``` go
-func (r *Request) Work(logCtx interface{}, id int)
+func (r *Request) Work(traceID string, id int)
 ```
 Work implements the worker inteface for processing messages. This is called
 from a routine in the work pool.
@@ -299,7 +299,7 @@ from a routine in the work pool.
 ``` go
 type RespHandler interface {
     // Write is provided the user-defined writer and the data to write.
-    Write(logCtx interface{}, r *Response, writer io.Writer)
+    Write(traceID string, r *Response, writer io.Writer)
 }
 ```
 RespHandler is implemented by the user to implement the processing
@@ -339,10 +339,10 @@ Response is message to send to the client.
 
 ### func (\*Response) Work
 ``` go
-func (r *Response) Work(logCtx interface{}, id int)
+func (r *Response) Work(traceID string, id int)
 ```
 Work implements the worker interface for sending messages. Called by
-AsyncSend via the d.client.Do(logCtx, &resp) method call.
+AsyncSend via the d.client.Do(traceID, &resp) method call.
 
 
 
@@ -366,7 +366,7 @@ UDP manages message to a specific ip address and port.
 
 ### func New
 ``` go
-func New(logCtx interface{}, name string, cfg Config) (*UDP, error)
+func New(traceID string, name string, cfg Config) (*UDP, error)
 ```
 New creates a new manager to service clients.
 
@@ -383,7 +383,7 @@ Addr returns the local listening network address.
 
 ### func (\*UDP) Do
 ``` go
-func (d *UDP) Do(logCtx interface{}, r *Response) error
+func (d *UDP) Do(traceID string, r *Response) error
 ```
 Do will post the request to be sent by the client worker pool.
 
@@ -391,7 +391,7 @@ Do will post the request to be sent by the client worker pool.
 
 ### func (\*UDP) Start
 ``` go
-func (d *UDP) Start(logCtx interface{}) error
+func (d *UDP) Start(traceID string) error
 ```
 Start begins to accept data.
 
@@ -415,7 +415,7 @@ StatsSend returns the current snapshot of the send pool stats.
 
 ### func (\*UDP) Stop
 ``` go
-func (d *UDP) Stop(logCtx interface{}) error
+func (d *UDP) Stop(traceID string) error
 ```
 Stop shuts down the manager and closes all connections.
 

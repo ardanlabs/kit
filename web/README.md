@@ -2,17 +2,6 @@
 # web
     import "github.com/ardanlabs/kit/web"
 
-Package web provides web application support for ctx and MongoDB access.
-Current Status Codes:
-
-
-	200 OK           : StatusOK                  : Call is success and returning data.
-	204 No Content   : StatusNoContent           : Call is success and returns no data.
-	400 Bad Request  : StatusBadRequest          : Invalid post data (syntax or semantics).
-	401 Unauthorized : StatusUnauthorized        : Authentication failure.
-	404 Not Found    : StatusNotFound            : Invalid URL or identifier.
-	500 Internal     : StatusInternalServerError : Weblication specific beyond scope of user.
-
 Package web provides a thin layer of support for writing web services. It
 integrates with the ardanlabs kit repo to provide support for routing and
 application ctx. The base things you need to write a web service is
@@ -22,6 +11,11 @@ provided.
 
 
 ## Constants
+``` go
+const KeyValues ctxKey = 1
+```
+KeyValues is how request values or stored/retrieved.
+
 ``` go
 const TraceIDHeader = "X-Trace-ID"
 ```
@@ -49,6 +43,28 @@ var (
 )
 ```
 
+## func Error
+``` go
+func Error(cxt context.Context, w http.ResponseWriter, traceID string, err error)
+```
+Error handles all error responses for the API.
+
+
+## func Respond
+``` go
+func Respond(ctx context.Context, w http.ResponseWriter, traceID string, data interface{}, code int)
+```
+Respond sends JSON to the client.
+If code is StatusNoContent, v is expected to be nil.
+
+
+## func RespondError
+``` go
+func RespondError(ctx context.Context, w http.ResponseWriter, traceID string, err error, code int)
+```
+RespondError sends JSON describing the error
+
+
 ## func Run
 ``` go
 func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error
@@ -56,21 +72,26 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 Run is called to start the web service.
 
 
-
-## type Ctx
+## func Unmarshal
 ``` go
-type Ctx struct {
-    http.ResponseWriter
-    Request   *http.Request
-    Now       time.Time
-    Params    map[string]string
-    SessionID string
-    Status    int
-    Values    map[string]interface{}
-    Web       *Web
+func Unmarshal(r io.Reader, v interface{}) error
+```
+Unmarshal decodes the input to the struct type and checks the
+fields to verify the value is in a proper state.
+
+
+
+## type App
+``` go
+type App struct {
+    *httptreemux.TreeMux
+    Values map[string]interface{}
+    // contains filtered or unexported fields
 }
 ```
-Ctx contains data associated with a single request.
+App is the entrypoint into our application and what configures our context
+object for each of our http handlers. Feel free to add any configuration
+data/logic on this App struct
 
 
 
@@ -80,47 +101,42 @@ Ctx contains data associated with a single request.
 
 
 
-
-
-### func (\*Ctx) Error
+### func New
 ``` go
-func (c *Ctx) Error(err error)
+func New(mw ...Middleware) *App
 ```
-Error handles all error responses for the API.
+New create an App value that handle a set of routes for the application.
+You can provide any number of middleware and they'll be used to wrap every
+request handler.
 
 
 
-### func (\*Ctx) Proxy
+
+### func (\*App) Group
 ``` go
-func (c *Ctx) Proxy(targetURL string, rewrite func(req *http.Request)) error
+func (a *App) Group(mw ...Middleware) *Group
 ```
-Proxy will setup a direct proxy inbetween this service and the destination
-service.
+Group creates a new App Group based on the current App and provided
+middleware.
 
 
 
-### func (\*Ctx) Respond
+### func (\*App) Handle
 ``` go
-func (c *Ctx) Respond(data interface{}, code int) error
+func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware)
 ```
-Respond sends JSON to the client.
-If code is StatusNoContent, v is expected to be nil.
+Handle is our mechanism for mounting Handlers for a given HTTP verb and path
+pair, this makes for really easy, convenient routing.
 
 
 
-### func (\*Ctx) RespondError
+### func (\*App) Use
 ``` go
-func (c *Ctx) RespondError(error string, code int)
+func (a *App) Use(mw ...Middleware)
 ```
-RespondError sends JSON describing the error
-
-
-
-### func (\*Ctx) RespondInvalid
-``` go
-func (c *Ctx) RespondInvalid(fields []Invalid)
-```
-RespondInvalid sends JSON describing field validation errors.
+Use adds the set of provided middleware onto the Application middleware
+chain. Any route running off of this App will use all the middleware provided
+this way always regardless of the ordering of the Handle/Use functions.
 
 
 
@@ -146,7 +162,7 @@ Group allows a segment of middleware to be shared amongst handlers.
 ``` go
 func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware)
 ```
-Handle proxies the Handle function of the underlying Web.
+Handle proxies the Handle function of the underlying App.
 
 
 
@@ -154,18 +170,16 @@ Handle proxies the Handle function of the underlying Web.
 ``` go
 func (g *Group) Use(mw ...Middleware)
 ```
-Use adds the set of provided middleware onto the Weblication middleware chain.
+Use adds the set of provided middleware onto the Application middleware chain.
 
 
 
 ## type Handler
 ``` go
-type Handler func(*Ctx) error
+type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string)
 ```
 A Handler is a type that handles an http request within our own little mini
-framework. The fun part is that our Ctx is fully controlled and
-configured by us so we can extend the functionality of the ctx whenever
-we want.
+framework.
 
 
 
@@ -185,6 +199,49 @@ type Invalid struct {
 }
 ```
 Invalid describes a validation error belonging to a specific field.
+
+
+
+
+
+
+
+
+
+
+
+## type InvalidError
+``` go
+type InvalidError []Invalid
+```
+InvalidError is a custom error type for invalid fields.
+
+
+
+
+
+
+
+
+
+
+
+### func (InvalidError) Error
+``` go
+func (err InvalidError) Error() string
+```
+Error implements the error interface for InvalidError.
+
+
+
+## type JSONError
+``` go
+type JSONError struct {
+    Error  string       `json:"error"`
+    Fields InvalidError `json:"fields,omitempty"`
+}
+```
+JSONError is the response for errors that occur within the API.
 
 
 
@@ -263,17 +320,15 @@ code written.
 
 
 
-## type Web
+## type Values
 ``` go
-type Web struct {
-    *httptreemux.TreeMux
-    Ctx map[string]interface{}
-    // contains filtered or unexported fields
+type Values struct {
+    TraceID    string
+    Now        time.Time
+    StatusCode int
 }
 ```
-Web is the entrypoint into our application and what configures our ctx
-object for each of our http handlers. Feel free to add any configuration
-data/logic on this Web struct
+Values represent state for each request.
 
 
 
@@ -282,52 +337,6 @@ data/logic on this Web struct
 
 
 
-
-### func New
-``` go
-func New(mw ...Middleware) *Web
-```
-New create an Web value that handle a set of routes for the application.
-You can provide any number of middleware and they'll be used to wrap every
-request handler.
-
-
-
-
-### func (\*Web) CORS
-``` go
-func (w *Web) CORS() Middleware
-```
-CORS providing support for Cross-Origin Resource Sharing.
-<a href="https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/">https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/</a>
-
-
-
-### func (\*Web) Group
-``` go
-func (w *Web) Group(mw ...Middleware) *Group
-```
-Group creates a new Web Group based on the current Web and provided
-middleware.
-
-
-
-### func (\*Web) Handle
-``` go
-func (w *Web) Handle(verb, path string, handler Handler, mw ...Middleware)
-```
-Handle is our mechanism for mounting Handlers for a given HTTP verb and path
-pair, this makes for really easy, convenient routing.
-
-
-
-### func (\*Web) Use
-``` go
-func (w *Web) Use(mw ...Middleware)
-```
-Use adds the set of provided middleware onto the Weblication middleware
-chain. Any route running off of this Web will use all the middleware provided
-this way always regardless of the ordering of the Handle/Use functions.
 
 
 

@@ -46,12 +46,12 @@ func init() {
 //==============================================================================
 
 // Event writes tcp events.
-func Event(logCtx interface{}, event string, format string, a ...interface{}) {
+func Event(traceID string, event string, format string, a ...interface{}) {
 	log.User("*EVENT*", event, format, a...)
 }
 
 func main() {
-	const logCtx = "startup"
+	const traceID = "startup"
 
 	// Create the configuration.
 	cfg := tcp.Config{
@@ -75,22 +75,22 @@ func main() {
 	}
 
 	// Create a new TCP value.
-	t, err := tcp.New(logCtx, "Sample", cfg)
+	t, err := tcp.New(traceID, "Sample", cfg)
 	if err != nil {
-		log.Error(logCtx, "main", err, "Creating tcp")
+		log.Error(traceID, "main", err, "Creating tcp")
 		return
 	}
 
 	// Start accepting client data.
-	if err := t.Start(logCtx); err != nil {
-		log.Error(logCtx, "main", err, "Starting tcp")
+	if err := t.Start(traceID); err != nil {
+		log.Error(traceID, "main", err, "Starting tcp")
 		return
 	}
 
 	// Defer the stop on shutdown.
-	defer t.Stop(logCtx)
+	defer t.Stop(traceID)
 
-	log.User(logCtx, "main", "Waiting for data on: %s", t.Addr())
+	log.User(traceID, "main", "Waiting for data on: %s", t.Addr())
 
 	// Listen for an interrupt signal from the OS.
 	sigChan := make(chan os.Signal, 1)
@@ -100,5 +100,5 @@ func main() {
 	// Use telnet to test the server.
 	// telnet localhost 6000
 
-	log.User(logCtx, "main", "Shutting down")
+	log.User(traceID, "main", "Shutting down")
 }

@@ -5,7 +5,10 @@
 package web
 
 import (
-	"errors"
+	"context"
+	"encoding/json"
+	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,6 +17,7 @@ import (
 	"github.com/braintree/manners"
 	"github.com/dimfeld/httptreemux"
 	"github.com/pborman/uuid"
+	"gopkg.in/go-playground/validator.v8"
 )
 
 // TraceIDHeader is the header added to outgoing requests which adds the
@@ -22,30 +26,50 @@ const TraceIDHeader = "X-Trace-ID"
 
 //==============================================================================
 
-var (
-	// ErrNotAuthorized occurs when the call is not authorized.
-	ErrNotAuthorized = errors.New("Not authorized")
+// validate provides a validator for checking models.
+var validate = validator.New(&validator.Config{
+	TagName:      "validate",
+	FieldNameTag: "json",
+})
 
-	// ErrDBNotConfigured occurs when the DB is not initialized.
-	ErrDBNotConfigured = errors.New("DB not initialized")
+// Unmarshal decodes the input to the struct type and checks the
+// fields to verify the value is in a proper state.
+func Unmarshal(r io.Reader, v interface{}) error {
+	if err := json.NewDecoder(r).Decode(v); err != nil {
+		return err
+	}
 
-	// ErrNotFound is abstracting the mgo not found error.
-	ErrNotFound = errors.New("Entity not found")
+	var inv InvalidError
+	if fve := validate.Struct(v); fve != nil {
+		for _, fe := range fve.(validator.ValidationErrors) {
+			inv = append(inv, Invalid{Fld: fe.Field, Err: fe.Tag})
+		}
+		return inv
+	}
 
-	// ErrInvalidID occurs when an ID is not in a valid form.
-	ErrInvalidID = errors.New("ID is not in it's proper form")
+	return nil
+}
 
-	// ErrValidation occurs when there are validation errors.
-	ErrValidation = errors.New("Validation errors occurred")
-)
+//==============================================================================
+
+// Key represents the type of value for the context key.
+type ctxKey int
+
+// KeyValues is how request values or stored/retrieved.
+const KeyValues ctxKey = 1
+
+// Values represent state for each request.
+type Values struct {
+	TraceID    string
+	Now        time.Time
+	StatusCode int
+}
 
 //==============================================================================
 
 // A Handler is a type that handles an http request within our own little mini
-// framework. The fun part is that our Ctx is fully controlled and
-// configured by us so we can extend the functionality of the ctx whenever
-// we want.
-type Handler func(*Ctx) error
+// framework.
+type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string)
 
 // A Middleware is a type that wraps a handler to remove boilerplate or other
 // concerns not direct to any given Handler.
@@ -53,143 +77,109 @@ type Middleware func(Handler) Handler
 
 //==============================================================================
 
-// Web is the entrypoint into our application and what configures our ctx
+// App is the entrypoint into our application and what configures our context
 // object for each of our http handlers. Feel free to add any configuration
-// data/logic on this Web struct
-type Web struct {
+// data/logic on this App struct
+type App struct {
 	*httptreemux.TreeMux
-	Ctx map[string]interface{}
+	Values map[string]interface{}
 
 	mw []Middleware
 }
 
-// New create an Web value that handle a set of routes for the application.
+// New create an App value that handle a set of routes for the application.
 // You can provide any number of middleware and they'll be used to wrap every
 // request handler.
-func New(mw ...Middleware) *Web {
-	return &Web{
+func New(mw ...Middleware) *App {
+	return &App{
 		TreeMux: httptreemux.New(),
-		Ctx:     make(map[string]interface{}),
+		Values:  make(map[string]interface{}),
 		mw:      mw,
 	}
 }
 
-// Group creates a new Web Group based on the current Web and provided
+// Group creates a new App Group based on the current App and provided
 // middleware.
-func (w *Web) Group(mw ...Middleware) *Group {
+func (a *App) Group(mw ...Middleware) *Group {
 	return &Group{
-		web: w,
+		app: a,
 		mw:  mw,
 	}
 }
 
-// Use adds the set of provided middleware onto the Weblication middleware
-// chain. Any route running off of this Web will use all the middleware provided
+// Use adds the set of provided middleware onto the Application middleware
+// chain. Any route running off of this App will use all the middleware provided
 // this way always regardless of the ordering of the Handle/Use functions.
-func (w *Web) Use(mw ...Middleware) {
-	w.mw = append(w.mw, mw...)
+func (a *App) Use(mw ...Middleware) {
+	a.mw = append(a.mw, mw...)
 }
 
 // Handle is our mechanism for mounting Handlers for a given HTTP verb and path
 // pair, this makes for really easy, convenient routing.
-func (w *Web) Handle(verb, path string, handler Handler, mw ...Middleware) {
+func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 	// Wrap up the application-wide first, this will call the first function
 	// of each middleware which will return a function of type Handler. Each
 	// Handler will then be wrapped up with the other handlers from the chain.
-	handler = wrapMiddleware(wrapMiddleware(handler, mw), w.mw)
+	handler = wrapMiddleware(wrapMiddleware(handler, mw), a.mw)
 
 	// The function to execute for each request.
-	h := func(rw http.ResponseWriter, r *http.Request, p map[string]string) {
-		c := Ctx{
-			ResponseWriter: rw,
-			Request:        r,
-			Now:            time.Now(),
-			Params:         p,
-			SessionID:      uuid.New(),
-			Values:         make(map[string]interface{}),
-			Web:            w,
-		}
+	h := func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 
-		// Set the request id on the outgoing requests before any other header to
+		// Create the context for the request.
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Set the context with the required values to
+		// process the request.
+		v := Values{
+			TraceID: uuid.New(),
+			Now:     time.Now(),
+		}
+		ctx = context.WithValue(ctx, KeyValues, &v)
+
+		// Set the trace id on the outgoing requests before any other header to
 		// ensure that the trace id is ALWAYS added to the request regardless of
 		// any error occuring or not.
-		c.Header().Set(TraceIDHeader, c.SessionID)
+		w.Header().Set(TraceIDHeader, v.TraceID)
 
-		// Call the wrapped handler and handle any possible error.
-		if err := handler(&c); err != nil {
-			c.Error(err)
-		}
+		// Call the wrapped handler functions.
+		handler(ctx, w, r, params)
 	}
 
 	// Add this handler for the specified verb and route.
-	w.TreeMux.Handle(verb, path, h)
-}
-
-// CORS providing support for Cross-Origin Resource Sharing.
-// https://metajack.im/2010/01/19/crossdomain-ajax-for-xmpp-http-binding-made-easy/
-func (w *Web) CORS() Middleware {
-
-	// Create the options request handler which will attach CORS options to it.
-	h := func(w http.ResponseWriter, r *http.Request, p map[string]string) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		w.Header().Set("Access-Control-Max-Age", "86400")
-		w.Header().Set("Content-Type", "application/json")
-
-		w.WriteHeader(http.StatusOK)
-	}
-
-	// Attach the new options handler to the mux.
-	w.TreeMux.OptionsHandler = h
-
-	// Create the CORS middleware which will need to be attached in the request
-	// chain in order to serve out the right headers.
-	m := func(next Handler) Handler {
-
-		// Create the handler inside the middleware.
-		h := func(c *Ctx) error {
-			c.Header().Set("Access-Control-Allow-Origin", "*")
-
-			// Continue the request chain.
-			return next(c)
-		}
-
-		return h
-	}
-
-	return m
+	a.TreeMux.Handle(verb, path, h)
 }
 
 //==============================================================================
 
 // Group allows a segment of middleware to be shared amongst handlers.
 type Group struct {
-	web *Web
+	app *App
 	mw  []Middleware
 }
 
-// Use adds the set of provided middleware onto the Weblication middleware chain.
+// Use adds the set of provided middleware onto the Application middleware chain.
 func (g *Group) Use(mw ...Middleware) {
 	g.mw = append(g.mw, mw...)
 }
 
-// Handle proxies the Handle function of the underlying Web.
+// Handle proxies the Handle function of the underlying App.
 func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
 
 	// Wrap up the route specific middleware last because rememeber, the
 	// middleware is wrapped backwards.
 	handler = wrapMiddleware(handler, mw)
 
-	// Wrap it with the Web wrapper and additionally the group level middleware.
-	g.web.Handle(verb, path, handler, g.mw...)
+	// Wrap it with the App wrapper and additionally the group level middleware.
+	g.app.Handle(verb, path, handler, g.mw...)
 }
 
 //==============================================================================
 
 // Run is called to start the web service.
 func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error {
+	log.Printf("Run : Start : Using Host[%s]\n", host)
 
 	// Create a new server and set timeout values.
 	server := manners.NewWithServer(&http.Server{
@@ -206,7 +196,8 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 		osSignals := make(chan os.Signal)
 		signal.Notify(osSignals, os.Interrupt)
 
-		<-osSignals
+		sig := <-osSignals
+		log.Printf("Run : Captured %v. Shutting Down...\n", sig)
 
 		// Shut down the API server.
 		server.Close()

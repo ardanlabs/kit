@@ -145,7 +145,7 @@ Config provides a data structure of required configuration parameters.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(ctx interface{}, event string, format string, a ...interface{})
+func (cfg *Config) Event(traceID string, event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -164,7 +164,7 @@ Validate checks the configuration to required items.
 type ConnHandler interface {
 
     // Bind is called to set the reader and writer.
-    Bind(logCtx interface{}, conn net.Conn) (io.Reader, io.Writer)
+    Bind(traceID string, conn net.Conn) (io.Reader, io.Writer)
 }
 ```
 ConnHandler is implemented by the user to bind the connection
@@ -183,7 +183,7 @@ to a reader and writer for processing.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(ctx interface{}, event string, format string, a ...interface{})
+    Event func(traceID string, event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
@@ -266,11 +266,11 @@ type ReqHandler interface {
     // Read is provided an ipaddress and the user-defined reader and must return
     // the data read off the wire and the length. Returning io.EOF or a non
     // temporary error will show down the listener.
-    Read(logCtx interface{}, ipAddress string, reader io.Reader) ([]byte, int, error)
+    Read(traceID string, ipAddress string, reader io.Reader) ([]byte, int, error)
 
     // Process is used to handle the processing of the request. This method
     // is called on a routine from a pool of routines.
-    Process(logCtx interface{}, r *Request)
+    Process(traceID string, r *Request)
 }
 ```
 ReqHandler is implemented by the user to implement the processing
@@ -311,7 +311,7 @@ Request is the message received by the client.
 
 ### func (\*Request) Work
 ``` go
-func (r *Request) Work(logCtx interface{}, id int)
+func (r *Request) Work(traceID string, id int)
 ```
 Work implements the worker interface for processing received messages.
 This is called from a routine in the work pool.
@@ -323,7 +323,7 @@ This is called from a routine in the work pool.
 type RespHandler interface {
 
     // Write is provided the response to write and the user-defined writer.
-    Write(logCtx interface{}, r *Response, writer io.Writer)
+    Write(traceID string, r *Response, writer io.Writer)
 }
 ```
 RespHandler is implemented by the user to implement the processing
@@ -363,7 +363,7 @@ Response is message to send to the client.
 
 ### func (\*Response) Work
 ``` go
-func (r *Response) Work(logCtx interface{}, id int)
+func (r *Response) Work(traceID string, id int)
 ```
 Work implements the worker interface for sending messages to the client.
 This is called from a routine in the work pool.
@@ -390,7 +390,7 @@ TCP contains a set of networked client connections.
 
 ### func New
 ``` go
-func New(logCtx interface{}, name string, cfg Config) (*TCP, error)
+func New(traceID string, name string, cfg Config) (*TCP, error)
 ```
 New creates a new manager to service clients.
 
@@ -408,7 +408,7 @@ provided in the configuration, for example if configuration port value is 0.
 
 ### func (\*TCP) Do
 ``` go
-func (t *TCP) Do(logCtx interface{}, r *Response) error
+func (t *TCP) Do(traceID string, r *Response) error
 ```
 Do will post the request to be sent by the client worker pool.
 
@@ -416,7 +416,7 @@ Do will post the request to be sent by the client worker pool.
 
 ### func (\*TCP) DropConnections
 ``` go
-func (t *TCP) DropConnections(logCtx interface{}, drop bool)
+func (t *TCP) DropConnections(traceID string, drop bool)
 ```
 DropConnections sets a flag to tell the accept routine to immediately
 drop connections that come in.
@@ -425,7 +425,7 @@ drop connections that come in.
 
 ### func (\*TCP) Start
 ``` go
-func (t *TCP) Start(logCtx interface{}) error
+func (t *TCP) Start(traceID string) error
 ```
 Start creates the accept routine and begins to accept connections.
 
@@ -449,7 +449,7 @@ StatsSend returns the current snapshot of the send pool stats.
 
 ### func (\*TCP) Stop
 ``` go
-func (t *TCP) Stop(logCtx interface{}) error
+func (t *TCP) Stop(traceID string) error
 ```
 Stop shuts down the manager and closes all connections.
 

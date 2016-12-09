@@ -94,7 +94,7 @@ Config provides configuration for the pool.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(logCtx interface{}, event string, format string, a ...interface{})
+func (cfg *Config) Event(traceID string, event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -103,7 +103,7 @@ Event fires events back to the user for important events.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(logCtx interface{}, event string, format string, a ...interface{})
+    Event func(traceID string, event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
@@ -139,7 +139,7 @@ tasks that are submitted.
 
 ### func New
 ``` go
-func New(logCtx interface{}, name string, cfg Config) (*Pool, error)
+func New(traceID string, name string, cfg Config) (*Pool, error)
 ```
 New creates a new Pool.
 
@@ -148,7 +148,7 @@ New creates a new Pool.
 
 ### func (\*Pool) Do
 ``` go
-func (p *Pool) Do(logCtx interface{}, work Worker)
+func (p *Pool) Do(traceID string, work Worker)
 ```
 Do waits for the goroutine pool to take the work to be executed.
 
@@ -156,7 +156,7 @@ Do waits for the goroutine pool to take the work to be executed.
 
 ### func (\*Pool) DoCancel
 ``` go
-func (p *Pool) DoCancel(ctx context.Context, logCtx interface{}, work Worker) error
+func (p *Pool) DoCancel(ctx context.Context, traceID string, work Worker) error
 ```
 DoCancel waits for the goroutine pool to take the work to be executed
 or gives up if the Context is cancelled. Only use when you want to throw
@@ -166,7 +166,7 @@ away work and not push back.
 
 ### func (\*Pool) DoWait
 ``` go
-func (p *Pool) DoWait(logCtx interface{}, work Worker, duration <-chan time.Time) error
+func (p *Pool) DoWait(traceID string, work Worker, duration <-chan time.Time) error
 ```
 DoWait waits for the goroutine pool to take the work to be executed or gives
 up after the allotted duration. Only use when you want to throw away work and
@@ -176,7 +176,7 @@ not push back.
 
 ### func (\*Pool) Shutdown
 ``` go
-func (p *Pool) Shutdown(logCtx interface{})
+func (p *Pool) Shutdown(traceID string)
 ```
 Shutdown waits for all the workers to finish.
 
@@ -215,7 +215,7 @@ Stat contains information about the pool.
 ## type Worker
 ``` go
 type Worker interface {
-    Work(logCtx interface{}, id int)
+    Work(traceID string, id int)
 }
 ```
 Worker must be implemented by types that want to use

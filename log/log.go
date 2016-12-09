@@ -57,7 +57,7 @@ func New(w io.Writer, levelHandler func() int, flags int) *Logger {
 const mLevel = 2
 
 // Dev logs trace information for developers.
-func (l *Logger) Dev(logCtx interface{}, funcName string, format string, a ...interface{}) {
+func (l *Logger) Dev(traceID string, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() == DEV {
@@ -65,14 +65,14 @@ func (l *Logger) Dev(logCtx interface{}, funcName string, format string, a ...in
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel, fmt.Sprintf("DEV : %s : %s : %s", logCtx, funcName, format))
+			l.Output(mLevel, fmt.Sprintf("DEV : %s : %s : %s", traceID, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
 }
 
 // User logs trace information for users.
-func (l *Logger) User(logCtx interface{}, funcName string, format string, a ...interface{}) {
+func (l *Logger) User(traceID string, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -80,14 +80,14 @@ func (l *Logger) User(logCtx interface{}, funcName string, format string, a ...i
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel, fmt.Sprintf("USER : %s : %s : %s", logCtx, funcName, format))
+			l.Output(mLevel, fmt.Sprintf("USER : %s : %s : %s", traceID, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
 }
 
 // Error logs trace information that are errors.
-func (l *Logger) Error(logCtx interface{}, funcName string, err error, format string, a ...interface{}) {
+func (l *Logger) Error(traceID string, funcName string, err error, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -95,14 +95,14 @@ func (l *Logger) Error(logCtx interface{}, funcName string, err error, format st
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel, fmt.Sprintf("ERROR : %s : %s : %s : %s", logCtx, funcName, err, format))
+			l.Output(mLevel, fmt.Sprintf("ERROR : %s : %s : %s : %s", traceID, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
 }
 
 // Fatal logs trace information for users and terminates the app.
-func (l *Logger) Fatal(logCtx interface{}, funcName string, format string, a ...interface{}) {
+func (l *Logger) Fatal(traceID string, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -110,7 +110,7 @@ func (l *Logger) Fatal(logCtx interface{}, funcName string, format string, a ...
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel, fmt.Sprintf("FATAL : %s : %s : %s", logCtx, funcName, format))
+			l.Output(mLevel, fmt.Sprintf("FATAL : %s : %s : %s", traceID, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -122,7 +122,7 @@ func (l *Logger) Fatal(logCtx interface{}, funcName string, format string, a ...
 
 // DevOffset logs trace information for developers with a offset option to
 // expand the caller level.
-func (l *Logger) DevOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{}) {
+func (l *Logger) DevOffset(traceID string, offset int, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() == DEV {
@@ -130,7 +130,7 @@ func (l *Logger) DevOffset(logCtx interface{}, offset int, funcName string, form
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel+offset, fmt.Sprintf("DEV : %s : %s : %s", logCtx, funcName, format))
+			l.Output(mLevel+offset, fmt.Sprintf("DEV : %s : %s : %s", traceID, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -138,7 +138,7 @@ func (l *Logger) DevOffset(logCtx interface{}, offset int, funcName string, form
 
 // UserOffset logs trace information for users with a offset option to expand the
 // caller level.
-func (l *Logger) UserOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{}) {
+func (l *Logger) UserOffset(traceID string, offset int, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -146,7 +146,7 @@ func (l *Logger) UserOffset(logCtx interface{}, offset int, funcName string, for
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel+offset, fmt.Sprintf("USER : %s : %s : %s", logCtx, funcName, format))
+			l.Output(mLevel+offset, fmt.Sprintf("USER : %s : %s : %s", traceID, funcName, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -154,7 +154,7 @@ func (l *Logger) UserOffset(logCtx interface{}, offset int, funcName string, for
 
 // ErrorOffset logs trace information that are errors with a offset option to
 // expand the caller level.
-func (l *Logger) ErrorOffset(logCtx interface{}, offset int, funcName string, err error, format string, a ...interface{}) {
+func (l *Logger) ErrorOffset(traceID string, offset int, funcName string, err error, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -162,7 +162,7 @@ func (l *Logger) ErrorOffset(logCtx interface{}, offset int, funcName string, er
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel+offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", logCtx, funcName, err, format))
+			l.Output(mLevel+offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", traceID, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -170,7 +170,7 @@ func (l *Logger) ErrorOffset(logCtx interface{}, offset int, funcName string, er
 
 // FatalOffset logs trace information for users and terminates the app with a
 // offset expand the caller level.
-func (l *Logger) FatalOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{}) {
+func (l *Logger) FatalOffset(traceID string, offset int, funcName string, format string, a ...interface{}) {
 	l.mu.RLock()
 	{
 		if l.level() >= DEV {
@@ -178,7 +178,7 @@ func (l *Logger) FatalOffset(logCtx interface{}, offset int, funcName string, fo
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel+offset, fmt.Sprintf("FATAL : %s : %s : %s", logCtx, funcName, format))
+			l.Output(mLevel+offset, fmt.Sprintf("FATAL : %s : %s : %s", traceID, funcName, format))
 		}
 	}
 	l.mu.RUnlock()

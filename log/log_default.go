@@ -23,47 +23,47 @@ func Init(w io.Writer, level func() int, flags int) {
 //==============================================================================
 
 // Dev logs trace information for developers.
-func Dev(logCtx interface{}, funcName string, format string, a ...interface{}) {
-	l.DevOffset(logCtx, 1, funcName, format, a...)
+func Dev(traceID string, funcName string, format string, a ...interface{}) {
+	l.DevOffset(traceID, 1, funcName, format, a...)
 }
 
 // User logs trace information for users.
-func User(logCtx interface{}, funcName string, format string, a ...interface{}) {
-	l.UserOffset(logCtx, 1, funcName, format, a...)
+func User(traceID string, funcName string, format string, a ...interface{}) {
+	l.UserOffset(traceID, 1, funcName, format, a...)
 }
 
 // Error logs trace information that are errors.
-func Error(logCtx interface{}, funcName string, err error, format string, a ...interface{}) {
-	l.ErrorOffset(logCtx, 1, funcName, err, format, a...)
+func Error(traceID string, funcName string, err error, format string, a ...interface{}) {
+	l.ErrorOffset(traceID, 1, funcName, err, format, a...)
 }
 
 // Fatal logs trace information for users and terminates the app.
-func Fatal(logCtx interface{}, funcName string, format string, a ...interface{}) {
-	l.FatalOffset(logCtx, 1, funcName, format, a...)
+func Fatal(traceID string, funcName string, format string, a ...interface{}) {
+	l.FatalOffset(traceID, 1, funcName, format, a...)
 }
 
 //==============================================================================
 
 // DevOffset logs trace information for developers with a offset option to
 // expand the caller level.
-func DevOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{}) {
-	l.DevOffset(logCtx, offset+1, funcName, format, a...)
+func DevOffset(traceID string, offset int, funcName string, format string, a ...interface{}) {
+	l.DevOffset(traceID, offset+1, funcName, format, a...)
 }
 
 // UserOffset logs trace information for users with a offset option to expand the
 // caller level.
-func UserOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{}) {
-	l.UserOffset(logCtx, offset+1, funcName, format, a...)
+func UserOffset(traceID string, offset int, funcName string, format string, a ...interface{}) {
+	l.UserOffset(traceID, offset+1, funcName, format, a...)
 }
 
 // ErrorOffset logs trace information that are errors with a offset option to
 // expand the caller level.
-func ErrorOffset(logCtx interface{}, offset int, funcName string, err error, format string, a ...interface{}) {
-	l.ErrorOffset(logCtx, offset+1, funcName, err, format, a...)
+func ErrorOffset(traceID string, offset int, funcName string, err error, format string, a ...interface{}) {
+	l.ErrorOffset(traceID, offset+1, funcName, err, format, a...)
 }
 
 // FatalOffset logs trace information for users and terminates the app with a
 // offset expand the caller level.
-func FatalOffset(logCtx interface{}, offset int, funcName string, format string, a ...interface{}) {
-	l.FatalOffset(logCtx, offset+1, funcName, format, a...)
+func FatalOffset(traceID string, offset int, funcName string, format string, a ...interface{}) {
+	l.FatalOffset(traceID, offset+1, funcName, format, a...)
 }
