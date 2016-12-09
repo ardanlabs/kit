@@ -11,7 +11,7 @@ import (
 type ConnHandler interface {
 
 	// Bind is called to set the reader and writer.
-	Bind(logCtx interface{}, conn net.Conn) (io.Reader, io.Writer)
+	Bind(traceID string, conn net.Conn) (io.Reader, io.Writer)
 }
 
 //==============================================================================
@@ -28,11 +28,11 @@ type ReqHandler interface {
 	// Read is provided an ipaddress and the user-defined reader and must return
 	// the data read off the wire and the length. Returning io.EOF or a non
 	// temporary error will show down the listener.
-	Read(logCtx interface{}, ipAddress string, reader io.Reader) ([]byte, int, error)
+	Read(traceID string, ipAddress string, reader io.Reader) ([]byte, int, error)
 
 	// Process is used to handle the processing of the request. This method
 	// is called on a routine from a pool of routines.
-	Process(logCtx interface{}, r *Request)
+	Process(traceID string, r *Request)
 }
 
 // Request is the message received by the client.
@@ -47,8 +47,8 @@ type Request struct {
 
 // Work implements the worker interface for processing received messages.
 // This is called from a routine in the work pool.
-func (r *Request) Work(logCtx interface{}, id int) {
-	r.TCP.ReqHandler.Process(logCtx, r)
+func (r *Request) Work(traceID string, id int) {
+	r.TCP.ReqHandler.Process(traceID, r)
 }
 
 //==============================================================================
@@ -58,7 +58,7 @@ func (r *Request) Work(logCtx interface{}, id int) {
 type RespHandler interface {
 
 	// Write is provided the response to write and the user-defined writer.
-	Write(logCtx interface{}, r *Response, writer io.Writer)
+	Write(traceID string, r *Response, writer io.Writer)
 }
 
 // Response is message to send to the client.
@@ -68,15 +68,15 @@ type Response struct {
 	Length   int
 	Complete func(r *Response)
 
-	tcp    *TCP
-	client *client
-	logCtx interface{}
+	tcp     *TCP
+	client  *client
+	traceID string
 }
 
 // Work implements the worker interface for sending messages to the client.
 // This is called from a routine in the work pool.
-func (r *Response) Work(logCtx interface{}, id int) {
-	r.tcp.RespHandler.Write(logCtx, r, r.client.writer)
+func (r *Response) Work(traceID string, id int) {
+	r.tcp.RespHandler.Write(traceID, r, r.client.writer)
 	if r.Complete != nil {
 		r.Complete(r)
 	}

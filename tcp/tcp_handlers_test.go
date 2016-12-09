@@ -14,7 +14,7 @@ import (
 type tcpConnHandler struct{}
 
 // Bind is called to init to reader and writer.
-func (tch tcpConnHandler) Bind(logCtx interface{}, conn net.Conn) (io.Reader, io.Writer) {
+func (tch tcpConnHandler) Bind(traceID string, conn net.Conn) (io.Reader, io.Writer) {
 	return bufio.NewReader(conn), bufio.NewWriter(conn)
 }
 
@@ -25,7 +25,7 @@ type tcpReqHandler struct{}
 
 // Read implements the udp.ReqHandler interface. It is provided a request
 // value to popular and a io.Reader that was created in the Bind above.
-func (tcpReqHandler) Read(logCtx interface{}, ipAddress string, reader io.Reader) ([]byte, int, error) {
+func (tcpReqHandler) Read(traceID string, ipAddress string, reader io.Reader) ([]byte, int, error) {
 	bufReader := reader.(*bufio.Reader)
 
 	// Read a small string to keep the code simple.
@@ -41,7 +41,7 @@ var dur int64
 
 // Process is used to handle the processing of the message. This method
 // is called on a routine from a pool of routines.
-func (tcpReqHandler) Process(logCtx interface{}, r *tcp.Request) {
+func (tcpReqHandler) Process(traceID string, r *tcp.Request) {
 	resp := tcp.Response{
 		TCPAddr: r.TCPAddr,
 		Data:    []byte("GOT IT\n"),
@@ -52,7 +52,7 @@ func (tcpReqHandler) Process(logCtx interface{}, r *tcp.Request) {
 		},
 	}
 
-	r.TCP.Do(logCtx, &resp)
+	r.TCP.Do(traceID, &resp)
 }
 
 //==============================================================================
@@ -60,7 +60,7 @@ func (tcpReqHandler) Process(logCtx interface{}, r *tcp.Request) {
 type tcpRespHandler struct{}
 
 // Write is provided the user-defined writer and the data to write.
-func (tcpRespHandler) Write(logCtx interface{}, r *tcp.Response, writer io.Writer) {
+func (tcpRespHandler) Write(traceID string, r *tcp.Response, writer io.Writer) {
 	bufWriter := writer.(*bufio.Writer)
 	bufWriter.WriteString(string(r.Data))
 	bufWriter.Flush()

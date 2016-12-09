@@ -30,13 +30,13 @@ var (
 // Worker must be implemented by types that want to use
 // this worker processes.
 type Worker interface {
-	Work(logCtx interface{}, id int)
+	Work(traceID string, id int)
 }
 
 // doWork is used internally to route work to the pool.
 type doWork struct {
-	logCtx interface{}
-	do     Worker
+	traceID string
+	do      Worker
 }
 
 // Stat contains information about the pool.
@@ -52,7 +52,7 @@ type Stat struct {
 
 // OptEvent defines an handler used to provide events.
 type OptEvent struct {
-	Event func(logCtx interface{}, event string, format string, a ...interface{})
+	Event func(traceID string, event string, format string, a ...interface{})
 }
 
 // Config provides configuration for the pool.
@@ -68,9 +68,9 @@ type Config struct {
 }
 
 // Event fires events back to the user for important events.
-func (cfg *Config) Event(logCtx interface{}, event string, format string, a ...interface{}) {
+func (cfg *Config) Event(traceID string, event string, format string, a ...interface{}) {
 	if cfg.OptEvent.Event != nil {
-		cfg.OptEvent.Event(logCtx, event, format, a...)
+		cfg.OptEvent.Event(traceID, event, format, a...)
 	}
 }
 
@@ -101,7 +101,7 @@ type Pool struct {
 }
 
 // New creates a new Pool.
-func New(logCtx interface{}, name string, cfg Config) (*Pool, error) {
+func New(traceID string, name string, cfg Config) (*Pool, error) {
 	if cfg.MinRoutines == nil {
 		return nil, ErrNilMinRoutines
 	}
@@ -126,14 +126,14 @@ func New(logCtx interface{}, name string, cfg Config) (*Pool, error) {
 		shutdown: make(chan struct{}),
 	}
 
-	p.manager(logCtx)
-	p.add(logCtx, cfg.MinRoutines())
+	p.manager(traceID)
+	p.add(traceID, cfg.MinRoutines())
 
 	return &p, nil
 }
 
 // Shutdown waits for all the workers to finish.
-func (p *Pool) Shutdown(logCtx interface{}) {
+func (p *Pool) Shutdown(traceID string) {
 	// If a reset or change is being made, we need to wait.
 	for atomic.LoadInt64(&p.updatePending) > 0 {
 		time.Sleep(time.Second)
@@ -144,10 +144,10 @@ func (p *Pool) Shutdown(logCtx interface{}) {
 }
 
 // Do waits for the goroutine pool to take the work to be executed.
-func (p *Pool) Do(logCtx interface{}, work Worker) {
+func (p *Pool) Do(traceID string, work Worker) {
 	dw := doWork{
-		logCtx: logCtx,
-		do:     work,
+		traceID: traceID,
+		do:      work,
 	}
 
 	p.measureHealth()
@@ -160,10 +160,10 @@ func (p *Pool) Do(logCtx interface{}, work Worker) {
 // DoWait waits for the goroutine pool to take the work to be executed or gives
 // up after the allotted duration. Only use when you want to throw away work and
 // not push back.
-func (p *Pool) DoWait(logCtx interface{}, work Worker, duration <-chan time.Time) error {
+func (p *Pool) DoWait(traceID string, work Worker, duration <-chan time.Time) error {
 	dw := doWork{
-		logCtx: logCtx,
-		do:     work,
+		traceID: traceID,
+		do:      work,
 	}
 
 	p.measureHealth()
@@ -184,10 +184,10 @@ func (p *Pool) DoWait(logCtx interface{}, work Worker, duration <-chan time.Time
 // DoCancel waits for the goroutine pool to take the work to be executed
 // or gives up if the Context is cancelled. Only use when you want to throw
 // away work and not push back.
-func (p *Pool) DoCancel(ctx context.Context, logCtx interface{}, work Worker) error {
+func (p *Pool) DoCancel(ctx context.Context, traceID string, work Worker) error {
 	dw := doWork{
-		logCtx: logCtx,
-		do:     work,
+		traceID: traceID,
+		do:      work,
 	}
 
 	p.measureHealth()
@@ -220,7 +220,7 @@ func (p *Pool) Stats() Stat {
 // routines to terminate.
 // NOTE: since our pools are auto-adjustable, we will not give the user ability
 // to add routines.
-func (p *Pool) add(logCtx interface{}, routines int) error {
+func (p *Pool) add(traceID string, routines int) error {
 	if routines == 0 {
 		return ErrInvalidAdd
 	}
@@ -244,13 +244,13 @@ func (p *Pool) add(logCtx interface{}, routines int) error {
 // Reset re-adjusts the pool to match the specified number of routines.
 // NOTE: since our pools are auto-adjustable, we will not give the user ability
 // to reset the number of routines.
-func (p *Pool) reset(logCtx interface{}, routines int) {
+func (p *Pool) reset(traceID string, routines int) {
 	if routines < 0 {
 		routines = 0
 	}
 
 	current := int(atomic.LoadInt64(&p.routines))
-	p.add(logCtx, routines-current)
+	p.add(traceID, routines-current)
 }
 
 // work performs the users work and keeps stats.
@@ -301,12 +301,12 @@ func (p *Pool) execute(id int, dw doWork) {
 			buf := make([]byte, 10000)
 			runtime.Stack(buf, false)
 
-			p.Event(dw.logCtx, "execute", "ERROR : %s", string(buf))
+			p.Event(dw.traceID, "execute", "ERROR : %s", string(buf))
 		}
 	}()
 
 	// Perform the work.
-	dw.do.Work(dw.logCtx, id)
+	dw.do.Work(dw.traceID, id)
 }
 
 // measureHealth calculates the health of the work pool.
@@ -353,7 +353,7 @@ func (p *Pool) measureHealth() {
 }
 
 // manager controls changes to the work pool including stats and shutting down.
-func (p *Pool) manager(logCtx interface{}) {
+func (p *Pool) manager(traceID string) {
 	p.wg.Add(1)
 
 	go func() {

@@ -20,7 +20,7 @@ type OptIntPool struct {
 
 // OptEvent defines an handler used to provide events.
 type OptEvent struct {
-	Event func(logCtx interface{}, event string, format string, a ...interface{})
+	Event func(traceID string, event string, format string, a ...interface{})
 }
 
 // Config provides a data structure of required configuration parameters.
@@ -76,8 +76,8 @@ func (cfg *Config) Validate() error {
 }
 
 // Event fires events back to the user for important events.
-func (cfg *Config) Event(logCtx interface{}, event string, format string, a ...interface{}) {
+func (cfg *Config) Event(traceID string, event string, format string, a ...interface{}) {
 	if cfg.OptEvent.Event != nil {
-		cfg.OptEvent.Event(logCtx, event, format, a...)
+		cfg.OptEvent.Event(traceID, event, format, a...)
 	}
 }

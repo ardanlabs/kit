@@ -52,7 +52,7 @@ type TCP struct {
 }
 
 // New creates a new manager to service clients.
-func New(logCtx interface{}, name string, cfg Config) (*TCP, error) {
+func New(traceID string, name string, cfg Config) (*TCP, error) {
 	// Validate the configuration.
 	if err := cfg.Validate(); err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func New(logCtx interface{}, name string, cfg Config) (*TCP, error) {
 		}
 
 		var err error
-		if recv, err = pool.New(logCtx, name+"-Recv", recvCfg); err != nil {
+		if recv, err = pool.New(traceID, name+"-Recv", recvCfg); err != nil {
 			return nil, err
 		}
 	}
@@ -91,7 +91,7 @@ func New(logCtx interface{}, name string, cfg Config) (*TCP, error) {
 		}
 
 		var err error
-		if send, err = pool.New(logCtx, name+"-Send", sendCfg); err != nil {
+		if send, err = pool.New(traceID, name+"-Send", sendCfg); err != nil {
 			return nil, err
 		}
 	}
@@ -128,7 +128,7 @@ func join(ip string, port int) string {
 }
 
 // Start creates the accept routine and begins to accept connections.
-func (t *TCP) Start(logCtx interface{}) error {
+func (t *TCP) Start(traceID string) error {
 	t.listenerMu.Lock()
 	{
 		// If the listener has been started already, return an error.
@@ -165,7 +165,7 @@ func (t *TCP) Start(logCtx interface{}) error {
 
 					waitStart.Done()
 
-					t.Event(logCtx, "accept", "Waiting For Connections : IPAddress[ %s ]", join(t.ipAddress, t.port))
+					t.Event(traceID, "accept", "Waiting For Connections : IPAddress[ %s ]", join(t.ipAddress, t.port))
 				}
 			}
 			t.listenerMu.Unlock()
@@ -176,7 +176,7 @@ func (t *TCP) Start(logCtx interface{}) error {
 				shutdown := atomic.LoadInt32(&t.shuttingDown)
 
 				if shutdown == 0 {
-					t.Event(logCtx, "accept", "ERROR : %v", err)
+					t.Event(traceID, "accept", "ERROR : %v", err)
 				} else {
 					t.listenerMu.Lock()
 					{
@@ -211,7 +211,7 @@ func (t *TCP) Start(logCtx interface{}) error {
 
 			// Check if we are being asked to drop all new connections.
 			if drop := atomic.LoadInt32(&t.dropConns); drop == 1 {
-				t.Event(logCtx, "accept", "*******> DROPPING CONNECTION")
+				t.Event(traceID, "accept", "*******> DROPPING CONNECTION")
 				conn.Close()
 				continue
 			}
@@ -223,7 +223,7 @@ func (t *TCP) Start(logCtx interface{}) error {
 				// We will only accept 1 connection per duration. Anything
 				// connection above that must be dropped.
 				if t.lastAcceptedConnection.Add(t.RateLimit()).After(now) {
-					t.Event(logCtx, "accept", "*******> DROPPING CONNECTION Local[ %v ] Remote[ %v ] DUE TO RATE LIMIT %v", conn.LocalAddr(), conn.RemoteAddr(), t.RateLimit())
+					t.Event(traceID, "accept", "*******> DROPPING CONNECTION Local[ %v ] Remote[ %v ] DUE TO RATE LIMIT %v", conn.LocalAddr(), conn.RemoteAddr(), t.RateLimit())
 					conn.Close()
 					continue
 				}
@@ -233,12 +233,12 @@ func (t *TCP) Start(logCtx interface{}) error {
 			}
 
 			// Add this new connection to the manager map.
-			t.join(logCtx, conn)
+			t.join(traceID, conn)
 		}
 
 		// Shutting down the routine.
 		t.wg.Done()
-		t.Event(logCtx, "accept", "Shutdown : IPAddress[ %s ]", join(t.ipAddress, t.port))
+		t.Event(traceID, "accept", "Shutdown : IPAddress[ %s ]", join(t.ipAddress, t.port))
 	}()
 
 	// Wait for the goroutine to initialize itself.
@@ -248,7 +248,7 @@ func (t *TCP) Start(logCtx interface{}) error {
 }
 
 // Stop shuts down the manager and closes all connections.
-func (t *TCP) Stop(logCtx interface{}) error {
+func (t *TCP) Stop(traceID string) error {
 	t.listenerMu.Lock()
 	{
 		// If the listener has been stopped already, return an error.
@@ -271,8 +271,8 @@ func (t *TCP) Stop(logCtx interface{}) error {
 
 	// Stop processing all the work.
 	if !t.userPools {
-		t.recv.Shutdown(logCtx)
-		t.send.Shutdown(logCtx)
+		t.recv.Shutdown(traceID)
+		t.send.Shutdown(traceID)
 	}
 
 	// Make a copy of all the connections. We need to do this
@@ -301,7 +301,7 @@ func (t *TCP) Stop(logCtx interface{}) error {
 }
 
 // Do will post the request to be sent by the client worker pool.
-func (t *TCP) Do(logCtx interface{}, r *Response) error {
+func (t *TCP) Do(traceID string, r *Response) error {
 	// Find the client connection for this IPAddress.
 	var c *client
 	t.clientsMu.Lock()
@@ -318,17 +318,17 @@ func (t *TCP) Do(logCtx interface{}, r *Response) error {
 	// Set the unexported fields.
 	r.tcp = t
 	r.client = c
-	r.logCtx = logCtx
+	r.traceID = traceID
 
 	// Send this to the client work pool for processing.
-	t.send.Do(logCtx, r)
+	t.send.Do(traceID, r)
 
 	return nil
 }
 
 // DropConnections sets a flag to tell the accept routine to immediately
 // drop connections that come in.
-func (t *TCP) DropConnections(logCtx interface{}, drop bool) {
+func (t *TCP) DropConnections(traceID string, drop bool) {
 	if drop {
 		atomic.StoreInt32(&t.dropConns, 1)
 		return
@@ -359,9 +359,9 @@ func (t *TCP) Addr() net.Addr {
 }
 
 // join takes a new connection and adds it to the manager.
-func (t *TCP) join(logCtx interface{}, conn net.Conn) {
+func (t *TCP) join(traceID string, conn net.Conn) {
 	ipAddress := conn.RemoteAddr().String()
-	cntx := fmt.Sprintf("%s-%s", logCtx, ipAddress)
+	cntx := fmt.Sprintf("%s-%s", traceID, ipAddress)
 	t.Event(cntx, "join", "Remote IPAddress[ %s ], Local IPAddress[ %v ]", ipAddress, conn.LocalAddr())
 
 	t.clientsMu.Lock()
@@ -369,7 +369,7 @@ func (t *TCP) join(logCtx interface{}, conn net.Conn) {
 		// If this ipaddress and socket alread exist, we have a problet.
 		if _, ok := t.clients[ipAddress]; ok {
 			err := fmt.Errorf("IP Address already connected [ %s ]", ipAddress)
-			t.Event(logCtx, "join", "ERROR : %v", err)
+			t.Event(traceID, "join", "ERROR : %v", err)
 			conn.Close()
 
 			t.clientsMu.Unlock()
@@ -383,16 +383,16 @@ func (t *TCP) join(logCtx interface{}, conn net.Conn) {
 }
 
 // remove deletes a connection from the manager.
-func (t *TCP) remove(logCtx interface{}, conn net.Conn) {
+func (t *TCP) remove(traceID string, conn net.Conn) {
 	ipAddress := conn.RemoteAddr().String()
-	t.Event(logCtx, "remove", "IPAddress[ %s ]", ipAddress)
+	t.Event(traceID, "remove", "IPAddress[ %s ]", ipAddress)
 
 	t.clientsMu.Lock()
 	{
 		// If this ipaddress and socket does not exist, we have a probler.
 		if _, ok := t.clients[ipAddress]; !ok {
 			err := fmt.Errorf("IP Address already removed [ %s ]", ipAddress)
-			t.Event(logCtx, "remove", "ERROR : %v", err)
+			t.Event(traceID, "remove", "ERROR : %v", err)
 
 			t.clientsMu.Unlock()
 			return

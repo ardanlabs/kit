@@ -38,19 +38,19 @@ func TestTCP(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New("testCtx", "TEST", cfg)
+		u, err := tcp.New("traceID", "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}
 		t.Log("\tShould be able to create a new TCP listener.", tests.Success)
 
 		// Start accepting client data.
-		if err := u.Start("testCtx"); err != nil {
+		if err := u.Start("traceID"); err != nil {
 			t.Fatal("\tShould be able to start the TCP listener.", tests.Failed, err)
 		}
 		t.Log("\tShould be able to start the TCP listener.", tests.Success)
 
-		defer u.Stop("testCtx")
+		defer u.Stop("traceID")
 
 		// Let's connect back and send a TCP package
 		conn, err := net.Dial("tcp4", u.Addr().String())
@@ -120,7 +120,7 @@ func TestTCPAddr(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New("testCtx", "TEST", cfg)
+		u, err := tcp.New("traceID", "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}
@@ -133,10 +133,10 @@ func TestTCPAddr(t *testing.T) {
 		t.Log("\tAddr() should be nil before Start.", tests.Success)
 
 		// Start accepting client data.
-		if err := u.Start("testCtx"); err != nil {
+		if err := u.Start("traceID"); err != nil {
 			t.Fatal("\tShould be able to start the TCP listener.", tests.Failed, err)
 		}
-		defer u.Stop("testCtx")
+		defer u.Stop("traceID")
 
 		// Addr should be non-nil after Start.
 		addr := u.Addr()
@@ -169,7 +169,7 @@ func TestDropConnections(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		recv, err := pool.New("testCtx", "Test-Recv", recvCfg)
+		recv, err := pool.New("traceID", "Test-Recv", recvCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the recv.", tests.Failed, err)
 		}
@@ -179,7 +179,7 @@ func TestDropConnections(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		send, err := pool.New("testCtx", "Test-Send", sendCfg)
+		send, err := pool.New("traceID", "Test-Send", sendCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the send.", tests.Failed, err)
 		}
@@ -199,7 +199,7 @@ func TestDropConnections(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New("testCtx", "TEST", cfg)
+		u, err := tcp.New("traceID", "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}
@@ -207,15 +207,15 @@ func TestDropConnections(t *testing.T) {
 
 		// Set the drop connection flag to true.
 		t.Log("\tSet the drop connections flag to TRUE.", tests.Success)
-		u.DropConnections("testCtx", true)
+		u.DropConnections("traceID", true)
 
 		// Start accepting client data.
-		if err := u.Start("testCtx"); err != nil {
+		if err := u.Start("traceID"); err != nil {
 			t.Fatal("\tShould be able to start the TCP listener.", tests.Failed, err)
 		}
 		t.Log("\tShould be able to start the TCP listener.", tests.Success)
 
-		defer u.Stop("testCtx")
+		defer u.Stop("traceID")
 
 		// Let's connect to the host:port.
 		conn, err := net.Dial("tcp4", u.Addr().String())
@@ -247,7 +247,7 @@ func TestRateLimit(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		recv, err := pool.New("testCtx", "Test-Recv", recvCfg)
+		recv, err := pool.New("traceID", "Test-Recv", recvCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the recv.", tests.Failed, err)
 		}
@@ -257,7 +257,7 @@ func TestRateLimit(t *testing.T) {
 			MaxRoutines: func() int { return 1000 },
 		}
 
-		send, err := pool.New("testCtx", "Test-Send", sendCfg)
+		send, err := pool.New("traceID", "Test-Send", sendCfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a work pool for the send.", tests.Failed, err)
 		}
@@ -281,19 +281,19 @@ func TestRateLimit(t *testing.T) {
 		}
 
 		// Create a new TCP value.
-		u, err := tcp.New("testCtx", "TEST", cfg)
+		u, err := tcp.New("traceID", "TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new TCP listener.", tests.Failed, err)
 		}
 		t.Log("\tShould be able to create a new TCP listener.", tests.Success)
 
 		// Start accepting client data.
-		if err := u.Start("testCtx"); err != nil {
+		if err := u.Start("traceID"); err != nil {
 			t.Fatal("\tShould be able to start the TCP listener.", tests.Failed, err)
 		}
 		t.Log("\tShould be able to start the TCP listener.", tests.Success)
 
-		defer u.Stop("testCtx")
+		defer u.Stop("traceID")
 
 		newconn := func() (*bufio.Writer, *bufio.Reader, net.Conn, error) {
 			// Let's connect to the host:port.
