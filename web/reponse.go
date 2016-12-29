@@ -100,13 +100,13 @@ func Error(cxt context.Context, w http.ResponseWriter, traceID string, err error
 }
 
 // RespondError sends JSON describing the error
-func RespondError(ctx context.Context, w http.ResponseWriter, traceID string, err error, code int) {
-	Respond(ctx, w, traceID, JSONError{Error: err.Error()}, code)
+func RespondError(ctx context.Context, w http.ResponseWriter, traceID string, err error, code int) error {
+	return Respond(ctx, w, traceID, JSONError{Error: err.Error()}, code)
 }
 
 // Respond sends JSON to the client.
 // If code is StatusNoContent, v is expected to be nil.
-func Respond(ctx context.Context, w http.ResponseWriter, traceID string, data interface{}, code int) {
+func Respond(ctx context.Context, w http.ResponseWriter, traceID string, data interface{}, code int) error {
 
 	// Set the status code for the request logger middleware.
 	v := ctx.Value(KeyValues).(*Values)
@@ -115,7 +115,7 @@ func Respond(ctx context.Context, w http.ResponseWriter, traceID string, data in
 	// Just set the status code and we are done.
 	if code == http.StatusNoContent {
 		w.WriteHeader(code)
-		return
+		return nil
 	}
 
 	// Set the content type.
@@ -128,8 +128,11 @@ func Respond(ctx context.Context, w http.ResponseWriter, traceID string, data in
 	jsonData, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		jsonData = []byte("{}")
+		io.WriteString(w, string(jsonData))
+		return err
 	}
 
 	// Send the result back to the client.
 	io.WriteString(w, string(jsonData))
+	return nil
 }

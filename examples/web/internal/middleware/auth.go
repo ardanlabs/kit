@@ -13,12 +13,12 @@ import (
 func Auth(next web.Handler) web.Handler {
 
 	// Wrap this handler around the next one provided.
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) error {
 		v := ctx.Value(app.KeyValues).(*app.Values)
 
 		log.Dev(v.TraceID, "Auth", "******> Authorized")
 		v.Auth = "1234"
 
-		next(ctx, w, r, params)
+		return next(ctx, w, r, params)
 	}
 }
