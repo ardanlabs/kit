@@ -17,10 +17,10 @@ func UserList(ctx context.Context, w http.ResponseWriter, r *http.Request, param
 
 	u, err := user.List(ctx, v.TraceID, v.DB)
 	if err != nil {
-		web.Error(ctx, w, v.TraceID, err)
+		web.Error(ctx, w, err)
 		return err
 	}
 
-	web.Respond(ctx, w, v.TraceID, u, http.StatusOK)
+	web.Respond(ctx, w, u, http.StatusOK)
 	return nil
 }
