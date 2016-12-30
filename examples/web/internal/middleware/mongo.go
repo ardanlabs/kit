@@ -20,7 +20,7 @@ func Mongo() web.Middleware {
 	return func(next web.Handler) web.Handler {
 
 		// Wrap this handler around the next one provided.
-		return func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) {
+		return func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) error {
 			v := ctx.Value(app.KeyValues).(*app.Values)
 
 			// Get a MongoDB session connection.
@@ -33,7 +33,7 @@ func Mongo() web.Middleware {
 				v.DB.Close()
 			}()
 
-			next(ctx, w, r, params)
+			return next(ctx, w, r, params)
 		}
 	}
 }

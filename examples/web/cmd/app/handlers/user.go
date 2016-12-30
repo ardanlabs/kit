@@ -12,14 +12,15 @@ import (
 
 // UserList returns all the existing users in the system.
 // 200 Success, 404 Not Found, 500 Internal
-func UserList(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) {
+func UserList(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	v := ctx.Value(app.KeyValues).(*app.Values)
 
 	u, err := user.List(ctx, v.TraceID, v.DB)
 	if err != nil {
 		web.Error(ctx, w, v.TraceID, err)
-		return
+		return err
 	}
 
 	web.Respond(ctx, w, v.TraceID, u, http.StatusOK)
+	return nil
 }

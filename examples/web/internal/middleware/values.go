@@ -12,7 +12,7 @@ import (
 func Values(next web.Handler) web.Handler {
 
 	// Wrap this handler around the next one provided.
-	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) {
+	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) error {
 		v := ctx.Value(web.KeyValues).(*web.Values)
 
 		values := app.Values{
@@ -20,6 +20,6 @@ func Values(next web.Handler) web.Handler {
 		}
 		ctx = context.WithValue(ctx, app.KeyValues, &values)
 
-		next(ctx, w, r, params)
+		return next(ctx, w, r, params)
 	}
 }
