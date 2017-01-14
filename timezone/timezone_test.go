@@ -17,7 +17,7 @@ func ExampleRetrieveGoogleTimezone() {
 
 	fmt.Printf("%v", googleTimezone)
 	// Output:
-	// &{3600 -18000 OK America/New_York Eastern Daylight Time}
+	// &{0 -18000 OK America/New_York Eastern Standard Time}
 }
 
 // ExampleRetrieveGeoNamesTimezone tests the call to the geonames timezone API.

@@ -1,12 +1,12 @@
 language: go
 
 go:
-  - 1.6
-  - 1.7
   - tip
 
 install:
   - go get -u github.com/golang/lint/golint
+  - go get ./...
+  - go install ./...
 
 before_script:
   - for package in $(go list ./... | grep -v '/vendor/'); do golint -set_exit_status $package; done

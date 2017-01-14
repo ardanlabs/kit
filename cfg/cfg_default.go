@@ -128,14 +128,21 @@ func SetURL(key string, value *url.URL) {
 	c.SetURL(key, value)
 }
 
+// Duration calls the default Config and returns the value of the given key as a
+// duration. It will return an error if the key was not found or the value can't be
+// converted to a Duration.
 func Duration(key string) (time.Duration, error) {
 	return c.Duration(key)
 }
 
+// MustDuration calls the default Config and returns the value of the given
+// key as a MustDuration. It will panic if the key was not found or the value
+// can't be converted to a MustDuration.
 func MustDuration(key string) time.Duration {
 	return c.MustDuration(key)
 }
 
+// SetDuration adds or modifies the default Config for the specified key and value.
 func SetDuration(key string, value time.Duration) {
 	c.SetDuration(key, value)
 }
