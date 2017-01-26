@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// ctx provides a base ctx for tests.
-var ctx = "Test"
+// traceID provides a base trace id for tests.
+var traceID = "Test"
 
 // Success and failure markers.
 var (
