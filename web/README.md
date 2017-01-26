@@ -45,14 +45,14 @@ var (
 
 ## func Error
 ``` go
-func Error(cxt context.Context, w http.ResponseWriter, traceID string, err error)
+func Error(cxt context.Context, w http.ResponseWriter, err error)
 ```
 Error handles all error responses for the API.
 
 
 ## func Respond
 ``` go
-func Respond(ctx context.Context, w http.ResponseWriter, traceID string, data interface{}, code int)
+func Respond(ctx context.Context, w http.ResponseWriter, data interface{}, code int) error
 ```
 Respond sends JSON to the client.
 If code is StatusNoContent, v is expected to be nil.
@@ -60,7 +60,7 @@ If code is StatusNoContent, v is expected to be nil.
 
 ## func RespondError
 ``` go
-func RespondError(ctx context.Context, w http.ResponseWriter, traceID string, err error, code int)
+func RespondError(ctx context.Context, w http.ResponseWriter, err error, code int) error
 ```
 RespondError sends JSON describing the error
 
@@ -176,7 +176,7 @@ Use adds the set of provided middleware onto the Application middleware chain.
 
 ## type Handler
 ``` go
-type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string)
+type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) error
 ```
 A Handler is a type that handles an http request within our own little mini
 framework.

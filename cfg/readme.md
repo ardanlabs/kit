@@ -44,6 +44,10 @@ converted to a bool.
 ``` go
 func Duration(key string) (time.Duration, error)
 ```
+Duration calls the default Config and returns the value of the given key as a
+duration. It will return an error if the key was not found or the value can't be
+converted to a Duration.
+
 
 ## func Init
 ``` go
@@ -84,6 +88,10 @@ converted to a bool.
 ``` go
 func MustDuration(key string) time.Duration
 ```
+MustDuration calls the default Config and returns the value of the given
+key as a MustDuration. It will panic if the key was not found or the value
+can't be converted to a MustDuration.
+
 
 ## func MustInt
 ``` go
@@ -131,6 +139,8 @@ SetBool adds or modifies the default Config for the specified key and value.
 ``` go
 func SetDuration(key string, value time.Duration)
 ```
+SetDuration adds or modifies the default Config for the specified key and value.
+
 
 ## func SetInt
 ``` go
