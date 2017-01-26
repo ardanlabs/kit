@@ -17,6 +17,11 @@ var (
 ```
 Success and failure markers.
 
+``` go
+var TraceID = "Test"
+```
+TraceID provides a base trace id for tests.
+
 
 ## func DisplayLog
 ``` go

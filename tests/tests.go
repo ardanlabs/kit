@@ -8,8 +8,8 @@ import (
 	"testing"
 )
 
-// traceID provides a base trace id for tests.
-var traceID = "Test"
+// TraceID provides a base trace id for tests.
+var TraceID = "Test"
 
 // Success and failure markers.
 var (
