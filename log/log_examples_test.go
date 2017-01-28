@@ -43,5 +43,4 @@ func ExampleDev() {
 
 	// Write a message error for the developer only.
 	log.DevOffset("traceID", 3, "ExampleDev", "Formatting %v", 42)
-
 }

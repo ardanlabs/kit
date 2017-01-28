@@ -95,7 +95,7 @@ func (l *Logger) Error(traceID string, funcName string, err error, format string
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel, fmt.Sprintf("ERROR : %s : %s : %s : %s", traceID, funcName, err, format))
+			l.Output(mLevel, fmt.Sprintf("ERROR : %s : %s : %+v : %s", traceID, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
@@ -162,7 +162,7 @@ func (l *Logger) ErrorOffset(traceID string, offset int, funcName string, err er
 				format = fmt.Sprintf(format, a...)
 			}
 
-			l.Output(mLevel+offset, fmt.Sprintf("ERROR : %s : %s : %s : %s", traceID, funcName, err, format))
+			l.Output(mLevel+offset, fmt.Sprintf("ERROR : %s : %s : %+v : %s", traceID, funcName, err, format))
 		}
 	}
 	l.mu.RUnlock()
