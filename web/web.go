@@ -190,7 +190,7 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 		osSignals := make(chan os.Signal)
 		signal.Notify(osSignals, os.Interrupt)
 
-		sig := <-osSignals
+		<-osSignals
 
 		// Shut down the API server.
 		server.Close()
