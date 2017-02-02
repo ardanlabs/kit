@@ -1,8 +1,6 @@
 // Package tcp provides the boilerpale code for working with TCP based data. The package
 // allows you to establish a TCP listener that can accept client connections on a specified IP address
-// and port. It also provides a function to send data back to the client. The processing
-// of received data and sending data happens on a configured routine pool, so concurrency
-// is handled.
+// and port. It also provides a function to send data back to the client.
 //
 // There are three interfaces that need to be implemented to use the package. These
 // interfaces provide the API for processing data.
@@ -10,7 +8,7 @@
 // ConnHandler
 //
 //     type ConnHandler interface {
-//         Bind(logCtx string, conn net.Conn) (io.Reader, io.Writer)
+//         Bind(conn net.Conn) (io.Reader, io.Writer)
 //     }
 //
 // The ConnHandler interface is implemented by the user to bind the client connection
@@ -19,8 +17,8 @@
 // ReqHandler
 //
 //     type ReqHandler interface {
-//         Read(logCtx string, ipAddress string, reader io.Reader) ([]byte, int, error)
-//         Process(logCtx string, r *Request)
+//         Read(ipAddress string, reader io.Reader) ([]byte, int, error)
+//         Process(r *Request)
 //     }
 //
 //     type Request struct {
@@ -38,7 +36,7 @@
 // RespHandler
 //
 //     type RespHandler interface {
-//         Write(logCtx string, r *Response, writer io.Writer)
+//         Write(r *Response, writer io.Writer) error
 //     }
 //
 //     type Response struct {
@@ -57,7 +55,7 @@
 // start processing messages.
 //
 //     func main() {
-//         log.Startf("TEST", "main", "Starting Test App")
+//         log.Println("Starting Test App")
 //
 //         cfg := tcp.Config{
 //             NetType:      "tcp4",
@@ -69,13 +67,15 @@
 //             RespHandler:  udpRespHandler{},
 //         }
 //
-//         t, err := tcp.New("TEST", &cfg)
+//         t, err := tcp.New(&cfg)
 //         if err != nil {
-//             log.ErrFatal(err, "TEST", "main")
+//             log.Println(err)
+//              return
 //         }
 //
-//         if err := t.Start("TEST"); err != nil {
-//             log.ErrFatal(err, "TEST", "main")
+//         if err := t.Start(); err != nil {
+//             log.Println(err)
+//              return
 //         }
 //
 //         // Wait for a signal to shutdown.
@@ -83,8 +83,7 @@
 //         signal.Notify(sigChan, os.Interrupt)
 //         <-sigChan
 //
-//         t.Stop("TEST")
-//
-//         log.Complete("TEST", "main")
+//         t.Stop()
+//         log.Println("down")
 //     }
 package tcp

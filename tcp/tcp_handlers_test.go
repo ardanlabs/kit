@@ -14,18 +14,16 @@ import (
 type tcpConnHandler struct{}
 
 // Bind is called to init to reader and writer.
-func (tch tcpConnHandler) Bind(traceID string, conn net.Conn) (io.Reader, io.Writer) {
+func (tch tcpConnHandler) Bind(conn net.Conn) (io.Reader, io.Writer) {
 	return bufio.NewReader(conn), bufio.NewWriter(conn)
 }
-
-//==============================================================================
 
 // tcpReqHandler is required to process client messages.
 type tcpReqHandler struct{}
 
 // Read implements the udp.ReqHandler interface. It is provided a request
 // value to popular and a io.Reader that was created in the Bind above.
-func (tcpReqHandler) Read(traceID string, ipAddress string, reader io.Reader) ([]byte, int, error) {
+func (tcpReqHandler) Read(ipAddress string, reader io.Reader) ([]byte, int, error) {
 	bufReader := reader.(*bufio.Reader)
 
 	// Read a small string to keep the code simple.
@@ -39,29 +37,28 @@ func (tcpReqHandler) Read(traceID string, ipAddress string, reader io.Reader) ([
 
 var dur int64
 
-// Process is used to handle the processing of the message. This method
-// is called on a routine from a pool of routines.
-func (tcpReqHandler) Process(traceID string, r *tcp.Request) {
+// Process is used to handle the processing of the message.
+func (tcpReqHandler) Process(r *tcp.Request) {
 	resp := tcp.Response{
 		TCPAddr: r.TCPAddr,
 		Data:    []byte("GOT IT\n"),
 		Length:  7,
-		Complete: func(rsp *tcp.Response) {
-			d := int64(time.Now().Sub(r.ReadAt))
-			atomic.StoreInt64(&dur, d)
-		},
 	}
 
-	r.TCP.Do(traceID, &resp)
-}
+	r.TCP.Send(&resp)
 
-//==============================================================================
+	d := int64(time.Now().Sub(r.ReadAt))
+	atomic.StoreInt64(&dur, d)
+}
 
 type tcpRespHandler struct{}
 
 // Write is provided the user-defined writer and the data to write.
-func (tcpRespHandler) Write(traceID string, r *tcp.Response, writer io.Writer) {
+func (tcpRespHandler) Write(r *tcp.Response, writer io.Writer) error {
 	bufWriter := writer.(*bufio.Writer)
-	bufWriter.WriteString(string(r.Data))
-	bufWriter.Flush()
+	if _, err := bufWriter.WriteString(string(r.Data)); err != nil {
+		return err
+	}
+
+	return bufWriter.Flush()
 }

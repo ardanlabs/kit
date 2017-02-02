@@ -12,7 +12,6 @@ import (
 
 // client represents a single networked connection.
 type client struct {
-	traceID   string
 	t         *TCP
 	conn      net.Conn
 	ipAddress string
@@ -23,16 +22,15 @@ type client struct {
 }
 
 // newClient creates a new client for an incoming connection.
-func newClient(traceID string, t *TCP, conn net.Conn) *client {
+func newClient(t *TCP, conn net.Conn) *client {
 	ipAddress := conn.RemoteAddr().String()
-	t.Event(traceID, "newClient", "IPAddress[%s]", ipAddress)
+	t.Event("newClient", "IPAddress[%s]", ipAddress)
 
 	// Ask the user to bind the reader and writer they want to
 	// use for this connection.
-	r, w := t.ConnHandler.Bind(traceID, conn)
+	r, w := t.ConnHandler.Bind(conn)
 
 	c := client{
-		traceID:   traceID,
 		t:         t,
 		conn:      conn,
 		ipAddress: ipAddress,
@@ -54,26 +52,28 @@ func newClient(traceID string, t *TCP, conn net.Conn) *client {
 
 // drop closes the client connection and read operation.
 func (c *client) drop() {
+
 	// Close the connection.
 	c.conn.Close()
 	c.wg.Wait()
 
-	c.t.Event(c.traceID, "drop", "Client Dropped")
+	c.t.Event("drop", "Client Dropped")
 }
 
 // read waits for a message and sends it to the user for procesing.
 func (c *client) read() {
-	c.t.Event(c.traceID, "read", "Read Processing")
+	c.t.Event("read", "Read Processing")
 
 close:
 	for {
+
 		// Wait for a message to arrive.
-		data, length, err := c.t.ReqHandler.Read(c.traceID, c.ipAddress, c.reader)
+		data, length, err := c.t.ReqHandler.Read(c.ipAddress, c.reader)
 		timeRead := time.Now()
 
 		if err != nil {
 			if atomic.LoadInt32(&c.t.shuttingDown) == 0 {
-				c.t.Event(c.traceID, "read", "ERROR : %v", err)
+				c.t.Event("read", "ERROR : %v", err)
 			}
 
 			// temporary is declared to test for the existence of
@@ -114,17 +114,14 @@ close:
 			Length: length,
 		}
 
-		// Send this to the user work pool for processing.
-		c.t.recv.Do(c.traceID, &r)
+		// Process the request on this goroutine that is
+		// handling the socket connection.
+		c.t.ReqHandler.Process(&r)
 	}
 
-	c.t.Event(c.traceID, "read", "Shutting Down Client Routine")
-
-	// Remove from the list of connections.
-	c.t.remove(c.traceID, c.conn)
-
+	// Remove from the list of connections and report we are done.
+	c.t.Event("read", "Shutting Down Client Routine")
+	c.t.remove(c.conn)
 	c.wg.Done()
-
-	c.t.Event(c.traceID, "read", "Client Routine Down")
-	return
+	c.t.Event("read", "Client Routine Down")
 }
