@@ -8,8 +8,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/ardanlabs/kit/pool"
 )
 
 // Set of error variables for start up.
@@ -42,16 +40,13 @@ type UDP struct {
 	reader io.Reader
 	writer io.Writer
 
-	recv      *pool.Pool
-	send      *pool.Pool
-	userPools bool
-
 	wg           sync.WaitGroup
 	shuttingDown int32
 }
 
 // New creates a new manager to service clients.
-func New(traceID string, name string, cfg Config) (*UDP, error) {
+func New(name string, cfg Config) (*UDP, error) {
+
 	// Validate the configuration.
 	if err := cfg.Validate(); err != nil {
 		return nil, err
@@ -63,45 +58,6 @@ func New(traceID string, name string, cfg Config) (*UDP, error) {
 		return nil, err
 	}
 
-	// Need a work pool to handle the received messages.
-	var recv *pool.Pool
-	if cfg.RecvPool != nil {
-		recv = cfg.RecvPool
-	} else {
-		recvCfg := pool.Config{
-			MinRoutines: cfg.RecvMinPoolSize,
-			MaxRoutines: cfg.RecvMaxPoolSize,
-		}
-
-		var err error
-		if recv, err = pool.New(traceID, name+"-Recv", recvCfg); err != nil {
-			return nil, err
-		}
-	}
-
-	// Need a work pool to handle the messages to send.
-	var send *pool.Pool
-	if cfg.SendPool != nil {
-		send = cfg.SendPool
-	} else {
-		sendCfg := pool.Config{
-			MinRoutines: cfg.SendMinPoolSize,
-			MaxRoutines: cfg.SendMaxPoolSize,
-		}
-
-		var err error
-		if send, err = pool.New(traceID, name+"-Send", sendCfg); err != nil {
-			return nil, err
-		}
-	}
-
-	// Are we using user provided work pools. Validation is helping us
-	// only have to check one of the two configuration options for this.
-	var userPools bool
-	if cfg.RecvPool != nil {
-		userPools = true
-	}
-
 	// Create a UDP for this ipaddress and port.
 	udp := UDP{
 		Config: cfg,
@@ -110,10 +66,6 @@ func New(traceID string, name string, cfg Config) (*UDP, error) {
 		ipAddress: udpAddr.IP.String(),
 		port:      udpAddr.Port,
 		udpAddr:   udpAddr,
-
-		recv:      recv,
-		send:      send,
-		userPools: userPools,
 	}
 
 	return &udp, nil
@@ -125,24 +77,23 @@ func join(ip string, port int) string {
 }
 
 // Start begins to accept data.
-func (d *UDP) Start(traceID string) error {
+func (d *UDP) Start() error {
 	d.listenerMu.Lock()
 	{
 		// If the listener has been started already, return an error.
 		if d.listener != nil {
 			d.listenerMu.Unlock()
-			return errors.New("This UDP has already been started")
+			return errors.New("this UDP has already been started")
 		}
 	}
 	d.listenerMu.Unlock()
-
-	d.wg.Add(1)
 
 	// We need to wait for the goroutine to initialize itself.
 	var waitStart sync.WaitGroup
 	waitStart.Add(1)
 
 	// Start the data accept routine.
+	d.wg.Add(1)
 	go func() {
 		for {
 			d.listenerMu.Lock()
@@ -158,17 +109,17 @@ func (d *UDP) Start(traceID string) error {
 
 					// Ask the user to bind the reader and writer they want to
 					// use for this listener.
-					d.reader, d.writer = d.ConnHandler.Bind(traceID, d.listener)
+					d.reader, d.writer = d.ConnHandler.Bind(d.listener)
 
 					waitStart.Done()
 
-					d.Event(traceID, "accept", "Waiting For Data : IPAddress[ %s ]", join(d.ipAddress, d.port))
+					d.Event("accept", "Waiting For Data : IPAddress[ %s ]", join(d.ipAddress, d.port))
 				}
 			}
 			d.listenerMu.Unlock()
 
 			// Wait for a message to arrive.
-			udpAddr, data, length, err := d.ReqHandler.Read(traceID, d.reader)
+			udpAddr, data, length, err := d.ReqHandler.Read(d.reader)
 			timeRead := time.Now()
 
 			if err != nil {
@@ -181,7 +132,7 @@ func (d *UDP) Start(traceID string) error {
 					break
 				}
 
-				d.Event(traceID, "accept", "ERROR : %v", err)
+				d.Event("accept", "ERROR : %v", err)
 
 				if e, ok := err.(temporary); ok && !e.Temporary() {
 					d.listenerMu.Lock()
@@ -203,6 +154,7 @@ func (d *UDP) Start(traceID string) error {
 			// Check to see if this message is ipv6.
 			isIPv6 := true
 			if ip4 := udpAddr.IP.To4(); ip4 != nil {
+
 				// Make sure we return an IPv4 address if udpAddr
 				// is an IPv4-mapped IPv6 address.  Otherwise we
 				// could end up sending an IPv6 response.
@@ -220,12 +172,13 @@ func (d *UDP) Start(traceID string) error {
 				Length:  length,
 			}
 
-			// Send this to the user work pool for processing.
-			d.recv.Do(req.traceID(traceID), &req)
+			// Process the request on this goroutine that is
+			// handling the socket connection.
+			d.ReqHandler.Process(&req)
 		}
 
 		d.wg.Done()
-		d.Event(traceID, "accept", "Shutdown : IPAddress[ %s ]", join(d.ipAddress, d.port))
+		d.Event("accept", "Shutdown : IPAddress[ %s ]", join(d.ipAddress, d.port))
 
 		return
 	}()
@@ -237,13 +190,13 @@ func (d *UDP) Start(traceID string) error {
 }
 
 // Stop shuts down the manager and closes all connections.
-func (d *UDP) Stop(traceID string) error {
+func (d *UDP) Stop() error {
 	d.listenerMu.Lock()
 	{
 		// If the listener has been stopped already, return an error.
 		if d.listener == nil {
 			d.listenerMu.Unlock()
-			return errors.New("This UDP has already been stopped")
+			return errors.New("this UDP has already been stopped")
 		}
 	}
 	d.listenerMu.Unlock()
@@ -258,42 +211,20 @@ func (d *UDP) Stop(traceID string) error {
 	}
 	d.listenerMu.Unlock()
 
-	// Stop processing all the work.
-	if !d.userPools {
-		d.recv.Shutdown(traceID)
-		d.send.Shutdown(traceID)
-	}
-
 	// Wait for the accept routine to terminate.
 	d.wg.Wait()
 
 	return nil
 }
 
-// Do will post the request to be sent by the client worker pool.
-func (d *UDP) Do(traceID string, r *Response) error {
-	// Set the unexported fields.
-	r.udp = d
-	r.traceID = traceID
-
-	// Send this to the client work pool for processing.
-	d.send.Do(traceID, r)
-
-	return nil
-}
-
-// StatsRecv returns the current snapshot of the recv pool stats.
-func (d *UDP) StatsRecv() pool.Stat {
-	return d.recv.Stats()
-}
-
-// StatsSend returns the current snapshot of the send pool stats.
-func (d *UDP) StatsSend() pool.Stat {
-	return d.send.Stats()
+// Send will deliver the response back to the client.
+func (d *UDP) Send(r *Response) error {
+	return d.RespHandler.Write(r, d.writer)
 }
 
 // Addr returns the local listening network address.
 func (d *UDP) Addr() net.Addr {
+
 	// We are aware this read is not safe with the
 	// goroutine accepting connections.
 	if d.listener == nil {

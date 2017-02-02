@@ -1,26 +1,8 @@
 package udp
 
-import "github.com/ardanlabs/kit/pool"
-
-// OptUserPool declares fields for the user to pass their own
-// work pools for configuration.
-type OptUserPool struct {
-	RecvPool *pool.Pool // User provided work pool for the receive work.
-	SendPool *pool.Pool // User provided work pool for the send work.
-}
-
-// OptIntPool declares fields for the user to provide configuration
-// for an internally configured pool.
-type OptIntPool struct {
-	RecvMinPoolSize func() int // Min number of routines the recv pool must have.
-	RecvMaxPoolSize func() int // Max number of routines the recv pool can have.
-	SendMinPoolSize func() int // Min number of routines the send pool must have.
-	SendMaxPoolSize func() int // Max number of routines the send pool can have.
-}
-
 // OptEvent defines an handler used to provide events.
 type OptEvent struct {
-	Event func(traceID string, event string, format string, a ...interface{})
+	Event func(event string, format string, a ...interface{})
 }
 
 // Config provides a data structure of required configuration parameters.
@@ -31,17 +13,6 @@ type Config struct {
 	ConnHandler ConnHandler // Support for binding new connections to a reader and writer.
 	ReqHandler  ReqHandler  // Support for handling the specific request workflow.
 	RespHandler RespHandler // Support for handling the specific response workflow.
-
-	// *************************************************************************
-	// ** Required, choose one option.                                        **
-	// *************************************************************************
-
-	// Decide if you want to pass in your own work pool for configuration options
-	// for the udp value to create its own. Pass in your own pool if you want to
-	// share a single pool across multiple udp values.
-
-	OptUserPool
-	OptIntPool
 
 	// *************************************************************************
 	// ** Not Required, optional                                              **
@@ -76,8 +47,8 @@ func (cfg *Config) Validate() error {
 }
 
 // Event fires events back to the user for important events.
-func (cfg *Config) Event(traceID string, event string, format string, a ...interface{}) {
+func (cfg *Config) Event(event string, format string, a ...interface{}) {
 	if cfg.OptEvent.Event != nil {
-		cfg.OptEvent.Event(traceID, event, format, a...)
+		cfg.OptEvent.Event(event, format, a...)
 	}
 }

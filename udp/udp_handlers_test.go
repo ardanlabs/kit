@@ -13,18 +13,16 @@ import (
 type udpConnHandler struct{}
 
 // Bind is called to init to reader and writer.
-func (udpConnHandler) Bind(traceID string, listener *net.UDPConn) (io.Reader, io.Writer) {
+func (udpConnHandler) Bind(listener *net.UDPConn) (io.Reader, io.Writer) {
 	return listener, listener
 }
-
-//==============================================================================
 
 // udpReqHandler is required to process client messages.
 type udpReqHandler struct{}
 
 // Read implements the udp.ReqHandler interface. It is provided a request
 // value to popular and a io.Reader that was created in the Bind above.
-func (udpReqHandler) Read(traceID string, reader io.Reader) (*net.UDPAddr, []byte, int, error) {
+func (udpReqHandler) Read(reader io.Reader) (*net.UDPAddr, []byte, int, error) {
 	listener := reader.(*net.UDPConn)
 
 	// Each package is 20 bytes in lengrh.
@@ -41,7 +39,7 @@ var dur int64
 
 // Process is used to handle the processing of the message. This method
 // is called on a routine from a pool of routines.
-func (udpReqHandler) Process(traceID string, r *udp.Request) {
+func (udpReqHandler) Process(r *udp.Request) {
 	if r.Length != 20 {
 		return
 	}
@@ -69,21 +67,22 @@ func (udpReqHandler) Process(traceID string, r *udp.Request) {
 		UDPAddr: r.UDPAddr,
 		Data:    []byte("GOT IT"),
 		Length:  6,
-		Complete: func(rsp *udp.Response) {
-			d := int64(time.Now().Sub(r.ReadAt))
-			atomic.StoreInt64(&dur, d)
-		},
 	}
 
-	r.UDP.Do(traceID, &resp)
-}
+	r.UDP.Send(&resp)
 
-//==============================================================================
+	d := int64(time.Now().Sub(r.ReadAt))
+	atomic.StoreInt64(&dur, d)
+}
 
 type udpRespHandler struct{}
 
 // Write is provided the user-defined writer and the data to write.
-func (udpRespHandler) Write(traceID string, r *udp.Response, writer io.Writer) {
+func (udpRespHandler) Write(r *udp.Response, writer io.Writer) error {
 	listener := writer.(*net.UDPConn)
-	listener.WriteToUDP(r.Data, r.UDPAddr)
+	if _, err := listener.WriteToUDP(r.Data, r.UDPAddr); err != nil {
+		return err
+	}
+
+	return nil
 }

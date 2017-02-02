@@ -28,29 +28,22 @@ func TestUDP(t *testing.T) {
 			ConnHandler: udpConnHandler{},
 			ReqHandler:  udpReqHandler{},
 			RespHandler: udpRespHandler{},
-
-			OptIntPool: udp.OptIntPool{
-				RecvMinPoolSize: func() int { return 2 },
-				RecvMaxPoolSize: func() int { return 1000 },
-				SendMinPoolSize: func() int { return 2 },
-				SendMaxPoolSize: func() int { return 1000 },
-			},
 		}
 
 		// Create a new UDP value.
-		u, err := udp.New("TEST", "TEST", cfg)
+		u, err := udp.New("TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new UDP listener.", tests.Failed, err)
 		}
 		t.Log("\tShould be able to create a new UDP listener.", tests.Success)
 
 		// Start accepting client data.
-		if err := u.Start("TEST"); err != nil {
+		if err := u.Start(); err != nil {
 			t.Fatal("\tShould be able to start the UDP listener.", tests.Failed, err)
 		}
 		t.Log("\tShould be able to start the UDP listener.", tests.Success)
 
-		defer u.Stop("TEST")
+		defer u.Stop()
 
 		// Let's connect back and send a UDP package
 		conn, err := net.Dial("udp4", u.Addr().String())
@@ -107,17 +100,10 @@ func TestUDPAddr(t *testing.T) {
 			ConnHandler: udpConnHandler{},
 			ReqHandler:  udpReqHandler{},
 			RespHandler: udpRespHandler{},
-
-			OptIntPool: udp.OptIntPool{
-				RecvMinPoolSize: func() int { return 2 },
-				RecvMaxPoolSize: func() int { return 1000 },
-				SendMinPoolSize: func() int { return 2 },
-				SendMaxPoolSize: func() int { return 1000 },
-			},
 		}
 
 		// Create a new UDP value.
-		u, err := udp.New("TEST", "TEST", cfg)
+		u, err := udp.New("TEST", cfg)
 		if err != nil {
 			t.Fatal("\tShould be able to create a new UDP listener.", tests.Failed, err)
 		}
@@ -130,10 +116,10 @@ func TestUDPAddr(t *testing.T) {
 		t.Log("\tAddr() should be nil before Start.", tests.Success)
 
 		// Start accepting client data.
-		if err := u.Start("TEST"); err != nil {
+		if err := u.Start(); err != nil {
 			t.Fatal("\tShould be able to start the UDP listener.", tests.Failed, err)
 		}
-		defer u.Stop("TEST")
+		defer u.Stop()
 
 		// Addr should be non-nil after Start.
 		addr := u.Addr()
