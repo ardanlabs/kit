@@ -3,7 +3,7 @@ package pool
 import (
 	"context"
 	"errors"
-	"runtime"
+	"runtime/debug"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -101,7 +101,7 @@ type Pool struct {
 }
 
 // New creates a new Pool.
-func New(traceID string, name string, cfg Config) (*Pool, error) {
+func New(name string, cfg Config) (*Pool, error) {
 	if cfg.MinRoutines == nil {
 		return nil, ErrNilMinRoutines
 	}
@@ -126,14 +126,14 @@ func New(traceID string, name string, cfg Config) (*Pool, error) {
 		shutdown: make(chan struct{}),
 	}
 
-	p.manager(traceID)
-	p.add(traceID, cfg.MinRoutines())
+	p.manager()
+	p.add(cfg.MinRoutines())
 
 	return &p, nil
 }
 
 // Shutdown waits for all the workers to finish.
-func (p *Pool) Shutdown(traceID string) {
+func (p *Pool) Shutdown() {
 	// If a reset or change is being made, we need to wait.
 	for atomic.LoadInt64(&p.updatePending) > 0 {
 		time.Sleep(time.Second)
@@ -220,7 +220,7 @@ func (p *Pool) Stats() Stat {
 // routines to terminate.
 // NOTE: since our pools are auto-adjustable, we will not give the user ability
 // to add routines.
-func (p *Pool) add(traceID string, routines int) error {
+func (p *Pool) add(routines int) error {
 	if routines == 0 {
 		return ErrInvalidAdd
 	}
@@ -244,13 +244,13 @@ func (p *Pool) add(traceID string, routines int) error {
 // Reset re-adjusts the pool to match the specified number of routines.
 // NOTE: since our pools are auto-adjustable, we will not give the user ability
 // to reset the number of routines.
-func (p *Pool) reset(traceID string, routines int) {
+func (p *Pool) reset(routines int) {
 	if routines < 0 {
 		routines = 0
 	}
 
 	current := int(atomic.LoadInt64(&p.routines))
-	p.add(traceID, routines-current)
+	p.add(routines - current)
 }
 
 // work performs the users work and keeps stats.
@@ -297,11 +297,8 @@ func (p *Pool) execute(id int, dw doWork) {
 	defer func() {
 		if r := recover(); r != nil {
 
-			// Capture the stack trace
-			buf := make([]byte, 10000)
-			runtime.Stack(buf, false)
-
-			p.Event(dw.traceID, "execute", "ERROR : %s", string(buf))
+			// Raise event and provide the stack trace.
+			p.Event(dw.traceID, "execute", "ERROR : %s", string(debug.Stack()))
 		}
 	}()
 
@@ -327,7 +324,7 @@ func (p *Pool) measureHealth() {
 	if stats.Pending == 0 && stats.Active == 0 && (stats.Routines > int64(p.MinRoutines())) {
 
 		// Reset the pool back to the min value.
-		p.reset(p.Name, p.MinRoutines())
+		p.reset(p.MinRoutines())
 		return
 	}
 
@@ -348,12 +345,12 @@ func (p *Pool) measureHealth() {
 		}
 
 		// Request this number to be added.
-		p.add(p.Name, add)
+		p.add(add)
 	}
 }
 
 // manager controls changes to the work pool including stats and shutting down.
-func (p *Pool) manager(traceID string) {
+func (p *Pool) manager() {
 	p.wg.Add(1)
 
 	go func() {

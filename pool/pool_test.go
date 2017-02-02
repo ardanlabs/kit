@@ -33,7 +33,7 @@ func ExampleNew() {
 	}
 
 	// Create a new pool.
-	p, err := pool.New("TEST", "TheWork", cfg)
+	p, err := pool.New("TheWork", cfg)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -48,7 +48,7 @@ func ExampleNew() {
 	time.Sleep(100 * time.Millisecond)
 
 	// Shutdown the pool.
-	p.Shutdown("TEST")
+	p.Shutdown()
 }
 
 // TestPool tests the pool is functional.
@@ -60,7 +60,7 @@ func TestPool(t *testing.T) {
 			MaxRoutines: func() int { return 5000 },
 		}
 
-		p, err := pool.New("TestPool", "Pool1", cfg)
+		p, err := pool.New("Pool1", cfg)
 		if err != nil {
 			t.Fatal("\tShould not get error creating pool.", failed, err)
 		}
@@ -72,6 +72,6 @@ func TestPool(t *testing.T) {
 
 		time.Sleep(100 * time.Millisecond)
 
-		p.Shutdown("TestPool")
+		p.Shutdown()
 	}
 }
