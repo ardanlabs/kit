@@ -43,10 +43,8 @@ func init() {
 	log.User("startup", "init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
 }
 
-//==============================================================================
-
 // Event writes tcp events.
-func Event(traceID string, event string, format string, a ...interface{}) {
+func Event(event string, format string, a ...interface{}) {
 	log.User("*EVENT*", event, format, a...)
 }
 
@@ -62,33 +60,26 @@ func main() {
 		ReqHandler:  tcpReqHandler{},
 		RespHandler: tcpRespHandler{},
 
-		OptIntPool: tcp.OptIntPool{
-			RecvMinPoolSize: func() int { return 2 },
-			RecvMaxPoolSize: func() int { return 100 },
-			SendMinPoolSize: func() int { return 2 },
-			SendMaxPoolSize: func() int { return 100 },
-		},
-
 		OptEvent: tcp.OptEvent{
 			Event: Event,
 		},
 	}
 
 	// Create a new TCP value.
-	t, err := tcp.New(traceID, "Sample", cfg)
+	t, err := tcp.New("Sample", cfg)
 	if err != nil {
 		log.Error(traceID, "main", err, "Creating tcp")
 		return
 	}
 
 	// Start accepting client data.
-	if err := t.Start(traceID); err != nil {
+	if err := t.Start(); err != nil {
 		log.Error(traceID, "main", err, "Starting tcp")
 		return
 	}
 
 	// Defer the stop on shutdown.
-	defer t.Stop(traceID)
+	defer t.Stop()
 
 	log.User(traceID, "main", "Waiting for data on: %s", t.Addr())
 

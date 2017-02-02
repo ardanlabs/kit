@@ -14,19 +14,17 @@ import (
 type udpConnHandler struct{}
 
 // Bind is called to init to reader and writer.
-func (udpConnHandler) Bind(traceID string, listener *net.UDPConn) (io.Reader, io.Writer) {
+func (udpConnHandler) Bind(listener *net.UDPConn) (io.Reader, io.Writer) {
 	return listener, listener
 }
-
-//==============================================================================
 
 // udpReqHandler is required to process client messages.
 type udpReqHandler struct{}
 
 // Read implements the udp.ReqHandler interface. It is provided a request
 // value to popular and a io.Reader that was created in the Bind above.
-func (udpReqHandler) Read(traceID string, reader io.Reader) (*net.UDPAddr, []byte, int, error) {
-	log.Dev(traceID, "Read", "Started : Waiting For Data")
+func (udpReqHandler) Read(reader io.Reader) (*net.UDPAddr, []byte, int, error) {
+	log.Dev("handler", "Read", "Started : Waiting For Data")
 
 	listener := reader.(*net.UDPConn)
 
@@ -34,22 +32,22 @@ func (udpReqHandler) Read(traceID string, reader io.Reader) (*net.UDPAddr, []byt
 	data := make([]byte, 20)
 	length, udpAddr, err := listener.ReadFromUDP(data)
 	if err != nil {
-		log.Error(traceID, "Read", err, "Completed")
+		log.Error("handler", "Read", err, "Completed")
 		return nil, nil, 0, err
 	}
 
-	log.Dev(traceID, "Read", "Completed : IP[%s] Length[%d]", udpAddr.String(), length)
+	log.Dev("handler", "Read", "Completed : IP[%s] Length[%d]", udpAddr.String(), length)
 	return udpAddr, data, length, nil
 }
 
 // Process is used to handle the processing of the message. This method
 // is called on a routine from a pool of routines.
-func (udpReqHandler) Process(traceID string, r *udp.Request) {
-	log.Dev(traceID, "Process", "Started : IP[%s] Length[%d] ReadAt[%v]", r.UDPAddr.String(), r.Length, r.ReadAt)
+func (udpReqHandler) Process(r *udp.Request) {
+	log.Dev("handler", "Process", "Started : IP[%s] Length[%d] ReadAt[%v]", r.UDPAddr.String(), r.Length, r.ReadAt)
 
 	if r.Length != 20 {
 		err := fmt.Errorf("Invalid package length of %d", r.Length)
-		log.Error(traceID, "Process", err, "Completed")
+		log.Error("handler", "Process", err, "Completed")
 		return
 	}
 
@@ -72,32 +70,29 @@ func (udpReqHandler) Process(traceID string, r *udp.Request) {
 		StreamHandle:  uint32(binary.BigEndian.Uint32(r.Data[4:8])),
 	}
 
-	log.Dev(traceID, "Process", "%+v", h)
+	log.Dev("handler", "Process", "%+v", h)
 
 	resp := udp.Response{
 		UDPAddr: r.UDPAddr,
 		Data:    []byte("GOT IT"),
 		Length:  6,
-		Complete: func(rsp *udp.Response) {
-			log.Dev(traceID, "Process", "*****************> %v", rsp)
-		},
 	}
 
-	r.UDP.Do(traceID, &resp)
+	r.UDP.Send(&resp)
 
-	log.Dev(traceID, "Process", "Completed")
+	log.Dev("handler", "Process", "Completed")
 }
-
-//==============================================================================
 
 type udpRespHandler struct{}
 
 // Write is provided the user-defined writer and the data to write.
-func (udpRespHandler) Write(traceID string, r *udp.Response, writer io.Writer) {
-	log.Dev(traceID, "Write", "Started")
+func (udpRespHandler) Write(r *udp.Response, writer io.Writer) error {
+	log.Dev("handler", "Write", "Started")
+	defer log.Dev("handler", "Write", "Completed")
 
 	listener := writer.(*net.UDPConn)
-	listener.WriteToUDP(r.Data, r.UDPAddr)
-
-	log.Dev(traceID, "Write", "Completed")
+	if _, err := listener.WriteToUDP(r.Data, r.UDPAddr); err != nil {
+		return err
+	}
+	return nil
 }

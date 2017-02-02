@@ -23,8 +23,6 @@ import (
 // traceID to it.
 const TraceIDHeader = "X-Trace-ID"
 
-//==============================================================================
-
 // validate provides a validator for checking models.
 var validate = validator.New(&validator.Config{
 	TagName:      "validate",
@@ -49,8 +47,6 @@ func Unmarshal(r io.Reader, v interface{}) error {
 	return nil
 }
 
-//==============================================================================
-
 // Key represents the type of value for the context key.
 type ctxKey int
 
@@ -64,8 +60,6 @@ type Values struct {
 	StatusCode int
 }
 
-//==============================================================================
-
 // A Handler is a type that handles an http request within our own little mini
 // framework.
 type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request, params map[string]string) error
@@ -73,8 +67,6 @@ type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request, p
 // A Middleware is a type that wraps a handler to remove boilerplate or other
 // concerns not direct to any given Handler.
 type Middleware func(Handler) Handler
-
-//==============================================================================
 
 // App is the entrypoint into our application and what configures our context
 // object for each of our http handlers. Feel free to add any configuration
@@ -146,8 +138,6 @@ func (a *App) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	a.TreeMux.Handle(verb, path, h)
 }
 
-//==============================================================================
-
 // Group allows a segment of middleware to be shared amongst handlers.
 type Group struct {
 	app *App
@@ -169,8 +159,6 @@ func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
 	// Wrap it with the App wrapper and additionally the group level middleware.
 	g.app.Handle(verb, path, handler, g.mw...)
 }
-
-//==============================================================================
 
 // Run is called to start the web service.
 func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error {
@@ -198,8 +186,6 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 
 	return server.ListenAndServe()
 }
-
-//==============================================================================
 
 // wrapMiddleware wraps a handler with some middleware.
 func wrapMiddleware(handler Handler, mw []Middleware) Handler {

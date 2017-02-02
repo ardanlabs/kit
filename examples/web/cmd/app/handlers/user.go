@@ -21,6 +21,5 @@ func UserList(ctx context.Context, w http.ResponseWriter, r *http.Request, param
 		return err
 	}
 
-	web.Respond(ctx, w, u, http.StatusOK)
-	return nil
+	return web.Respond(ctx, w, u, http.StatusOK)
 }

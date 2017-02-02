@@ -12,11 +12,11 @@ import (
 
 // Set of error variables for start up.
 var (
-	ErrInvalidConfiguration = errors.New("Invalid Configuration")
-	ErrInvalidNetType       = errors.New("Invalid NetType Configuration")
-	ErrInvalidConnHandler   = errors.New("Invalid Connection Handler Configuration")
-	ErrInvalidReqHandler    = errors.New("Invalid Request Handler Configuration")
-	ErrInvalidRespHandler   = errors.New("Invalid Response Handler Configuration")
+	ErrInvalidConfiguration = errors.New("invalid configuration")
+	ErrInvalidNetType       = errors.New("invalid net type configuration")
+	ErrInvalidConnHandler   = errors.New("invalid connection handler configuration")
+	ErrInvalidReqHandler    = errors.New("invalid request handler configuration")
+	ErrInvalidRespHandler   = errors.New("invalid response handler configuration")
 )
 
 // TCP contains a set of networked client connections.

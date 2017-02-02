@@ -43,8 +43,6 @@ func init() {
 	log.User("startup", "init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
 }
 
-//==============================================================================
-
 func main() {
 	const traceID = "startup"
 
@@ -56,30 +54,23 @@ func main() {
 		ConnHandler: udpConnHandler{},
 		ReqHandler:  udpReqHandler{},
 		RespHandler: udpRespHandler{},
-
-		OptIntPool: udp.OptIntPool{
-			RecvMinPoolSize: func() int { return 2 },
-			RecvMaxPoolSize: func() int { return 100 },
-			SendMinPoolSize: func() int { return 2 },
-			SendMaxPoolSize: func() int { return 100 },
-		},
 	}
 
 	// Create a new UDP value.
-	u, err := udp.New(traceID, "Sample", cfg)
+	u, err := udp.New("Sample", cfg)
 	if err != nil {
 		log.Error(traceID, "main", err, "Creating udp")
 		return
 	}
 
 	// Start accepting client data.
-	if err := u.Start(traceID); err != nil {
+	if err := u.Start(); err != nil {
 		log.Error(traceID, "main", err, "Starting udp")
 		return
 	}
 
 	// Defer the stop on shutdown.
-	defer u.Stop(traceID)
+	defer u.Stop()
 
 	log.User(traceID, "main", "Waiting for data on: %s", u.Addr())
 

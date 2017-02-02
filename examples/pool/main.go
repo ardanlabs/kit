@@ -49,8 +49,6 @@ func init() {
 	log.User("startup", "init", "\n\nConfig Settings: %s\n%s\n", configKey, cfg.Log())
 }
 
-//==============================================================================
-
 // wg represents a WaitGroup so we can control the shutdown
 // of the test application.
 var wg sync.WaitGroup
@@ -66,8 +64,6 @@ func (t *Task) Work(traceID string, id int) {
 	wg.Done()
 }
 
-//==============================================================================
-
 func main() {
 	const traceID = "main"
 	const totalWork = 100
@@ -81,7 +77,7 @@ func main() {
 	}
 
 	// Create a pool.
-	p, err := pool.New(traceID, "test", cfg)
+	p, err := pool.New("test", cfg)
 	if err != nil {
 		log.Error(traceID, "main", err, "Creating pool")
 		return
@@ -104,5 +100,5 @@ func main() {
 	wg.Wait()
 
 	// Shutdown the pool.
-	p.Shutdown(traceID)
+	p.Shutdown()
 }

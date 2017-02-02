@@ -20,6 +20,23 @@ import (
 	"net/http"
 )
 
+var (
+	// ErrNotAuthorized occurs when the call is not authorized.
+	ErrNotAuthorized = errors.New("Not authorized")
+
+	// ErrDBNotConfigured occurs when the DB is not initialized.
+	ErrDBNotConfigured = errors.New("DB not initialized")
+
+	// ErrNotFound is abstracting the mgo not found error.
+	ErrNotFound = errors.New("Entity not found")
+
+	// ErrInvalidID occurs when an ID is not in a valid form.
+	ErrInvalidID = errors.New("ID is not in it's proper form")
+
+	// ErrValidation occurs when there are validation errors.
+	ErrValidation = errors.New("Validation errors occurred")
+)
+
 // Invalid describes a validation error belonging to a specific field.
 type Invalid struct {
 	Fld string `json:"field_name"`
@@ -43,27 +60,6 @@ type JSONError struct {
 	Error  string       `json:"error"`
 	Fields InvalidError `json:"fields,omitempty"`
 }
-
-//==============================================================================
-
-var (
-	// ErrNotAuthorized occurs when the call is not authorized.
-	ErrNotAuthorized = errors.New("Not authorized")
-
-	// ErrDBNotConfigured occurs when the DB is not initialized.
-	ErrDBNotConfigured = errors.New("DB not initialized")
-
-	// ErrNotFound is abstracting the mgo not found error.
-	ErrNotFound = errors.New("Entity not found")
-
-	// ErrInvalidID occurs when an ID is not in a valid form.
-	ErrInvalidID = errors.New("ID is not in it's proper form")
-
-	// ErrValidation occurs when there are validation errors.
-	ErrValidation = errors.New("Validation errors occurred")
-)
-
-//==============================================================================
 
 // Error handles all error responses for the API.
 func Error(cxt context.Context, w http.ResponseWriter, err error) {

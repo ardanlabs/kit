@@ -23,8 +23,6 @@ func init() {
 	os.Setenv("KIT_LOGGING_LEVEL", "1")
 }
 
-//==============================================================================
-
 // main is the entry point for the application.
 func main() {
 
