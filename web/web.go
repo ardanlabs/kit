@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"time"
 
 	"github.com/dimfeld/httptreemux"
@@ -171,30 +172,42 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 		MaxHeaderBytes: 1 << 20,
 	}
 
+	// We want to report the listener is closed.
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	// Start the listener.
+	var err error
 	go func() {
-
-		// Listen for an interrupt signal from the OS.
-		osSignals := make(chan os.Signal)
-		signal.Notify(osSignals, os.Interrupt)
-
-		<-osSignals
-
-		// Create a context to attempt a graceful 5 second shutdown.
-		const timeout = 5 * time.Second
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-
-		// Attempt the graceful shutdown.
-		if err := server.Shutdown(ctx); err != nil {
-
-			// Looks like we timedout on the graceful shutdown. Kill it hard.
-			if err := server.Close(); err != nil {
-				return
-			}
-		}
+		err = server.ListenAndServe()
+		wg.Done()
 	}()
 
-	return server.ListenAndServe()
+	// Listen for an interrupt signal from the OS.
+	osSignals := make(chan os.Signal)
+	signal.Notify(osSignals, os.Interrupt)
+
+	// Wait for a signal to shutdown.
+	<-osSignals
+
+	// Create a context to attempt a graceful 5 second shutdown.
+	const timeout = 5 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	// Attempt the graceful shutdown by closing the listener and
+	// completing all inflight requests.
+	if err := server.Shutdown(ctx); err != nil {
+
+		// Looks like we timedout on the graceful shutdown. Kill it hard.
+		if err := server.Close(); err != nil {
+			return err
+		}
+	}
+
+	// Wait for the listener to report it is closed.
+	wg.Wait()
+	return err
 }
 
 // wrapMiddleware wraps a handler with some middleware.

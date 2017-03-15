@@ -37,7 +37,6 @@ func main() {
 	}
 
 	log.User("main", "main", "Started : Listening on: %s", host)
-	web.Run(host, routes.API(), time.Second, time.Second)
-
-	log.User("main", "main", "Down")
+	err := web.Run(host, routes.API(), time.Second, time.Second)
+	log.User("main", "main", "Down : %v", err)
 }
