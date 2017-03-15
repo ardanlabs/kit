@@ -13,7 +13,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/braintree/manners"
 	"github.com/dimfeld/httptreemux"
 	"github.com/pborman/uuid"
 	"gopkg.in/go-playground/validator.v8"
@@ -164,13 +163,13 @@ func (g *Group) Handle(verb, path string, handler Handler, mw ...Middleware) {
 func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Duration) error {
 
 	// Create a new server and set timeout values.
-	server := manners.NewWithServer(&http.Server{
+	server := http.Server{
 		Addr:           host,
 		Handler:        routes,
 		ReadTimeout:    readTimeout,
 		WriteTimeout:   writeTimeout,
 		MaxHeaderBytes: 1 << 20,
-	})
+	}
 
 	go func() {
 
@@ -180,8 +179,19 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 
 		<-osSignals
 
-		// Shut down the API server.
-		server.Close()
+		// Create a context to attempt a graceful 5 second shutdown.
+		const timeout = 5 * time.Second
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+
+		// Attempt the graceful shutdown.
+		if err := server.Shutdown(ctx); err != nil {
+
+			// Looks like we timedout on the graceful shutdown. Kill it hard.
+			if err := server.Close(); err != nil {
+				return
+			}
+		}
 	}()
 
 	return server.ListenAndServe()
