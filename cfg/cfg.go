@@ -62,7 +62,7 @@ func (c *Config) String(key string) (string, error) {
 
 	value, found := c.m[key]
 	if !found {
-		return "", fmt.Errorf("Unknown key %s !", key)
+		return "", fmt.Errorf("unknown key %s", key)
 	}
 
 	return value, nil
@@ -100,7 +100,7 @@ func (c *Config) Int(key string) (int, error) {
 
 	value, found := c.m[key]
 	if !found {
-		return 0, fmt.Errorf("Unknown Key %s !", key)
+		return 0, fmt.Errorf("unknown key %s", key)
 	}
 
 	iv, err := strconv.Atoi(value)
@@ -119,12 +119,12 @@ func (c *Config) MustInt(key string) int {
 
 	value, found := c.m[key]
 	if !found {
-		panic(fmt.Sprintf("Unknown Key %s !", key))
+		panic(fmt.Sprintf("Unknown key %s !", key))
 	}
 
 	iv, err := strconv.Atoi(value)
 	if err != nil {
-		panic(fmt.Sprintf("Key %q value is not an int", key))
+		panic(fmt.Sprintf("key %q value is not an int", key))
 	}
 
 	return iv
@@ -147,7 +147,7 @@ func (c *Config) Time(key string) (time.Time, error) {
 
 	value, found := c.m[key]
 	if !found {
-		return time.Time{}, fmt.Errorf("Unknown Key %s !", key)
+		return time.Time{}, fmt.Errorf("unknown key %s", key)
 	}
 
 	tv, err := time.Parse(time.UnixDate, value)
@@ -166,12 +166,12 @@ func (c *Config) MustTime(key string) time.Time {
 
 	value, found := c.m[key]
 	if !found {
-		panic(fmt.Sprintf("Unknown Key %s !", key))
+		panic(fmt.Sprintf("unknown key %s", key))
 	}
 
 	tv, err := time.Parse(time.UnixDate, value)
 	if err != nil {
-		panic(fmt.Sprintf("Key %q value is not a Time", key))
+		panic(fmt.Sprintf("key %q value is not a Time", key))
 	}
 
 	return tv
@@ -194,7 +194,7 @@ func (c *Config) Bool(key string) (bool, error) {
 
 	value, found := c.m[key]
 	if !found {
-		return false, fmt.Errorf("Unknown Key %s !", key)
+		return false, fmt.Errorf("unknown key %s", key)
 	}
 
 	if value == "on" || value == "yes" {
@@ -219,7 +219,7 @@ func (c *Config) MustBool(key string) bool {
 
 	value, found := c.m[key]
 	if !found {
-		panic(fmt.Sprintf("Unknown Key %s !", key))
+		panic(fmt.Sprintf("unknown key %s", key))
 	}
 
 	if value == "on" || value == "yes" {
@@ -258,7 +258,7 @@ func (c *Config) URL(key string) (*url.URL, error) {
 
 	value, found := c.m[key]
 	if !found {
-		return nil, fmt.Errorf("Unknown Key %s !", key)
+		return nil, fmt.Errorf("unknown key %s", key)
 	}
 
 	u, err := url.Parse(value)
@@ -277,12 +277,12 @@ func (c *Config) MustURL(key string) *url.URL {
 
 	value, found := c.m[key]
 	if !found {
-		panic(fmt.Sprintf("Unknown Key %s !", key))
+		panic(fmt.Sprintf("unknown key %s", key))
 	}
 
 	u, err := url.Parse(value)
 	if err != nil {
-		panic(fmt.Sprintf("Key %q value is not a URL", key))
+		panic(fmt.Sprintf("key %q value is not a URL", key))
 	}
 
 	return u
@@ -305,7 +305,7 @@ func (c *Config) Duration(key string) (time.Duration, error) {
 
 	value, found := c.m[key]
 	if !found {
-		return time.Duration(0), fmt.Errorf("Unknown Key %s !", key)
+		return time.Duration(0), fmt.Errorf("unknown key %s", key)
 	}
 
 	d, err := time.ParseDuration(value)
@@ -324,12 +324,12 @@ func (c *Config) MustDuration(key string) time.Duration {
 
 	value, found := c.m[key]
 	if !found {
-		panic(fmt.Errorf("Unknown Key %s !", key))
+		panic(fmt.Errorf("unknown key %s", key))
 	}
 
 	d, err := time.ParseDuration(value)
 	if err != nil {
-		panic(fmt.Sprintf("Key %q value is not a Duration", key))
+		panic(fmt.Sprintf("key %q value is not a Duration", key))
 	}
 
 	return d
