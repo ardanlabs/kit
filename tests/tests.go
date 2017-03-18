@@ -17,24 +17,22 @@ var (
 	Failed  = "\u2717"
 )
 
-// logdash is the central buffer where all logs are stored.
-var logdash bytes.Buffer
+// Logdash is the central buffer where all logs are stored.
+var Logdash bytes.Buffer
 
-//==============================================================================
-
-// ResetLog resets the contents of logdash.
+// ResetLog resets the contents of Logdash.
 func ResetLog() {
-	logdash.Reset()
+	Logdash.Reset()
 }
 
-// DisplayLog writes the logdash data to standand out, if testing in verbose mode
+// DisplayLog writes the Logdash data to standand out, if testing in verbose mode
 // was turned on.
 func DisplayLog() {
 	if !testing.Verbose() {
 		return
 	}
 
-	logdash.WriteTo(os.Stdout)
+	Logdash.WriteTo(os.Stdout)
 }
 
 // IndentJSON takes a JSON payload as a string and re-indents it to make

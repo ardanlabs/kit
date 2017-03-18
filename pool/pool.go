@@ -25,8 +25,6 @@ var (
 	ErrInvalidMetricInterval = errors.New("Invalid metric interval")
 )
 
-//==============================================================================
-
 // Worker must be implemented by types that want to use
 // this worker processes.
 type Worker interface {
@@ -47,8 +45,6 @@ type Stat struct {
 	Executed    int64 // Number of pieces of work executed.
 	MaxRoutines int64 // High water mark of routines the pool has been at.
 }
-
-//==============================================================================
 
 // OptEvent defines an handler used to provide events.
 type OptEvent struct {
@@ -73,8 +69,6 @@ func (cfg *Config) Event(traceID string, event string, format string, a ...inter
 		cfg.OptEvent.Event(traceID, event, format, a...)
 	}
 }
-
-//==============================================================================
 
 // Pool provides a pool of routines that can execute any Worker
 // tasks that are submitted.

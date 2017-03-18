@@ -23,8 +23,6 @@ type Provider interface {
 	Provide() (map[string]string, error)
 }
 
-//==============================================================================
-
 // New populates a new Config from a Provider. It will return an error if there
 // was any problem reading from the Provider.
 func New(p Provider) (*Config, error) {

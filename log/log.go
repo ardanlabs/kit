@@ -41,8 +41,6 @@ type Logger struct {
 	mu    sync.RWMutex
 }
 
-//==============================================================================
-
 // New returns a instance of a logger.
 func New(w io.Writer, levelHandler func() int, flags int) *Logger {
 	return &Logger{
@@ -50,8 +48,6 @@ func New(w io.Writer, levelHandler func() int, flags int) *Logger {
 		level:  levelHandler,
 	}
 }
-
-//==============================================================================
 
 // mLevel sets the default log level for use with the log methods.
 const mLevel = 2
@@ -117,8 +113,6 @@ func (l *Logger) Fatal(traceID string, funcName string, format string, a ...inte
 
 	os.Exit(1)
 }
-
-//==============================================================================
 
 // DevOffset logs trace information for developers with a offset option to
 // expand the caller level.

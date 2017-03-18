@@ -14,8 +14,6 @@ var (
 	failed  = "\u2717"
 )
 
-//==============================================================================
-
 // TestExists validates the ability to load configuration values
 // using the OS-level environment variables and read them back.
 func TestExists(t *testing.T) {

@@ -5,8 +5,6 @@ import "io"
 // l defines the default log variable for the global log functions.
 var l Logger
 
-//==============================================================================
-
 // Init initializes the default logger to allow usage of the global log
 // functions.
 func Init(w io.Writer, level func() int, flags int) {
@@ -19,8 +17,6 @@ func Init(w io.Writer, level func() int, flags int) {
 	}
 	l.mu.Unlock()
 }
-
-//==============================================================================
 
 // Dev logs trace information for developers.
 func Dev(traceID string, funcName string, format string, a ...interface{}) {
@@ -41,8 +37,6 @@ func Error(traceID string, funcName string, err error, format string, a ...inter
 func Fatal(traceID string, funcName string, format string, a ...interface{}) {
 	l.FatalOffset(traceID, 1, funcName, format, a...)
 }
-
-//==============================================================================
 
 // DevOffset logs trace information for developers with a offset option to
 // expand the caller level.

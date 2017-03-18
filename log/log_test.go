@@ -32,8 +32,6 @@ func displayLog() {
 	logdest.WriteTo(os.Stdout)
 }
 
-//==============================================================================
-
 // TestLogLevelUSER tests the basic functioning of the logger in USER mode.
 func TestLogLevelUSER(t *testing.T) {
 	t.Log("Given the need to log DEV and USER messages.")
