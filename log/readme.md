@@ -18,7 +18,7 @@ To initialize the logging system from your application, call Init:
 		return ll
 	}
 	
-	log.Init(os.Stderr, logLevel)
+	log.Init(os.Stderr, logLevel, log.Ldefault)
 
 To write to the log you can make calls like this:
 
