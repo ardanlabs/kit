@@ -197,18 +197,18 @@ func TestLogLevelUserOffset(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:206: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:207: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:204: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:205: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
 			log.DevOffset("traceID", 0, "FuncName", "Message 1 no format")
 			log.UserOffset("traceID", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
 			log.ErrorOffset("traceID", 0, "FuncName", errors.New("An error"), "Message 3 with format: %s, %s", "C", "D")
 
-			if logdest.String() == log1+log2 {
+			if logdest.String() == (log1 + log2) {
 				t.Logf("\t\t%v : Should log the expected trace line.", Success)
 			} else {
 				t.Log("***>", logdest.String())
-				t.Log("***>", log1+log2)
+				t.Log("***>", (log1 + log2))
 				t.Errorf("\t\t%v : Should log the expected trace line.", Failed)
 			}
 		}
