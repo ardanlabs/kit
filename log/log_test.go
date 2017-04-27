@@ -44,8 +44,8 @@ func TestLogLevelUSER(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:53: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:54: ERROR : traceID : FuncName : An error : Message 3 no format\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:51: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:52: ERROR : traceID : FuncName : An error : Message 3 no format\n", dt)
 
 			log.Dev("traceID", "FuncName", "Message 1 no format")
 			log.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
@@ -74,9 +74,9 @@ func TestLogLevelDEV(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:83: DEV : traceID : FuncName : Message 1 no format\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:84: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
-			log3 := fmt.Sprintf("%s log_test.go:85: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:81: DEV : traceID : FuncName : Message 1 no format\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:82: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log3 := fmt.Sprintf("%s log_test.go:83: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
 			log.Dev("traceID", "FuncName", "Message 1 no format")
 			log.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
@@ -105,9 +105,9 @@ func TestLogInstanceInDev(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:114: DEV : traceID : FuncName : Message 1 no format\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:115: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
-			log3 := fmt.Sprintf("%s log_test.go:116: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:112: DEV : traceID : FuncName : Message 1 no format\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:113: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log3 := fmt.Sprintf("%s log_test.go:114: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
 			lg.Dev("traceID", "FuncName", "Message 1 no format")
 			lg.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
@@ -136,8 +136,8 @@ func TestLogInstanceInUser(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:145: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:146: ERROR : traceID : FuncName : An error : Message 3 no format\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:143: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:144: ERROR : traceID : FuncName : An error : Message 3 no format\n", dt)
 
 			lg.Dev("traceID", "FuncName", "Message 1 no format")
 			lg.User("traceID", "FuncName", "Message 2 with format: %s, %s", "A", "B")
@@ -166,9 +166,9 @@ func TestLogLevelDEVOffset(t *testing.T) {
 
 			dt := time.Now().Format("2006/01/02 15:04:05")
 
-			log1 := fmt.Sprintf("%s log_test.go:175: DEV : traceID : FuncName : Message 1 no format\n", dt)
-			log2 := fmt.Sprintf("%s log_test.go:176: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
-			log3 := fmt.Sprintf("%s log_test.go:177: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
+			log1 := fmt.Sprintf("%s log_test.go:173: DEV : traceID : FuncName : Message 1 no format\n", dt)
+			log2 := fmt.Sprintf("%s log_test.go:174: USER : traceID : FuncName : Message 2 with format: A, B\n", dt)
+			log3 := fmt.Sprintf("%s log_test.go:175: ERROR : traceID : FuncName : An error : Message 3 with format: C, D\n", dt)
 
 			log.DevOffset("traceID", 0, "FuncName", "Message 1 no format")
 			log.UserOffset("traceID", 0, "FuncName", "Message 2 with format: %s, %s", "A", "B")
