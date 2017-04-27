@@ -18,6 +18,11 @@ var (
 Success and failure markers.
 
 ``` go
+var Logdash bytes.Buffer
+```
+Logdash is the central buffer where all logs are stored.
+
+``` go
 var TraceID = "Test"
 ```
 TraceID provides a base trace id for tests.
@@ -27,7 +32,7 @@ TraceID provides a base trace id for tests.
 ``` go
 func DisplayLog()
 ```
-DisplayLog writes the logdash data to standand out, if testing in verbose mode
+DisplayLog writes the Logdash data to standand out, if testing in verbose mode
 was turned on.
 
 
@@ -43,7 +48,7 @@ comparing expected strings to tests strings during testing.
 ``` go
 func ResetLog()
 ```
-ResetLog resets the contents of logdash.
+ResetLog resets the contents of Logdash.
 
 
 

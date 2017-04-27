@@ -123,9 +123,6 @@ type Config struct {
     ReqHandler  ReqHandler  // Support for handling the specific request workflow.
     RespHandler RespHandler // Support for handling the specific response workflow.
 
-    OptUserPool
-    OptIntPool
-
     OptEvent
 }
 ```
@@ -143,7 +140,7 @@ Config provides a data structure of required configuration parameters.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(traceID string, event string, format string, a ...interface{})
+func (cfg *Config) Event(event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -160,8 +157,9 @@ Validate checks the configuration to required items.
 ## type ConnHandler
 ``` go
 type ConnHandler interface {
+
     // Bind is called to set the reader and writer.
-    Bind(traceID string, listener *net.UDPConn) (io.Reader, io.Writer)
+    Bind(listener *net.UDPConn) (io.Reader, io.Writer)
 }
 ```
 ConnHandler is implemented by the user to bind the listener
@@ -180,7 +178,7 @@ to a reader and writer for processing.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(traceID string, event string, format string, a ...interface{})
+    Event func(event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
@@ -195,59 +193,18 @@ OptEvent defines an handler used to provide events.
 
 
 
-## type OptIntPool
-``` go
-type OptIntPool struct {
-    RecvMinPoolSize func() int // Min number of routines the recv pool must have.
-    RecvMaxPoolSize func() int // Max number of routines the recv pool can have.
-    SendMinPoolSize func() int // Min number of routines the send pool must have.
-    SendMaxPoolSize func() int // Max number of routines the send pool can have.
-}
-```
-OptIntPool declares fields for the user to provide configuration
-for an internally configured pool.
-
-
-
-
-
-
-
-
-
-
-
-## type OptUserPool
-``` go
-type OptUserPool struct {
-    RecvPool *pool.Pool // User provided work pool for the receive work.
-    SendPool *pool.Pool // User provided work pool for the send work.
-}
-```
-OptUserPool declares fields for the user to pass their own
-work pools for configuration.
-
-
-
-
-
-
-
-
-
-
-
 ## type ReqHandler
 ``` go
 type ReqHandler interface {
+
     // Read is provided the user-defined reader and must return the data read
     // off the wire and the length. Returning io.EOF or a non temporary error
     // will show down the listener.
-    Read(traceID string, reader io.Reader) (*net.UDPAddr, []byte, int, error)
+    Read(reader io.Reader) (*net.UDPAddr, []byte, int, error)
 
     // Process is used to handle the processing of the request. This method
     // is called on a routine from a pool of routines.
-    Process(traceID string, r *Request)
+    Process(r *Request)
 }
 ```
 ReqHandler is implemented by the user to implement the processing
@@ -286,20 +243,12 @@ Request is the message received by the client.
 
 
 
-### func (\*Request) Work
-``` go
-func (r *Request) Work(traceID string, id int)
-```
-Work implements the worker inteface for processing messages. This is called
-from a routine in the work pool.
-
-
-
 ## type RespHandler
 ``` go
 type RespHandler interface {
+
     // Write is provided the user-defined writer and the data to write.
-    Write(traceID string, r *Response, writer io.Writer)
+    Write(r *Response, writer io.Writer) error
 }
 ```
 RespHandler is implemented by the user to implement the processing
@@ -318,11 +267,9 @@ of the response messages to the client.
 ## type Response
 ``` go
 type Response struct {
-    UDPAddr  *net.UDPAddr
-    Data     []byte
-    Length   int
-    Complete func(r *Response)
-    // contains filtered or unexported fields
+    UDPAddr *net.UDPAddr
+    Data    []byte
+    Length  int
 }
 ```
 Response is message to send to the client.
@@ -334,15 +281,6 @@ Response is message to send to the client.
 
 
 
-
-
-
-### func (\*Response) Work
-``` go
-func (r *Response) Work(traceID string, id int)
-```
-Work implements the worker interface for sending messages. Called by
-AsyncSend via the d.client.Do(traceID, &resp) method call.
 
 
 
@@ -366,7 +304,7 @@ UDP manages message to a specific ip address and port.
 
 ### func New
 ``` go
-func New(traceID string, name string, cfg Config) (*UDP, error)
+func New(name string, cfg Config) (*UDP, error)
 ```
 New creates a new manager to service clients.
 
@@ -381,41 +319,25 @@ Addr returns the local listening network address.
 
 
 
-### func (\*UDP) Do
+### func (\*UDP) Send
 ``` go
-func (d *UDP) Do(traceID string, r *Response) error
+func (d *UDP) Send(r *Response) error
 ```
-Do will post the request to be sent by the client worker pool.
+Send will deliver the response back to the client.
 
 
 
 ### func (\*UDP) Start
 ``` go
-func (d *UDP) Start(traceID string) error
+func (d *UDP) Start() error
 ```
 Start begins to accept data.
 
 
 
-### func (\*UDP) StatsRecv
-``` go
-func (d *UDP) StatsRecv() pool.Stat
-```
-StatsRecv returns the current snapshot of the recv pool stats.
-
-
-
-### func (\*UDP) StatsSend
-``` go
-func (d *UDP) StatsSend() pool.Stat
-```
-StatsSend returns the current snapshot of the send pool stats.
-
-
-
 ### func (\*UDP) Stop
 ``` go
-func (d *UDP) Stop(traceID string) error
+func (d *UDP) Stop() error
 ```
 Stop shuts down the manager and closes all connections.
 

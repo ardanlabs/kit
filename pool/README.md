@@ -139,7 +139,7 @@ tasks that are submitted.
 
 ### func New
 ``` go
-func New(traceID string, name string, cfg Config) (*Pool, error)
+func New(name string, cfg Config) (*Pool, error)
 ```
 New creates a new Pool.
 
@@ -176,7 +176,7 @@ not push back.
 
 ### func (\*Pool) Shutdown
 ``` go
-func (p *Pool) Shutdown(traceID string)
+func (p *Pool) Shutdown()
 ```
 Shutdown waits for all the workers to finish.
 

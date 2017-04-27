@@ -4,9 +4,7 @@
 
 Package tcp provides the boilerpale code for working with TCP based data. The package
 allows you to establish a TCP listener that can accept client connections on a specified IP address
-and port. It also provides a function to send data back to the client. The processing
-of received data and sending data happens on a configured routine pool, so concurrency
-is handled.
+and port. It also provides a function to send data back to the client.
 
 There are three interfaces that need to be implemented to use the package. These
 interfaces provide the API for processing data.
@@ -15,7 +13,7 @@ ConnHandler
 
 
 	type ConnHandler interface {
-	    Bind(logCtx string, conn net.Conn) (io.Reader, io.Writer)
+	    Bind(conn net.Conn) (io.Reader, io.Writer)
 	}
 
 The ConnHandler interface is implemented by the user to bind the client connection
@@ -25,8 +23,8 @@ ReqHandler
 
 
 	type ReqHandler interface {
-	    Read(logCtx string, ipAddress string, reader io.Reader) ([]byte, int, error)
-	    Process(logCtx string, r *Request)
+	    Read(ipAddress string, reader io.Reader) ([]byte, int, error)
+	    Process(r *Request)
 	}
 	
 	type Request struct {
@@ -45,7 +43,7 @@ RespHandler
 
 
 	type RespHandler interface {
-	    Write(logCtx string, r *Response, writer io.Writer)
+	    Write(r *Response, writer io.Writer) error
 	}
 	
 	type Response struct {
@@ -64,7 +62,7 @@ start processing messages.
 
 
 	func main() {
-	    log.Startf("TEST", "main", "Starting Test App")
+	    log.Println("Starting Test App")
 	
 	    cfg := tcp.Config{
 	        NetType:      "tcp4",
@@ -76,13 +74,15 @@ start processing messages.
 	        RespHandler:  udpRespHandler{},
 	    }
 	
-	    t, err := tcp.New("TEST", &cfg)
+	    t, err := tcp.New(&cfg)
 	    if err != nil {
-	        log.ErrFatal(err, "TEST", "main")
+	        log.Println(err)
+	         return
 	    }
 	
-	    if err := t.Start("TEST"); err != nil {
-	        log.ErrFatal(err, "TEST", "main")
+	    if err := t.Start(); err != nil {
+	        log.Println(err)
+	         return
 	    }
 	
 	    // Wait for a signal to shutdown.
@@ -90,9 +90,8 @@ start processing messages.
 	    signal.Notify(sigChan, os.Interrupt)
 	    <-sigChan
 	
-	    t.Stop("TEST")
-	
-	    log.Complete("TEST", "main")
+	    t.Stop()
+	    log.Println("down")
 	}
 
 
@@ -102,12 +101,11 @@ start processing messages.
 ## Variables
 ``` go
 var (
-    ErrInvalidConfiguration     = errors.New("Invalid Configuration")
-    ErrInvalidNetType           = errors.New("Invalid NetType Configuration")
-    ErrInvalidConnHandler       = errors.New("Invalid Connection Handler Configuration")
-    ErrInvalidReqHandler        = errors.New("Invalid Request Handler Configuration")
-    ErrInvalidRespHandler       = errors.New("Invalid Response Handler Configuration")
-    ErrInvalidPoolConfiguration = errors.New("Invalid Pool Configuration")
+    ErrInvalidConfiguration = errors.New("invalid configuration")
+    ErrInvalidNetType       = errors.New("invalid net type configuration")
+    ErrInvalidConnHandler   = errors.New("invalid connection handler configuration")
+    ErrInvalidReqHandler    = errors.New("invalid request handler configuration")
+    ErrInvalidRespHandler   = errors.New("invalid response handler configuration")
 )
 ```
 Set of error variables for start up.
@@ -123,9 +121,6 @@ type Config struct {
     ConnHandler ConnHandler // Support for binding new connections to a reader and writer.
     ReqHandler  ReqHandler  // Support for handling the specific request workflow.
     RespHandler RespHandler // Support for handling the specific response workflow.
-
-    OptUserPool
-    OptIntPool
 
     OptRateLimit
     OptEvent
@@ -145,7 +140,7 @@ Config provides a data structure of required configuration parameters.
 
 ### func (\*Config) Event
 ``` go
-func (cfg *Config) Event(traceID string, event string, format string, a ...interface{})
+func (cfg *Config) Event(event string, format string, a ...interface{})
 ```
 Event fires events back to the user for important events.
 
@@ -164,7 +159,7 @@ Validate checks the configuration to required items.
 type ConnHandler interface {
 
     // Bind is called to set the reader and writer.
-    Bind(traceID string, conn net.Conn) (io.Reader, io.Writer)
+    Bind(conn net.Conn) (io.Reader, io.Writer)
 }
 ```
 ConnHandler is implemented by the user to bind the connection
@@ -183,32 +178,10 @@ to a reader and writer for processing.
 ## type OptEvent
 ``` go
 type OptEvent struct {
-    Event func(traceID string, event string, format string, a ...interface{})
+    Event func(event string, format string, a ...interface{})
 }
 ```
 OptEvent defines an handler used to provide events.
-
-
-
-
-
-
-
-
-
-
-
-## type OptIntPool
-``` go
-type OptIntPool struct {
-    RecvMinPoolSize func() int // Min number of routines the recv pool must have.
-    RecvMaxPoolSize func() int // Max number of routines the recv pool can have.
-    SendMinPoolSize func() int // Min number of routines the send pool must have.
-    SendMaxPoolSize func() int // Max number of routines the send pool can have.
-}
-```
-OptIntPool declares fields for the user to provide configuration
-for an internally configured pool.
 
 
 
@@ -239,26 +212,6 @@ for connection rate limit.
 
 
 
-## type OptUserPool
-``` go
-type OptUserPool struct {
-    RecvPool *pool.Pool // User provided work pool for the receive work.
-    SendPool *pool.Pool // User provided work pool for the send work.
-}
-```
-OptUserPool declares fields for the user to pass their own
-work pools for configuration.
-
-
-
-
-
-
-
-
-
-
-
 ## type ReqHandler
 ``` go
 type ReqHandler interface {
@@ -266,11 +219,10 @@ type ReqHandler interface {
     // Read is provided an ipaddress and the user-defined reader and must return
     // the data read off the wire and the length. Returning io.EOF or a non
     // temporary error will show down the listener.
-    Read(traceID string, ipAddress string, reader io.Reader) ([]byte, int, error)
+    Read(ipAddress string, reader io.Reader) ([]byte, int, error)
 
-    // Process is used to handle the processing of the request. This method
-    // is called on a routine from a pool of routines.
-    Process(traceID string, r *Request)
+    // Process is used to handle the processing of the request.
+    Process(r *Request)
 }
 ```
 ReqHandler is implemented by the user to implement the processing
@@ -309,21 +261,12 @@ Request is the message received by the client.
 
 
 
-### func (\*Request) Work
-``` go
-func (r *Request) Work(traceID string, id int)
-```
-Work implements the worker interface for processing received messages.
-This is called from a routine in the work pool.
-
-
-
 ## type RespHandler
 ``` go
 type RespHandler interface {
 
     // Write is provided the response to write and the user-defined writer.
-    Write(traceID string, r *Response, writer io.Writer)
+    Write(r *Response, writer io.Writer) error
 }
 ```
 RespHandler is implemented by the user to implement the processing
@@ -342,11 +285,9 @@ of the response messages to the client.
 ## type Response
 ``` go
 type Response struct {
-    TCPAddr  *net.TCPAddr
-    Data     []byte
-    Length   int
-    Complete func(r *Response)
-    // contains filtered or unexported fields
+    TCPAddr *net.TCPAddr
+    Data    []byte
+    Length  int
 }
 ```
 Response is message to send to the client.
@@ -358,15 +299,6 @@ Response is message to send to the client.
 
 
 
-
-
-
-### func (\*Response) Work
-``` go
-func (r *Response) Work(traceID string, id int)
-```
-Work implements the worker interface for sending messages to the client.
-This is called from a routine in the work pool.
 
 
 
@@ -390,7 +322,7 @@ TCP contains a set of networked client connections.
 
 ### func New
 ``` go
-func New(traceID string, name string, cfg Config) (*TCP, error)
+func New(name string, cfg Config) (*TCP, error)
 ```
 New creates a new manager to service clients.
 
@@ -406,50 +338,34 @@ provided in the configuration, for example if configuration port value is 0.
 
 
 
-### func (\*TCP) Do
-``` go
-func (t *TCP) Do(traceID string, r *Response) error
-```
-Do will post the request to be sent by the client worker pool.
-
-
-
 ### func (\*TCP) DropConnections
 ``` go
-func (t *TCP) DropConnections(traceID string, drop bool)
+func (t *TCP) DropConnections(drop bool)
 ```
 DropConnections sets a flag to tell the accept routine to immediately
 drop connections that come in.
 
 
 
+### func (\*TCP) Send
+``` go
+func (t *TCP) Send(r *Response) error
+```
+Send will deliver the response back to the client.
+
+
+
 ### func (\*TCP) Start
 ``` go
-func (t *TCP) Start(traceID string) error
+func (t *TCP) Start() error
 ```
 Start creates the accept routine and begins to accept connections.
 
 
 
-### func (\*TCP) StatsRecv
-``` go
-func (t *TCP) StatsRecv() pool.Stat
-```
-StatsRecv returns the current snapshot of the recv pool stats.
-
-
-
-### func (\*TCP) StatsSend
-``` go
-func (t *TCP) StatsSend() pool.Stat
-```
-StatsSend returns the current snapshot of the send pool stats.
-
-
-
 ### func (\*TCP) Stop
 ``` go
-func (t *TCP) Stop(traceID string) error
+func (t *TCP) Stop() error
 ```
 Stop shuts down the manager and closes all connections.
 
