@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -21,6 +22,13 @@ const (
 	cfgMinRoutines  = "MIN_ROUTINES"
 	cfgMaxRoutines  = "MAX_ROUTINES"
 )
+
+// TraceID is represents the trace id.
+type TraceID string
+
+// TraceIDKey is the type of value to use for the key. The key is
+// type specific and only values of the same type will match.
+type TraceIDKey int
 
 func init() {
 
@@ -59,16 +67,17 @@ type Task struct {
 }
 
 // Work implements the Worker interface so task can be executed by the pool.
-func (t *Task) Work(traceID string, id int) {
+func (t *Task) Work(ctx context.Context, id int) {
 	time.Sleep(time.Second)
 	wg.Done()
 }
 
 func main() {
-	const traceID = "main"
-	const totalWork = 100
 
-	wg.Add(totalWork)
+	// Create a traceID for this run.
+	traceID := TraceID("f47ac10b-58cc-0372-8567-0e02b2c3d479")
+	const traceIDKey TraceIDKey = 0
+	ctx := context.WithValue(context.Background(), traceIDKey, traceID)
 
 	// Create the configuration.
 	cfg := pool.Config{
@@ -79,7 +88,7 @@ func main() {
 	// Create a pool.
 	p, err := pool.New("test", cfg)
 	if err != nil {
-		log.Error(traceID, "main", err, "Creating pool")
+		log.Error(string(traceID), "main", err, "Creating pool")
 		return
 	}
 
@@ -87,13 +96,16 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(250 * time.Millisecond)
-			log.User(traceID, "Stats", "%#v", p.Stats())
+			log.User(string(traceID), "Stats", "%#v", p.Stats())
 		}
 	}()
 
+	const totalWork = 100
+	wg.Add(totalWork)
+
 	// Perform some work.
 	for i := 0; i < totalWork; i++ {
-		p.Do(traceID, &Task{Name: strconv.Itoa(i)})
+		p.Do(ctx, &Task{Name: strconv.Itoa(i)})
 	}
 
 	// Wait until all the work is complete.

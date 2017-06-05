@@ -28,13 +28,13 @@ var (
 // Worker must be implemented by types that want to use
 // this worker processes.
 type Worker interface {
-	Work(traceID string, id int)
+	Work(ctx context.Context, id int)
 }
 
 // doWork is used internally to route work to the pool.
 type doWork struct {
-	traceID string
-	do      Worker
+	ctx context.Context
+	do  Worker
 }
 
 // Stat contains information about the pool.
@@ -48,7 +48,7 @@ type Stat struct {
 
 // OptEvent defines an handler used to provide events.
 type OptEvent struct {
-	Event func(traceID string, event string, format string, a ...interface{})
+	Event func(ctx context.Context, event string, format string, a ...interface{})
 }
 
 // Config provides configuration for the pool.
@@ -64,9 +64,9 @@ type Config struct {
 }
 
 // Event fires events back to the user for important events.
-func (cfg *Config) Event(traceID string, event string, format string, a ...interface{}) {
+func (cfg *Config) Event(ctx context.Context, event string, format string, a ...interface{}) {
 	if cfg.OptEvent.Event != nil {
-		cfg.OptEvent.Event(traceID, event, format, a...)
+		cfg.OptEvent.Event(ctx, event, format, a...)
 	}
 }
 
@@ -138,10 +138,10 @@ func (p *Pool) Shutdown() {
 }
 
 // Do waits for the goroutine pool to take the work to be executed.
-func (p *Pool) Do(traceID string, work Worker) {
+func (p *Pool) Do(ctx context.Context, work Worker) {
 	dw := doWork{
-		traceID: traceID,
-		do:      work,
+		ctx: ctx,
+		do:  work,
 	}
 
 	p.measureHealth()
@@ -151,37 +151,13 @@ func (p *Pool) Do(traceID string, work Worker) {
 	atomic.AddInt64(&p.pending, -1)
 }
 
-// DoWait waits for the goroutine pool to take the work to be executed or gives
-// up after the allotted duration. Only use when you want to throw away work and
-// not push back.
-func (p *Pool) DoWait(traceID string, work Worker, duration <-chan time.Time) error {
-	dw := doWork{
-		traceID: traceID,
-		do:      work,
-	}
-
-	p.measureHealth()
-
-	atomic.AddInt64(&p.pending, 1)
-
-	select {
-	case p.tasks <- dw:
-		atomic.AddInt64(&p.pending, -1)
-		return nil
-
-	case <-duration:
-		atomic.AddInt64(&p.pending, -1)
-		return errors.New("Timedout waiting to post work")
-	}
-}
-
 // DoCancel waits for the goroutine pool to take the work to be executed
 // or gives up if the Context is cancelled. Only use when you want to throw
 // away work and not push back.
 func (p *Pool) DoCancel(ctx context.Context, traceID string, work Worker) error {
 	dw := doWork{
-		traceID: traceID,
-		do:      work,
+		ctx: ctx,
+		do:  work,
 	}
 
 	p.measureHealth()
@@ -292,12 +268,12 @@ func (p *Pool) execute(id int, dw doWork) {
 		if r := recover(); r != nil {
 
 			// Raise event and provide the stack trace.
-			p.Event(dw.traceID, "execute", "ERROR : %s", string(debug.Stack()))
+			p.Event(dw.ctx, "execute", "ERROR : %s", string(debug.Stack()))
 		}
 	}()
 
 	// Perform the work.
-	dw.do.Work(dw.traceID, id)
+	dw.do.Work(dw.ctx, id)
 }
 
 // measureHealth calculates the health of the work pool.

@@ -6,7 +6,7 @@
 // Worker
 //
 //     type Worker interface {
-//         Work(ctx interface{}, id int)
+//         Work(ctx context.Context, id int)
 //     }
 //
 // The Worker interface is how you can provide work to the pool. A user-defined type
@@ -15,34 +15,6 @@
 //
 // Sample Application
 //
-// The following is a sample application using the work pool.
+// https://github.com/ardanlabs/kit/blob/master/examples/pool/main.go
 //
-//     // theWork is the customer work type for using the pool.
-//     type theWork struct{}
-//
-//     // Work implements the DoWorker interface.
-//     func (*theWork) Work(ctx string, id int) {
-//         fmt.Printf("%s : Performing Work\n", ctx)
-//     }
-//
-//     // ExampleNewDoPool provides a basic example for using a DoPool.
-//     func ExampleNewDoPool() {
-//         // Create a new do pool.
-//         p, err := pool.New(ctx, "TheWork", 3, func() time.Duration { return time.Minute })
-//         if err != nil {
-//             fmt.Println(err)
-//             return
-//         }
-//
-//         // Pass in some work to be performed.
-//         p.Do("TEST", &theWork{})
-//         p.Do("TEST", &theWork{})
-//         p.Do("TEST", &theWork{})
-//
-//         // Wait to the work to be processed.
-//         time.Sleep(1 * time.Second)
-//
-//         // Shutdown the pool.
-//         p.Shutdown(ctx)
-//     }
 package pool

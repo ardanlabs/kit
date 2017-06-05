@@ -1,6 +1,7 @@
 package pool_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -20,7 +21,7 @@ type theWork struct {
 }
 
 // Work implements the DoWorker interface.
-func (p *theWork) Work(traceID string, id int) {
+func (p *theWork) Work(ctx context.Context, id int) {
 	fmt.Printf("Performing Work with privateID %d\n", p.privateID)
 }
 
@@ -40,9 +41,9 @@ func ExampleNew() {
 	}
 
 	// Pass in some work to be performed.
-	p.Do("TEST", &theWork{})
-	p.Do("TEST", &theWork{})
-	p.Do("TEST", &theWork{})
+	p.Do(context.TODO(), &theWork{})
+	p.Do(context.TODO(), &theWork{})
+	p.Do(context.TODO(), &theWork{})
 
 	// Wait to the work to be processed.
 	time.Sleep(100 * time.Millisecond)
@@ -67,7 +68,7 @@ func TestPool(t *testing.T) {
 		t.Log("\tShould not get error creating pool.", success)
 
 		for i := 0; i < 100; i++ {
-			p.Do("TestPool", &theWork{privateID: i})
+			p.Do(context.TODO(), &theWork{privateID: i})
 		}
 
 		time.Sleep(100 * time.Millisecond)
