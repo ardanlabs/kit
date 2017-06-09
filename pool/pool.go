@@ -154,7 +154,7 @@ func (p *Pool) Do(ctx context.Context, work Worker) {
 // DoCancel waits for the goroutine pool to take the work to be executed
 // or gives up if the Context is cancelled. Only use when you want to throw
 // away work and not push back.
-func (p *Pool) DoCancel(ctx context.Context, traceID string, work Worker) error {
+func (p *Pool) DoCancel(ctx context.Context, work Worker) error {
 	dw := doWork{
 		ctx: ctx,
 		do:  work,
