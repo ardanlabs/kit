@@ -83,11 +83,11 @@ func (c *Config) MustString(key string) string {
 // SetString adds or modifies the configuration for the specified key and
 // value.
 func (c *Config) SetString(key string, value string) {
-	c.mu.RLock()
+	c.mu.Lock()
 	{
 		c.m[key] = value
 	}
-	c.mu.RUnlock()
+	c.mu.Unlock()
 }
 
 // Int returns the value of the given key as an int. It will return an error if
@@ -130,11 +130,11 @@ func (c *Config) MustInt(key string) int {
 
 // SetInt adds or modifies the configuration for the specified key and value.
 func (c *Config) SetInt(key string, value int) {
-	c.mu.RLock()
+	c.mu.Lock()
 	{
 		c.m[key] = strconv.Itoa(value)
 	}
-	c.mu.RUnlock()
+	c.mu.Unlock()
 }
 
 // Time returns the value of the given key as a Time. It will return an error
@@ -177,11 +177,11 @@ func (c *Config) MustTime(key string) time.Time {
 
 // SetTime adds or modifies the configuration for the specified key and value.
 func (c *Config) SetTime(key string, value time.Time) {
-	c.mu.RLock()
+	c.mu.Lock()
 	{
 		c.m[key] = value.Format(time.UnixDate)
 	}
-	c.mu.RUnlock()
+	c.mu.Unlock()
 }
 
 // Bool returns the bool value of a given key as a bool. It will return an
@@ -241,11 +241,11 @@ func (c *Config) SetBool(key string, value bool) {
 		str = "true"
 	}
 
-	c.mu.RLock()
+	c.mu.Lock()
 	{
 		c.m[key] = str
 	}
-	c.mu.RUnlock()
+	c.mu.Unlock()
 }
 
 // URL returns the value of the given key as a URL. It will return an error if
@@ -288,11 +288,11 @@ func (c *Config) MustURL(key string) *url.URL {
 
 // SetURL adds or modifies the configuration for the specified key and value.
 func (c *Config) SetURL(key string, value *url.URL) {
-	c.mu.RLock()
+	c.mu.Lock()
 	{
 		c.m[key] = value.String()
 	}
-	c.mu.RUnlock()
+	c.mu.Unlock()
 }
 
 // Duration returns the value of the given key as a Duration. It will return an
@@ -336,9 +336,9 @@ func (c *Config) MustDuration(key string) time.Duration {
 // SetDuration adds or modifies the configuration for a given duration at a
 // specific key.
 func (c *Config) SetDuration(key string, value time.Duration) {
-	c.mu.RLock()
+	c.mu.Lock()
 	{
 		c.m[key] = value.String()
 	}
-	c.mu.RUnlock()
+	c.mu.Unlock()
 }
