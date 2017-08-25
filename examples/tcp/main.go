@@ -44,8 +44,8 @@ func init() {
 }
 
 // Event writes tcp events.
-func Event(event string, format string, a ...interface{}) {
-	log.User("*EVENT*", event, format, a...)
+func Event(evt, typ int, ipAddress string, format string, a ...interface{}) {
+	log.User("*EVENT*", fmt.Sprintf("EVT[%d] TYP[%d]", evt, typ), format, a...)
 }
 
 func main() {

@@ -1,6 +1,7 @@
 package tcp
 
 import (
+	"context"
 	"io"
 	"net"
 	"time"
@@ -12,6 +13,7 @@ type Request struct {
 	TCPAddr *net.TCPAddr
 	IsIPv6  bool
 	ReadAt  time.Time
+	Context context.Context
 	Data    []byte
 	Length  int
 }

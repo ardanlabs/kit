@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"io"
 	"net"
 
@@ -50,7 +51,7 @@ func (tcpReqHandler) Process(r *tcp.Request) {
 		Length:  7,
 	}
 
-	r.TCP.Send(&resp)
+	r.TCP.Send(context.TODO(), &resp)
 
 	log.Dev("handler", "Process", "Completed")
 }

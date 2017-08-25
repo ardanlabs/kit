@@ -1,14 +1,30 @@
 
-# tests
-    import "github.com/ardanlabs/kit/tests"
 
+# tests
+`import "github.com/ardanlabs/kit/tests"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 Package tests provides the generic support all tests require.
 
 
 
 
+## <a name="pkg-index">Index</a>
+* [Variables](#pkg-variables)
+* [func DisplayLog()](#DisplayLog)
+* [func IndentJSON(j string) string](#IndentJSON)
+* [func ResetLog()](#ResetLog)
 
-## Variables
+
+#### <a name="pkg-files">Package files</a>
+[tests.go](/src/github.com/ardanlabs/kit/tests/tests.go) 
+
+
+
+## <a name="pkg-variables">Variables</a>
 ``` go
 var (
     Success = "\u2713"
@@ -28,7 +44,8 @@ var TraceID = "Test"
 TraceID provides a base trace id for tests.
 
 
-## func DisplayLog
+
+## <a name="DisplayLog">func</a> [DisplayLog](/src/target/tests.go?s=553:570#L20)
 ``` go
 func DisplayLog()
 ```
@@ -36,7 +53,8 @@ DisplayLog writes the Logdash data to standand out, if testing in verbose mode
 was turned on.
 
 
-## func IndentJSON
+
+## <a name="IndentJSON">func</a> [IndentJSON](/src/target/tests.go?s=778:810#L30)
 ``` go
 func IndentJSON(j string) string
 ```
@@ -44,12 +62,12 @@ IndentJSON takes a JSON payload as a string and re-indents it to make
 comparing expected strings to tests strings during testing.
 
 
-## func ResetLog
+
+## <a name="ResetLog">func</a> [ResetLog](/src/target/tests.go?s=415:430#L14)
 ``` go
 func ResetLog()
 ```
 ResetLog resets the contents of Logdash.
-
 
 
 

@@ -45,9 +45,9 @@ func (tcpReqHandler) Process(r *tcp.Request) {
 		Length:  7,
 	}
 
-	r.TCP.Send(&resp)
+	r.TCP.Send(r.Context, &resp)
 
-	d := int64(time.Now().Sub(r.ReadAt))
+	d := int64(time.Since(r.ReadAt))
 	atomic.StoreInt64(&dur, d)
 }
 

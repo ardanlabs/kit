@@ -2,11 +2,11 @@ package tcp
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net"
 	"strconv"
 	"sync"
-	"sync/atomic"
 	"time"
 )
 
@@ -19,12 +19,17 @@ type client struct {
 	reader    io.Reader
 	writer    io.Writer
 	wg        sync.WaitGroup
+
+	timeConn time.Time
+	lastAct  time.Time
+	nReads   int
+	nWrites  int
 }
 
 // newClient creates a new client for an incoming connection.
 func newClient(t *TCP, conn net.Conn) *client {
+	now := time.Now().UTC()
 	ipAddress := conn.RemoteAddr().String()
-	t.Event("newClient", "IPAddress[%s]", ipAddress)
 
 	// Ask the user to bind the reader and writer they want to
 	// use for this connection.
@@ -36,6 +41,8 @@ func newClient(t *TCP, conn net.Conn) *client {
 		ipAddress: ipAddress,
 		reader:    r,
 		writer:    w,
+		timeConn:  now,
+		lastAct:   now,
 	}
 
 	// Check to see if this connection is ipv6.
@@ -57,24 +64,22 @@ func (c *client) drop() {
 	c.conn.Close()
 	c.wg.Wait()
 
-	c.t.Event("drop", "Client Dropped")
+	c.t.Event(EvtDrop, TypInfo, c.ipAddress, "connect dropped")
 }
 
 // read waits for a message and sends it to the user for procesing.
 func (c *client) read() {
-	c.t.Event("read", "Read Processing")
+	c.t.Event(EvtRead, TypTrigger, c.ipAddress, "ready")
 
 close:
 	for {
 
 		// Wait for a message to arrive.
 		data, length, err := c.t.ReqHandler.Read(c.ipAddress, c.reader)
-		timeRead := time.Now()
+		c.lastAct = time.Now().UTC()
+		c.nReads++
 
 		if err != nil {
-			if atomic.LoadInt32(&c.t.shuttingDown) == 0 {
-				c.t.Event("read", "ERROR : %v", err)
-			}
 
 			// temporary is declared to test for the existence of
 			// the method coming from the net package.
@@ -108,10 +113,11 @@ close:
 				Port: port,
 				Zone: c.t.tcpAddr.Zone,
 			},
-			IsIPv6: c.isIPv6,
-			ReadAt: timeRead,
-			Data:   data,
-			Length: length,
+			IsIPv6:  c.isIPv6,
+			ReadAt:  c.lastAct,
+			Context: context.Background(),
+			Data:    data,
+			Length:  length,
 		}
 
 		// Process the request on this goroutine that is
@@ -120,8 +126,7 @@ close:
 	}
 
 	// Remove from the list of connections and report we are done.
-	c.t.Event("read", "Shutting Down Client Routine")
 	c.t.remove(c.conn)
 	c.wg.Done()
-	c.t.Event("read", "Client Routine Down")
+	c.t.Event(EvtDrop, TypTrigger, c.ipAddress, "dropped connection")
 }

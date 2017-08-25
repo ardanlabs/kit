@@ -1,6 +1,8 @@
 package tcp
 
 import (
+	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -18,6 +20,36 @@ var (
 	ErrInvalidReqHandler    = errors.New("invalid request handler configuration")
 	ErrInvalidRespHandler   = errors.New("invalid response handler configuration")
 )
+
+// Set of event types.
+const (
+	EvtAccept = iota + 1
+	EvtJoin
+	EvtRead
+	EvtRemove
+	EvtDrop
+	EvtGroom
+)
+
+// Set of event sub types.
+const (
+	TypError = iota + 1
+	TypInfo
+	TypTrigger
+)
+
+// CltError provides support for multi client operations that might error.
+type CltError []error
+
+// Error implments the error interface for CltError.
+func (ce CltError) Error() string {
+	var b bytes.Buffer
+	for _, err := range ce {
+		b.WriteString(err.Error())
+		b.WriteString("\n")
+	}
+	return b.String()
+}
 
 // TCP contains a set of networked client connections.
 type TCP struct {
@@ -113,7 +145,7 @@ func (t *TCP) Start() error {
 					t.listener = listener
 					waitStart.Done()
 
-					t.Event("accept", "waiting for connections : IPAddress[ %s ]", join(t.ipAddress, t.port))
+					t.Event(EvtAccept, TypInfo, join(t.ipAddress, t.port), "waiting")
 				}
 			}
 			t.listenerMu.Unlock()
@@ -124,7 +156,7 @@ func (t *TCP) Start() error {
 				shutdown := atomic.LoadInt32(&t.shuttingDown)
 
 				if shutdown == 0 {
-					t.Event("accept", "ERROR : %v", err)
+					t.Event(EvtAccept, TypError, conn.RemoteAddr().String(), err.Error())
 				} else {
 					t.listenerMu.Lock()
 					{
@@ -159,19 +191,19 @@ func (t *TCP) Start() error {
 
 			// Check if we are being asked to drop all new connections.
 			if drop := atomic.LoadInt32(&t.dropConns); drop == 1 {
-				t.Event("accept", "*******> DROPPING CONNECTION")
+				t.Event(EvtAccept, TypInfo, "", "dropping new connection")
 				conn.Close()
 				continue
 			}
 
 			// Check if rate limit is enabled.
 			if t.RateLimit != nil {
-				now := time.Now()
+				now := time.Now().UTC()
 
 				// We will only accept 1 connection per duration. Anything
 				// connection above that must be dropped.
 				if t.lastAcceptedConnection.Add(t.RateLimit()).After(now) {
-					t.Event("accept", "*******> DROPPING CONNECTION Local[ %v ] Remote[ %v ] DUE TO RATE LIMIT %v", conn.LocalAddr(), conn.RemoteAddr(), t.RateLimit())
+					t.Event(EvtAccept, TypError, conn.RemoteAddr().String(), "rate limit drop : Local[ %v ] Limit[ %v ]", conn.LocalAddr(), t.RateLimit())
 					conn.Close()
 					continue
 				}
@@ -186,7 +218,7 @@ func (t *TCP) Start() error {
 
 		// Shutting down the routine.
 		t.wg.Done()
-		t.Event("accept", "Shutdown : IPAddress[ %s ]", join(t.ipAddress, t.port))
+		t.Event(EvtAccept, TypError, join(t.ipAddress, t.port), "shutdown")
 	}()
 
 	// Wait for the goroutine to initialize itself.
@@ -243,24 +275,75 @@ func (t *TCP) Stop() error {
 	return nil
 }
 
-// Send will deliver the response back to the client.
-func (t *TCP) Send(r *Response) error {
+// Drop will close the socket connection.
+func (t *TCP) Drop(tcpAddr *net.TCPAddr) error {
 
 	// Find the client connection for this IPAddress.
 	var c *client
 	t.clientsMu.Lock()
 	{
-		// If this ipaddress and socket does not exist, report an error.
+		// Validate this ipaddress and socket exists first.
+		var ok bool
+		if c, ok = t.clients[tcpAddr.String()]; !ok {
+			t.clientsMu.Unlock()
+			return fmt.Errorf("IP[ %s ] : disconnected", tcpAddr.String())
+		}
+	}
+	t.clientsMu.Unlock()
+
+	// Drop the connection using a goroutine since we are on the
+	// socket goroutine most likely.
+	go c.drop()
+	return nil
+}
+
+// Send will deliver the response back to the client.
+func (t *TCP) Send(ctx context.Context, r *Response) error {
+
+	// Find the client connection for this IPAddress.
+	var c *client
+	t.clientsMu.Lock()
+	{
+		// Validate this ipaddress and socket exists first.
 		var ok bool
 		if c, ok = t.clients[r.TCPAddr.String()]; !ok {
 			t.clientsMu.Unlock()
-			return fmt.Errorf("IP address disconnected [ %s ]", r.TCPAddr.String())
+			return fmt.Errorf("IP[ %s ] : disconnected", r.TCPAddr.String())
 		}
+
+		// Increment the number of writes.
+		c.nWrites++
 	}
 	t.clientsMu.Unlock()
 
 	// Send the response.
 	return t.RespHandler.Write(r, c.writer)
+}
+
+// SendAll will deliver the response back to all connected clients.
+func (t *TCP) SendAll(ctx context.Context, r *Response) error {
+	var clts []*client
+	t.clientsMu.Lock()
+	{
+		for _, c := range t.clients {
+			clts = append(clts, c)
+			c.nWrites++
+		}
+	}
+	t.clientsMu.Unlock()
+
+	// TODO: Consider doing this in parallel.
+	var errors CltError
+	for _, c := range clts {
+		if err := t.RespHandler.Write(r, c.writer); err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	if errors != nil {
+		return errors
+	}
+	return nil
 }
 
 // DropConnections sets a flag to tell the accept routine to immediately
@@ -286,24 +369,108 @@ func (t *TCP) Addr() net.Addr {
 	return t.listener.Addr()
 }
 
-// join takes a new connection and adds it to the manager.
-func (t *TCP) join(conn net.Conn) {
-	ipAddress := conn.RemoteAddr().String()
-	t.Event("join", "remote IPAddress[ %s ], local IPAddress[ %v ]", ipAddress, conn.LocalAddr())
+// Connections returns the number of client connections.
+func (t *TCP) Connections() int {
+	var l int
 
 	t.clientsMu.Lock()
 	{
-		// If this ipaddress and socket alread exist, we have a problet.
+		l = len(t.clients)
+	}
+	t.clientsMu.Unlock()
+
+	return l
+}
+
+// Stat represents a client statistic.
+type Stat struct {
+	IP       string
+	Reads    int
+	Writes   int
+	TimeConn time.Time
+	LastAct  time.Time
+}
+
+// ClientStats return details for all active clients.
+func (t *TCP) ClientStats() []Stat {
+	var clts []*client
+	t.clientsMu.Lock()
+	{
+		for _, v := range t.clients {
+			clts = append(clts, v)
+		}
+	}
+	t.clientsMu.Unlock()
+
+	stats := make([]Stat, len(clts))
+	for i, c := range clts {
+		stats[i] = Stat{
+			IP:       c.ipAddress,
+			Reads:    c.nReads,
+			Writes:   c.nWrites,
+			TimeConn: c.timeConn,
+			LastAct:  c.lastAct,
+		}
+	}
+
+	return stats
+}
+
+// Clients returns the number of active clients connected.
+func (t *TCP) Clients() int {
+	var count int
+	t.clientsMu.Lock()
+	{
+		count = len(t.clients)
+	}
+	t.clientsMu.Unlock()
+
+	return count
+}
+
+// Groom drops connections that are not active for the specified duration.
+func (t *TCP) Groom(d time.Duration) {
+	var clts []*client
+	t.clientsMu.Lock()
+	{
+		for _, v := range t.clients {
+			clts = append(clts, v)
+		}
+	}
+	t.clientsMu.Unlock()
+
+	now := time.Now().UTC()
+	for _, c := range clts {
+		sub := now.Sub(c.lastAct)
+		if sub >= d {
+
+			// TODO
+			// This is a blocking call that waits for the socket goroutine
+			// to report its done. This parallel call should work well since
+			// there is no error handling needed.
+			t.Event(EvtGroom, TypInfo, c.ipAddress, "Last[ %v ] Dur[ %v ]", c.lastAct.Format(time.RFC3339), sub)
+			go c.drop()
+		}
+	}
+}
+
+// join takes a new connection and adds it to the manager.
+func (t *TCP) join(conn net.Conn) {
+	ipAddress := conn.RemoteAddr().String()
+	t.Event(EvtJoin, TypTrigger, ipAddress, "new connection")
+
+	t.clientsMu.Lock()
+	{
+		// Validate this has not been joined already.
 		if _, ok := t.clients[ipAddress]; ok {
-			err := fmt.Errorf("IP Address already connected [ %s ]", ipAddress)
-			t.Event("join", "ERROR : %v", err)
+			t.Event(EvtJoin, TypError, ipAddress, "already connected")
 			conn.Close()
 
 			t.clientsMu.Unlock()
 			return
 		}
 
-		// Add the new client connection.
+		// Add the client connection to the map.
 		t.clients[ipAddress] = newClient(t, conn)
 	}
 	t.clientsMu.Unlock()
@@ -312,15 +479,12 @@ func (t *TCP) join(conn net.Conn) {
 // remove deletes a connection from the manager.
 func (t *TCP) remove(conn net.Conn) {
 	ipAddress := conn.RemoteAddr().String()
-	t.Event("remove", "IPAddress[ %s ]", ipAddress)
 
 	t.clientsMu.Lock()
 	{
-		// If this ipaddress and socket does not exist, we have a probler.
+		// Validate this has not been removed already.
 		if _, ok := t.clients[ipAddress]; !ok {
-			err := fmt.Errorf("IP Address already removed [ %s ]", ipAddress)
-			t.Event("remove", "ERROR : %v", err)
-
+			t.Event(EvtRemove, TypError, ipAddress, "already removed")
 			t.clientsMu.Unlock()
 			return
 		}
