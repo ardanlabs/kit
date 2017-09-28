@@ -171,14 +171,13 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	// We want to report the listener is closed.
-	done := make(chan struct{})
+	// We want to use an error channel to block and receive the error.
+	serverErrors := make(chan error, 1)
+	defer close(serverErrors)
 
 	// Start the listener.
-	var err error
 	go func() {
-		err = server.ListenAndServe()
-		close(done)
+		serverErrors <- server.ListenAndServe()
 	}()
 
 	// Listen for an interrupt signal from the OS.
@@ -187,7 +186,8 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 
 	// Wait for a signal to shutdown.
 	select {
-	case <-done:
+	case err := <-serverErrors:
+		return err
 	case <-osSignals:
 
 		// Create a context to attempt a graceful 5 second shutdown.
@@ -204,12 +204,10 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 				return err
 			}
 		}
-	}
 
-	// Wait for the listener to report it is closed.
-	// A closed channel never blocks.
-	<-done
-	return err
+		// If we're in this select block, we can safely collect the error from this channel.
+		return <-serverErrors
+	}
 }
 
 // wrapMiddleware wraps a handler with some middleware.
