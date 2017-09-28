@@ -189,6 +189,7 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 	select {
 	case <-done:
 	case <-osSignals:
+
 		// Create a context to attempt a graceful 5 second shutdown.
 		const timeout = 5 * time.Second
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -206,7 +207,7 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 	}
 
 	// Wait for the listener to report it is closed.
-	// A closed channel never blocks
+	// A closed channel never blocks.
 	<-done
 	return err
 }
