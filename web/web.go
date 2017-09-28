@@ -173,7 +173,6 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 
 	// We want to use an error channel to block and receive the error.
 	serverErrors := make(chan error, 1)
-	defer close(serverErrors)
 
 	// Start the listener.
 	go func() {
