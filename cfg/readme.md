@@ -81,6 +81,8 @@ will panic if the key does not exist:
   * [func (ep EnvProvider) Provide() (map[string]string, error)](#EnvProvider.Provide)
 * [type FileProvider](#FileProvider)
   * [func (fp FileProvider) Provide() (map[string]string, error)](#FileProvider.Provide)
+* [type StorageProvider](#StorageProvider)
+  * [func (sp StorageProvider) Provide() (map[string]string, error)](#StorageProvider.Provide)
 * [type MapProvider](#MapProvider)
   * [func (mp MapProvider) Provide() (map[string]string, error)](#MapProvider.Provide)
 * [type Provider](#Provider)
@@ -89,7 +91,7 @@ will panic if the key does not exist:
 * [New](#example_New)
 
 #### <a name="pkg-files">Package files</a>
-[cfg.go](/src/github.com/ardanlabs/kit/cfg/cfg.go) [cfg_default.go](/src/github.com/ardanlabs/kit/cfg/cfg_default.go) [doc.go](/src/github.com/ardanlabs/kit/cfg/doc.go) [env_provider.go](/src/github.com/ardanlabs/kit/cfg/env_provider.go) [file_provider.go](/src/github.com/ardanlabs/kit/cfg/file_provider.go) [map_provider.go](/src/github.com/ardanlabs/kit/cfg/map_provider.go) 
+[cfg.go](/src/github.com/ardanlabs/kit/cfg/cfg.go) [cfg_default.go](/src/github.com/ardanlabs/kit/cfg/cfg_default.go) [doc.go](/src/github.com/ardanlabs/kit/cfg/doc.go) [env_provider.go](/src/github.com/ardanlabs/kit/cfg/env_provider.go) [file_provider.go](/src/github.com/ardanlabs/kit/cfg/file_provider.go) [storage_provider.go](/src/target/storage_provider.go) [map_provider.go](/src/github.com/ardanlabs/kit/cfg/map_provider.go) 
 
 
 
@@ -544,6 +546,32 @@ from a file listed.
 func (fp FileProvider) Provide() (map[string]string, error)
 ```
 Provide implements the Provider interface.
+
+
+## <a name="StorageProvider">type</a> [StorageProvider](/cfg/storage_provider.go?#L13)
+``` go
+type StorageProvider struct {
+    Bucketname string
+    Filename   string
+}
+```
+StorageProvider describes GCP Storage based loader which loads the configuration
+from a bucket and file listed.
+
+
+
+
+
+
+
+
+
+### <a name="StorageProvider.Provide">func</a> (StorageProvider) [Provide](/cfg/storage_provider.go?#L19)
+``` go
+func (sp StorageProvider) Provide() (map[string]string, error)
+```
+Provide implements the Provider interface.
+
 
 
 
