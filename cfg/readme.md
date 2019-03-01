@@ -548,7 +548,7 @@ func (fp FileProvider) Provide() (map[string]string, error)
 Provide implements the Provider interface.
 
 
-## <a name="StorageProvider">type</a> [StorageProvider](/storage_provider.go?#L13)
+## <a name="StorageProvider">type</a> [StorageProvider](/cfg/storage_provider.go?#L13)
 ``` go
 type StorageProvider struct {
     Bucketname string
@@ -566,7 +566,7 @@ from a bucket and file listed.
 
 
 
-### <a name="StorageProvider.Provide">func</a> (StorageProvider) [Provide](/storage_provider.go?#L19)
+### <a name="StorageProvider.Provide">func</a> (StorageProvider) [Provide](/cfg/storage_provider.go?#L19)
 ``` go
 func (sp StorageProvider) Provide() (map[string]string, error)
 ```
