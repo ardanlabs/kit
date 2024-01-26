@@ -362,9 +362,9 @@ func TestSets(t *testing.T) {
 			if dVal != retDurVal {
 				t.Log(dVal)
 				t.Log(retDurVal)
-				t.Errorf("\t\t%s Should return the bool value \"%v\" that was set.", failed, dVal)
+				t.Errorf("\t\t%s Should return the duration value \"%v\" that was set.", failed, dVal)
 			} else {
-				t.Logf("\t\t%s Should return the bool value \"%v\" that was set.", success, dVal)
+				t.Logf("\t\t%s Should return the duration value \"%v\" that was set.", success, dVal)
 			}
 		}
 	}
