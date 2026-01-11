@@ -1,7 +1,7 @@
 
 
 # tests
-`import "github.com/ardanlabs/kit/tests"`
+`import "github.com/kurisu1024/kit/tests"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -20,7 +20,7 @@ Package tests provides the generic support all tests require.
 
 
 #### <a name="pkg-files">Package files</a>
-[tests.go](/src/github.com/ardanlabs/kit/tests/tests.go) 
+[tests.go](/src/github.com/kurisu1024/kit/tests/tests.go) 
 
 
 

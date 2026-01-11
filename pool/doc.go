@@ -5,16 +5,15 @@
 //
 // Worker
 //
-//     type Worker interface {
-//         Work(ctx context.Context, id int)
-//     }
+//	type Worker interface {
+//	    Work(ctx context.Context, id int)
+//	}
 //
 // The Worker interface is how you can provide work to the pool. A user-defined type
 // implements this interface, then values of that type can be passed into the Do
 // function.
 //
-// Sample Application
+// # Sample Application
 //
-// https://github.com/ardanlabs/kit/blob/master/examples/pool/main.go
-//
+// https://github.com/kurisu1024/kit/blob/master/examples/pool/main.go
 package pool

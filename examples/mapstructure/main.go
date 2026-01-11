@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	ms "github.com/ardanlabs/kit/mapstructure"
+	ms "github.com/kurisu1024/kit/mapstructure"
 )
 
 func main() {

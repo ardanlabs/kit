@@ -1,7 +1,7 @@
 
 
 # mapstructure
-`import "github.com/ardanlabs/kit/mapstructure"`
+`import "github.com/kurisu1024/kit/mapstructure"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -244,7 +244,7 @@ You can decode within those arrays
 * [Decode (WeaklyTypedInput)](#example_Decode_weaklyTypedInput)
 
 #### <a name="pkg-files">Package files</a>
-[doc.go](/src/github.com/ardanlabs/kit/mapstructure/doc.go) [error.go](/src/github.com/ardanlabs/kit/mapstructure/error.go) [mapstructure.go](/src/github.com/ardanlabs/kit/mapstructure/mapstructure.go) 
+[doc.go](/src/github.com/kurisu1024s/kit/mapstructure/doc.go) [error.go](/src/github.com/kurisu1024s/kit/mapstructure/error.go) [mapstructure.go](/src/github.com/kurisu1024s/kit/mapstructure/mapstructure.go) 
 
 
 

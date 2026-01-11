@@ -8,8 +8,8 @@ import (
 
 	mgo "gopkg.in/mgo.v2"
 
-	"github.com/ardanlabs/kit/examples/web/internal/sys/db"
-	"github.com/ardanlabs/kit/log"
+	"github.com/kurisu1024/kit/examples/web/internal/sys/db"
+	"github.com/kurisu1024/kit/log"
 )
 
 const usersCollection = "users"

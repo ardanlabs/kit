@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ardanlabs/kit/tcp"
-	"github.com/ardanlabs/kit/tests"
+	"github.com/kurisu1024/kit/tcp"
+	"github.com/kurisu1024/kit/tests"
 )
 
 // TestTCP provide a test of listening for a connection and

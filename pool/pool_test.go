@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ardanlabs/kit/pool"
+	"github.com/kurisu1024/kit/pool"
 )
 
 // Success and failure markers.

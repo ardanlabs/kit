@@ -6,8 +6,8 @@ import (
 	"io"
 	"net"
 
-	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/tcp"
+	"github.com/kurisu1024/kit/log"
+	"github.com/kurisu1024/kit/tcp"
 )
 
 // tcpConnHandler is required to process data.

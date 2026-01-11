@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	googleURI   string = "https://maps.googleapis.com/maps/api/timezone/json?location=%f,%f&timestamp=%d&sensor=false"
+	googleURI   string = "https://maps.googleapis.com/maps/api/timezone/json?location=%f,%f&timestamp=%d"
 	geonamesURI string = "http://api.geonames.org/timezoneJSON?lat=%f&lng=%f&username=%s"
 )
 

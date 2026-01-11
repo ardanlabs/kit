@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ardanlabs/kit/log"
+	"github.com/kurisu1024/kit/log"
 )
 
 // Success and failure markers.

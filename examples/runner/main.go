@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/runner"
+	"github.com/kurisu1024/kit/cfg"
+	"github.com/kurisu1024/kit/log"
+	"github.com/kurisu1024/kit/runner"
 )
 
 // Configuation settings.

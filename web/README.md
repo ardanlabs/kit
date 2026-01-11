@@ -1,14 +1,14 @@
 
 
 # web
-`import "github.com/ardanlabs/kit/web"`
+`import "github.com/kurisu1024/kit/web"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
 
 ## <a name="pkg-overview">Overview</a>
 Package web provides a thin layer of support for writing web services. It
-integrates with the ardanlabs kit repo to provide support for routing and
+integrates with the kurisu1024 kit repo to provide support for routing and
 application ctx. The base things you need to write a web service is
 provided.
 
@@ -45,7 +45,7 @@ provided.
 
 
 #### <a name="pkg-files">Package files</a>
-[proxy.go](/src/github.com/ardanlabs/kit/web/proxy.go) [reponse.go](/src/github.com/ardanlabs/kit/web/reponse.go) [web.go](/src/github.com/ardanlabs/kit/web/web.go) 
+[proxy.go](/src/github.com/kurisu1024/kit/web/proxy.go) [reponse.go](/src/github.com/kurisu1024/kit/web/reponse.go) [web.go](/src/github.com/kurisu1024/kit/web/web.go) 
 
 
 ## <a name="pkg-constants">Constants</a>

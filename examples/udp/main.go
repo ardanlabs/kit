@@ -7,9 +7,9 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/udp"
+	"github.com/kurisu1024/kit/cfg"
+	"github.com/kurisu1024/kit/log"
+	"github.com/kurisu1024/kit/udp"
 )
 
 // Configuation settings.

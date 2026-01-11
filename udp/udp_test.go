@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ardanlabs/kit/tests"
-	"github.com/ardanlabs/kit/udp"
+	"github.com/kurisu1024/kit/tests"
+	"github.com/kurisu1024/kit/udp"
 )
 
 // TestUDP provide a test of listening for a connection and

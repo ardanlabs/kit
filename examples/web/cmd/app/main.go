@@ -9,11 +9,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/ardanlabs/kit/cfg"
-	"github.com/ardanlabs/kit/examples/web/cmd/app/routes"
-	"github.com/ardanlabs/kit/examples/web/internal/sys/app"
-	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/web"
+	"github.com/kurisu1024/kit/cfg"
+	"github.com/kurisu1024/kit/examples/web/cmd/app/routes"
+	"github.com/kurisu1024/kit/examples/web/internal/sys/app"
+	"github.com/kurisu1024/kit/log"
+	"github.com/kurisu1024/kit/web"
 )
 
 // init is called before main. We are using init to customize logging output.

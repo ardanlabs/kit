@@ -4,7 +4,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/ardanlabs/kit/log"
+	"github.com/kurisu1024/kit/log"
 )
 
 // ExampleDev shows how to use the log package.

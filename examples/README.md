@@ -1,6 +1,6 @@
 
 # examples
-    import "github.com/ardanlabs/kit/examples"
+    import "github.com/kurisu1024/kit/examples"
 
 Set of examples to show how to use the different packages in the kit.
 

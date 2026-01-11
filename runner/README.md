@@ -1,7 +1,7 @@
 
 
 # runner
-`import "github.com/ardanlabs/kit/runner"`
+`import "github.com/kurisu1024/kit/runner"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -24,7 +24,7 @@ support for notifying the task the shutdown using a <control> C.
 
 
 #### <a name="pkg-files">Package files</a>
-[runner.go](/src/github.com/ardanlabs/kit/runner/runner.go) 
+[runner.go](/src/github.com/kurisu1024/kit/runner/runner.go) 
 
 
 

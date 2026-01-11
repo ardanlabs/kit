@@ -1,7 +1,7 @@
 
 
 # cfg
-`import "github.com/ardanlabs/kit/cfg"`
+`import "github.com/kurisu1024/kit/cfg"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -89,7 +89,7 @@ will panic if the key does not exist:
 * [New](#example_New)
 
 #### <a name="pkg-files">Package files</a>
-[cfg.go](/src/github.com/ardanlabs/kit/cfg/cfg.go) [cfg_default.go](/src/github.com/ardanlabs/kit/cfg/cfg_default.go) [doc.go](/src/github.com/ardanlabs/kit/cfg/doc.go) [env_provider.go](/src/github.com/ardanlabs/kit/cfg/env_provider.go) [file_provider.go](/src/github.com/ardanlabs/kit/cfg/file_provider.go) [map_provider.go](/src/github.com/ardanlabs/kit/cfg/map_provider.go) 
+[cfg.go](/src/github.com/kurisu1024/kit/cfg/cfg.go) [cfg_default.go](/src/github.com/kurisu1024/kit/cfg/cfg_default.go) [doc.go](/src/github.com/kurisu1024/kit/cfg/doc.go) [env_provider.go](/src/github.com/kurisu1024/kit/cfg/env_provider.go) [file_provider.go](/src/github.com/kurisu1024s/kit/cfg/file_provider.go) [map_provider.go](/src/github.com/kurisu1024s/kit/cfg/map_provider.go) 
 
 
 

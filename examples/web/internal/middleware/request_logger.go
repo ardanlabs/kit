@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ardanlabs/kit/examples/web/internal/sys/app"
-	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/web"
+	"github.com/kurisu1024/kit/examples/web/internal/sys/app"
+	"github.com/kurisu1024/kit/log"
+	"github.com/kurisu1024/kit/web"
 )
 
 // RequestLogger writes some information about the request to the logs in

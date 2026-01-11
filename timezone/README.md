@@ -1,7 +1,7 @@
 
 
 # timezone
-`import "github.com/ardanlabs/kit/timezone"`
+`import "github.com/kurisu1024/kit/timezone"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -86,7 +86,7 @@ the /lib/time/zoneinfo.zip file. Because of this we can use the TimezoneID withi
 * [RetrieveGoogleTimezone](#example_RetrieveGoogleTimezone)
 
 #### <a name="pkg-files">Package files</a>
-[doc.go](/src/github.com/ardanlabs/kit/timezone/doc.go) [timezone.go](/src/github.com/ardanlabs/kit/timezone/timezone.go) 
+[doc.go](/src/github.com/kurisu1024/kit/timezone/doc.go) [timezone.go](/src/github.com/kurisu1024/kit/timezone/timezone.go) 
 
 
 

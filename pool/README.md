@@ -1,7 +1,7 @@
 
 
 # pool
-`import "github.com/ardanlabs/kit/pool"`
+`import "github.com/kurisu1024/kit/pool"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -25,7 +25,7 @@ implements this interface, then values of that type can be passed into the Do
 function.
 
 ### Sample Application
-<a href="https://github.com/ardanlabs/kit/blob/master/examples/pool/main.go">https://github.com/ardanlabs/kit/blob/master/examples/pool/main.go</a>
+<a href="https://github.com/kurisu1024/kit/blob/master/examples/pool/main.go">https://github.com/kurisu1024/kit/blob/master/examples/pool/main.go</a>
 
 
 
@@ -48,7 +48,7 @@ function.
 * [New](#example_New)
 
 #### <a name="pkg-files">Package files</a>
-[doc.go](/src/github.com/ardanlabs/kit/pool/doc.go) [pool.go](/src/github.com/ardanlabs/kit/pool/pool.go) 
+[doc.go](/src/github.com/kurisu1024/kit/pool/doc.go) [pool.go](/src/github.com/kurisu1024/kit/pool/pool.go) 
 
 
 

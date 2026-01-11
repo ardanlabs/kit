@@ -5,12 +5,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/ardanlabs/kit/cfg"
+	"github.com/kurisu1024/kit/cfg"
 )
 
 // ExampleGlobal shows how to use the package level funcs of the config
 // package.
-func ExampleGlobal() {
+func ExampleInit() {
 	// Init() must be called only once with the given namespace to load.
 	cfg.Init(cfg.MapProvider{
 		Map: map[string]string{

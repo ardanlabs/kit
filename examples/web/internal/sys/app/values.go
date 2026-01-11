@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/ardanlabs/kit/web"
+	"github.com/kurisu1024/kit/web"
 	"gopkg.in/mgo.v2"
 )
 

@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ardanlabs/kit/udp"
+	"github.com/kurisu1024/kit/udp"
 )
 
 // udpConnHandler is required to process data.

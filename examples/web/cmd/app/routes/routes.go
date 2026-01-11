@@ -3,9 +3,9 @@ package routes
 import (
 	"net/http"
 
-	"github.com/ardanlabs/kit/examples/web/cmd/app/handlers"
-	"github.com/ardanlabs/kit/examples/web/internal/middleware"
-	"github.com/ardanlabs/kit/web"
+	"github.com/kurisu1024/kit/examples/web/cmd/app/handlers"
+	"github.com/kurisu1024/kit/examples/web/internal/middleware"
+	"github.com/kurisu1024/kit/web"
 )
 
 // API returns a handler for a set of routes.

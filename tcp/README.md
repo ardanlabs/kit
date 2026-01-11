@@ -1,7 +1,7 @@
 
 
 # tcp
-`import "github.com/ardanlabs/kit/tcp"`
+`import "github.com/kurisu1024/kit/tcp"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -134,7 +134,7 @@ start processing messages.
 
 
 #### <a name="pkg-files">Package files</a>
-[client.go](/src/github.com/ardanlabs/kit/tcp/client.go) [doc.go](/src/github.com/ardanlabs/kit/tcp/doc.go) [handlers.go](/src/github.com/ardanlabs/kit/tcp/handlers.go) [tcp.go](/src/github.com/ardanlabs/kit/tcp/tcp.go) [tcp_config.go](/src/github.com/ardanlabs/kit/tcp/tcp_config.go) 
+[client.go](/src/github.com/kurisu1024/kit/tcp/client.go) [doc.go](/src/github.com/kurisu1024/kit/tcp/doc.go) [handlers.go](/src/github.com/kurisu1024/kit/tcp/handlers.go) [tcp.go](/src/github.com/kurisu1024s/kit/tcp/tcp.go) [tcp_config.go](/src/github.com/kurisu1024s/kit/tcp/tcp_config.go) 
 
 
 ## <a name="pkg-constants">Constants</a>

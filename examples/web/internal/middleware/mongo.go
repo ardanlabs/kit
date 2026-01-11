@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ardanlabs/kit/examples/web/internal/sys/app"
-	"github.com/ardanlabs/kit/examples/web/internal/sys/db"
-	"github.com/ardanlabs/kit/log"
-	"github.com/ardanlabs/kit/web"
+	"github.com/kurisu1024/kit/examples/web/internal/sys/app"
+	"github.com/kurisu1024/kit/examples/web/internal/sys/db"
+	"github.com/kurisu1024/kit/log"
+	"github.com/kurisu1024/kit/web"
 )
 
 // Mongo initializes the master session and wires in the connection middleware.

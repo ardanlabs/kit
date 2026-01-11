@@ -5,9 +5,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ardanlabs/kit/examples/web/internal/sys/app"
-	"github.com/ardanlabs/kit/examples/web/internal/user"
-	"github.com/ardanlabs/kit/web"
+	"github.com/kurisu1024/kit/examples/web/internal/sys/app"
+	"github.com/kurisu1024/kit/examples/web/internal/user"
+	"github.com/kurisu1024/kit/web"
 )
 
 // UserList returns all the existing users in the system.

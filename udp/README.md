@@ -1,7 +1,7 @@
 
 
 # udp
-`import "github.com/ardanlabs/kit/udp"`
+`import "github.com/kurisu1024/kit/udp"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -123,7 +123,7 @@ start processing messages.
 
 
 #### <a name="pkg-files">Package files</a>
-[doc.go](/src/github.com/ardanlabs/kit/udp/doc.go) [handlers.go](/src/github.com/ardanlabs/kit/udp/handlers.go) [udp.go](/src/github.com/ardanlabs/kit/udp/udp.go) [udp_config.go](/src/github.com/ardanlabs/kit/udp/udp_config.go) 
+[doc.go](/src/github.com/kurisu1024/kit/udp/doc.go) [handlers.go](/src/github.com/kurisu1024/kit/udp/handlers.go) [udp.go](/src/github.com/kurisu1024/kit/udp/udp.go) [udp_config.go](/src/github.com/kurisu1024/kit/udp/udp_config.go) 
 
 
 

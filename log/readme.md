@@ -1,7 +1,7 @@
 
 
 # log
-`import "github.com/ardanlabs/kit/log"`
+`import "github.com/kurisu1024/kit/log"`
 
 * [Overview](#pkg-overview)
 * [Index](#pkg-index)
@@ -82,7 +82,7 @@ would be substituted if provided. This messaging is up to you.
 * [Dev](#example_Dev)
 
 #### <a name="pkg-files">Package files</a>
-[doc.go](/src/github.com/ardanlabs/kit/log/doc.go) [log.go](/src/github.com/ardanlabs/kit/log/log.go) [log_default.go](/src/github.com/ardanlabs/kit/log/log_default.go) 
+[doc.go](/src/github.com/kurisu1024/kit/log/doc.go) [log.go](/src/github.com/kurisu1024/kit/log/log.go) [log_default.go](/src/github.com/kurisu1024/kit/log/log_default.go) 
 
 
 ## <a name="pkg-constants">Constants</a>

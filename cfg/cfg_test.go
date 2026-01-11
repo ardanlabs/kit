@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ardanlabs/kit/cfg"
+	"github.com/kurisu1024/kit/cfg"
 )
 
 // Success and failure markers.

@@ -1,5 +1,5 @@
 // Package web provides a thin layer of support for writing web services. It
-// integrates with the ardanlabs kit repo to provide support for routing and
+// integrates with the kurisu1024 kit repo to provide support for routing and
 // application ctx. The base things you need to write a web service is
 // provided.
 package web
@@ -180,7 +180,7 @@ func Run(host string, routes http.Handler, readTimeout, writeTimeout time.Durati
 	}()
 
 	// Listen for an interrupt signal from the OS.
-	osSignals := make(chan os.Signal)
+	osSignals := make(chan os.Signal, 1)
 	signal.Notify(osSignals, os.Interrupt)
 
 	// Wait for a signal to shutdown.
